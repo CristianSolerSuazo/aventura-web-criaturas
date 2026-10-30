@@ -338,36 +338,45 @@ La versión preliminar del sistema de combate presentaba serias debilidades de e
 
 ## 6. Sub-Fase 10f: Equipo Activo y Almacén (`PantallaEquipo.tsx` y `PantallaAlmacen.tsx`)
 
-### 6.1 Diagnóstico Inicial y Auditoría Impeccable
-Previa a la intervención, la gestión táctica de criaturas y la custodia en almacén presentaban debilidades arquitectónicas, de sincronización y de ergonomía visual:
-1. **Inconsistencias en Servidor y Orden Táctico Indeterminado:** El endpoint `PATCH /api/equipo/orden` admitía permutaciones parciales y duplicadas. Dado que `CombateService` selecciona al combatiente líder según `ordenEquipo asc`, un reordenamiento corrupto dejaba indeterminado quién abría los combates.
-2. **Condiciones de Carrera en la Regla A-6 y Equipo Mínimo:** Las transferencias leían el estado de la criatura y el total de integrantes fuera de transacciones serializadas, permitiendo que peticiones concurrentes (doble clic o sesiones simultáneas) desbordaran el límite de 6 criaturas o vaciaran completamente el equipo.
-3. **Ausencia de Intercambio Atómico:** Cuando el equipo alcanzaba su capacidad máxima (6/6), el jugador debía salir a la pantalla de equipo, enviar una criatura al almacén y retornar a la pantalla de almacén para promover a la nueva criatura, creando ventanas de vulnerabilidad transitoria con 5 miembros y fricción innecesaria.
-4. **Carencia de Estadísticas en Almacén:** `GET /api/almacen` omitía atributos esenciales (`ataque`, `defensa`, `velocidad`, `experiencia`, `porcentajeXp`), imposibilitando evaluar estratégicamente a qué combatiente incorporar.
-5. **Falta de Exposición de la Regla de Localidad Segura:** La UI no informaba sobre la restricción territorial exigida por el servidor (`403 ACCION_NO_PERMITIDA`), ofreciendo controles que fallaban inesperadamente fuera de un asentamiento seguro.
-6. **Ausencia de Identidad Visual Retro y Sprites:** Las criaturas carecían de sprites pixelados con respaldo; se empleaban tipografías sans genéricas y bordes redondeados (`rounded`) en tarjetas y estadísticas, en contravención con `docs/DESIGN.md`.
-7. **Hardening Insuficiente y Desincronización Local:** La deshabilitación por doble clic era aislada por tarjeta, posibilitando disparos concurrentes entre miembros; tras transferencias se filtraba el arreglo local sin renumerar posiciones.
-8. **Navegación Inaccesible:** Existía anidamiento no conforme de `<button>` dentro de elementos `<a>` (`<Link>`), generando paradas dobles de foco para lectores de pantalla y teclado.
-9. **Fuga Crítica de Recursos Web Audio:** `sintetizarTonoRetro` en `apps/web/src/lib/assets.ts` instanciaba un `AudioContext` en cada emisión acústica sin cerrarlo al finalizar, provocando el enmudecimiento total del audio en el navegador tras múltiples interacciones.
+### 6.1 Diagnóstico Inicial y Auditoría Heurística Impeccable
+Previa a la intervención y consolidación retro-brutalist, la gestión táctica de combatientes y la custodia en almacén presentaban debilidades arquitectónicas, de sincronización y de ergonomía visual:
+1. **Jerarquía Visual Plana entre Líder y Reserva:** La tarjeta del combatiente líder carecía de impacto visual supremo; usaba un borde dorado tenue sin sombras sólidas ortogonales, diluyéndose entre los compañeros de reserva y dificultando identificar de un vistazo quién abriría los combates.
+2. **Ausencia de Estética Retro-Brutalist 8-Bit (`8bitcn/ui`):** Las tarjetas, barras y botones presentaban estilos genéricos sin los bordes negros gruesos (`border-2 border-black`, `border-4 border-black`) ni sombras sólidas duras (`shadow-[2px_2px_0_0_#000]`, `shadow-[4px_4px_0_0_#000]`, `shadow-[6px_6px_0_0_#000]`) exigidos por `docs/DESIGN.md`.
+3. **Legibilidad Débil en Medidores de Vitalidad y Progresión:** Las barras `HealthBar` y `XpBar` no contaban con canales oscuros empotrados ni marcos protectores, careciendo de la apariencia de cartucho RPG clásico de consola.
+4. **Matriz de Atributos Atenuada:** Los atributos tácticos (ATQ, DEF, VEL) se mostraban en un contenedor opaco de bajo contraste sin iconografía temática destacada ni cajas retro independientes.
+5. **Ranuras Libres Poco Diferenciadas:** La capacidad desocupada del equipo se mostraba mediante un marco tenue, sin sensación de pedestal táctico de reserva.
+6. **Botonera Táctica sin Retroalimentación Física:** Los botones de subida/bajada y designación de líder carecían del efecto de pulsación física retro (`active:translate-y-0.5 active:shadow-none`).
+7. **Inconsistencias en Servidor y Orden Táctico Indeterminado:** El endpoint `PATCH /api/equipo/orden` admitía permutaciones parciales y duplicadas. Dado que `CombateService` selecciona al combatiente líder según `ordenEquipo asc`, un reordenamiento corrupto dejaba indeterminado quién abría los combates.
+8. **Condiciones de Carrera en la Regla A-6 y Equipo Mínimo:** Las transferencias leían el estado de la criatura y el total de integrantes fuera de transacciones serializadas, permitiendo que peticiones concurrentes (doble clic o sesiones simultáneas) desbordaran el límite de 6 criaturas o vaciaran completamente el equipo.
+9. **Ausencia de Intercambio Atómico:** Cuando el equipo alcanzaba su capacidad máxima (6/6), el jugador debía salir a la pantalla de equipo, enviar una criatura al almacén y retornar a la pantalla de almacén para promover a la nueva criatura, creando ventanas de vulnerabilidad transitoria con 5 miembros y fricción innecesaria.
+10. **Carencia de Estadísticas en Almacén:** `GET /api/almacen` omitía atributos esenciales (`ataque`, `defensa`, `velocidad`, `experiencia`, `porcentajeXp`), imposibilitando evaluar estratégicamente a qué combatiente incorporar.
+11. **Falta de Exposición de la Regla de Localidad Segura:** La UI no informaba sobre la restricción territorial exigida por el servidor (`403 ACCION_NO_PERMITIDA`), ofreciendo controles que fallaban inesperadamente fuera de un asentamiento seguro.
+12. **Hardening Insuficiente y Desincronización Local:** La deshabilitación por doble clic era aislada por tarjeta, posibilitando disparos concurrentes entre miembros; tras transferencias se filtraba el arreglo local sin renumerar posiciones.
+13. **Navegación Inaccesible:** Existía anidamiento no conforme de `<button>` dentro de elementos `<a>` (`<Link>`), generando paradas dobles de foco para lectores de pantalla y teclado.
+14. **Fuga Crítica de Recursos Web Audio:** `sintetizarTonoRetro` en `apps/web/src/lib/assets.ts` instanciaba un `AudioContext` en cada emisión acústica sin cerrarlo al finalizar, provocando el enmudecimiento total del audio en el navegador tras múltiples interacciones.
 
 ---
 
 ### 6.2 Mejoras Implementadas
 
-#### A. Identidad Retro y Jerarquía Visual (`docs/DESIGN.md`)
-- **Tipografía Bimodal Estricta:** Encabezados (`h1`), insignias tácticas y botones de comando implementan `Press Start 2P` (`.retro`), respetando una escala visual contenida (`text-base sm:text-lg`). Textos complementarios, descripciones y apodos se canalizan mediante fuentes sans de alta legibilidad.
-- **Insignia y Corona de Liderazgo:** La criatura en la primera posición (`orden === 1`) exhibe una insignia distintiva dorada `LÍDER` con el icono `Crown` y un borde reforzado `border-4 border-amber-500/80 bg-amber-500/5`, denotando inequívocamente quién abrirá la arena de combate.
-- **Insignia y Salvaguarda de Estado Debilitada:** Los combatientes con `hpActual === 0` se marcan con la insignia destructiva `DEBILITADA`, inhabilitando su designación como líder con la advertencia contextual: *"El combate la omitirá hasta curarla."*
-- **Visualización de Ranuras Libres:** La capacidad disponible del equipo se visualiza explícitamente mediante marcos rectangulares `border-2 border-dashed border-border/60` con la leyenda *"Ranura libre N de 6"*, permitiendo dimensionar el margen de reclutamiento disponible.
-- **Geometría Retro 8-Bit:** Supresión radical de esquinas redondeadas (`rounded`), instaurando bordes ortogonales puros (`rounded-none`) y sprites de criatura con clase `.pixelated` y respaldo SVG transparente.
+#### A. Mesa Táctica de Mando 16-Bit y Jerarquía Retro-Brutalist (`docs/DESIGN.md` y `8bitcn/ui`)
+- **Combatiente Líder (`orden === 1`):** Rediseñado con marco supremo retro-brutalista `border-4 border-black shadow-[6px_6px_0_0_#000] bg-amber-500/10 ring-1 ring-amber-400/40`, badge retro `LÍDER` con icono `Crown` (`border-2 border-black shadow-[2px_2px_0_0_#000] bg-amber-400 text-black font-bold text-[9px] retro rounded-none gap-1 py-0.5 px-2`), sprite pixelado con aura luminosa dorada (`bg-amber-500/20 border-2 border-amber-400 shadow-[0_0_12px_rgba(251,191,36,0.35)] p-1`) y relieve superior de mando.
+- **Compañeros de Reserva:** Enmarcados con marco brutalista táctil `border-2 border-black shadow-[4px_4px_0_0_#000] bg-card`, sprite pixelado con relieve interior oscuro (`bg-black/40 border-2 border-black shadow-[inset_2px_2px_0_0_rgba(0,0,0,0.6)] p-1`) y badge de nivel monoespaciado en alto contraste (`Nv. X`) con `border-2 border-black shadow-[2px_2px_0_0_#000] bg-black/50`.
+- **Estado Debilitado:** Badge destructivo retro `DEBILITADA` (`border-2 border-black shadow-[2px_2px_0_0_#000] bg-red-600 text-white font-bold text-[9px] retro`) e indicador contextual enmarcado: *"El combate la omitirá hasta curarla."*
+- **Barras Retro Empotradas de Vitalidad y EXP:**
+  - `HealthBar` integrada en un canal oscuro protegido `border border-black bg-black/60 p-0.5 shadow-[1px_1px_0_0_#000]`, con semáforo cromático reactivo (>50% esmeralda, 20%-50% ámbar, <=20% carmesí crítico) y animación de pulso crítico.
+  - `XpBar` empotrada en canal oscuro `border border-black bg-black/60 p-0.5 shadow-[1px_1px_0_0_#000]`, desplegando el progreso porcentual exacto sin duplicidades.
+- **Matriz de Atributos Base Táctica:** Caja retro `border-2 border-black bg-black/40 shadow-[2px_2px_0_0_#000] p-1.5` con tres celdas independientes para ATQ (`Swords` en rojo), DEF (`Shield` en azul) y VEL (`Zap` en ámbar), con valores numéricos monoespaciados en negrita y máximo contraste.
+- **Ranuras Libres como Pedestales Tácticos:** Ranuras desocupadas modeladas como pedestales brutales con borde discontinuo de alto contraste `border-2 border-dashed border-black/80 bg-black/20 shadow-[2px_2px_0_0_#000] p-6`, texto retro `Ranura libre` en `Press Start 2P` y conteo `{numeroRanura} de {limiteEquipo}` en tipografía monoespaciada.
+- **Cabecera y Navegación Rápida:** Título principal con tipografía pixelada `Press Start 2P` (`.retro`), badge retro de capacidad `{equipo.length} / {limiteEquipo}` con `border-2 border-black shadow-[2px_2px_0_0_#000]`, y botones de acceso directo `/almacen` e `/hub` con marco brutalista táctil `border-2 border-black shadow-[2px_2px_0_0_#000] active:translate-y-0.5 active:shadow-none`.
+- **Aviso Territorial:** Banner de advertencia territorial con `MapPinOff` con borde negro ortogonal `border-2 border-black shadow-[2px_2px_0_0_#000] bg-amber-500/10 text-amber-400`.
 
-#### B. Componentes Táctiles 8bitcn/ui y Hardening
-- **Bloqueo Global Reactivo contra Doble Clic:** Se sustituyó el flag local por el estado unificado `operacion: { tipo, criaturaId } | null`. Durante cualquier petición en vuelo, **todos** los botones de reordenamiento y transferencia se inhabilitan, asignando `aria-busy={true}`, spinners pixelados y la leyenda retro `PROCESANDO...`.
-- **Modal de Intercambio Sellado contra Overflow:** Cuando el equipo está lleno (6/6), el botón de la criatura en almacén conmuta a `Intercambiar`, abriendo un diálogo retro (`Dialog` de 8bitcn/ui) adaptativo:
-  - Contenedor confinado con `w-[calc(100vw-2rem)] sm:max-w-md overflow-hidden rounded-none`.
-  - Desplazamiento vertical interno con `max-h-[55vh] overflow-y-auto` para seleccionar al compañero saliente mediante un grupo de radio accesible (`role="radio"`).
-  - Pie apilado verticalmente (`flex-col gap-2 w-full`) con botones a ancho completo, suprimiendo desbordamientos horizontales en dispositivos móviles (320px–425px).
-- **Navegación Accesible y Erradicación de Emojis Unicode:** Los enlaces de cabecera implementan `Button asChild` envolviendo a `Link` de `react-router`, eliminando advertencias de validación HTML. Cero emojis unicode presentes en las vistas, sustituidos por iconografía SVG de Lucide (`Crown`, `ChevronUp`, `ChevronDown`, `Archive`, `Repeat`, `ArrowUpFromLine`, `MapPinOff`, `Warehouse`, `Users`, `ArrowLeft`).
+#### B. Componentes Táctiles 8bitcn/ui, Hardening y Ergonomía Móvil
+- **Botonera Táctil con Feedback Físico:** Botones de reordenamiento (`ChevronUp`, `ChevronDown`) y `Designar líder` con marco retro `border-2 border-black shadow-[2px_2px_0_0_#000]` y compresión física al presionar (`active:translate-y-0.5 active:shadow-none`). Botón a ancho completo `Enviar al almacén` con icono `Archive`, bloqueado contextualmente si el equipo tiene 1 sola criatura o si la expedición está fuera de un asentamiento seguro.
+- **Bloqueo Global Reactivo contra Doble Acción:** Se implementó el estado unificado `operacion: { tipo, criaturaId } | null`. Durante cualquier petición en vuelo, **todos** los botones de la tarjeta se inhabilitan (`disabled={operacion !== null}`), aplicando `aria-busy={true}`, spinners retro pixelados y la leyenda `PROCESANDO...`.
+- **Adaptabilidad Móvil Estricta (360px–420px):** Contenedor elástico `max-w-5xl mx-auto py-2 sm:py-4 px-2 sm:px-4` y cuadrícula adaptable `grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4` con apilado fluido, garantizando cero desbordamiento horizontal en dispositivos móviles estrechos.
+- **Modal de Intercambio en Almacén Sellado contra Overflow:** Cuando el equipo está lleno (6/6), el botón en almacén conmuta a `Intercambiar`, desplegando un diálogo retro confinado (`w-[calc(100vw-2rem)] sm:max-w-md overflow-hidden rounded-none`) con scroll vertical interno (`max-h-[55vh] overflow-y-auto`) y pie apilado verticalmente.
+- **Cumplimiento Estricto de la Regla R1:** Cero emojis unicode en código, comentarios y textos de UI. Toda la semántica gráfica se canaliza exclusivamente mediante iconos SVG de Lucide (`Crown`, `ChevronUp`, `ChevronDown`, `Archive`, `MapPinOff`, `Warehouse`, `ArrowLeft`, `Swords`, `Shield`, `Zap`, `Heart`, `Repeat`, `ArrowUpFromLine`).
 
 #### C. Integración Multimedia y Audio Retro Centralizado (`assets.ts`)
 - **Erradicación de Fugas de `AudioContext`:** Inserción de la directiva `osc.onended = () => void ctx.close();` en `sintetizarTonoRetro`, asegurando la liberación inmediata del canal acústico tras reproducir cualquier efecto de sonido.
@@ -382,21 +391,27 @@ Previa a la intervención, la gestión táctica de criaturas y la custodia en al
 - **Serialización Pesimista por Explorador:** Tanto `actualizarOrden` como `moverCriatura` ejecutan `SELECT id FROM personaje WHERE id = ${personaje.id} FOR UPDATE` al inicio de su transacción interactiva en PostgreSQL, blindando las invariantes `A-6` (máximo 6 criaturas) y equipo mínimo ($\ge 1$ criatura) frente a concurrencia extrema.
 - **Intercambio Atómico de Posición (`intercambiarConId`):** Permuta en una única transacción atómica el estado de ambas criaturas; la entrante hereda exactamente el `ordenEquipo` de la saliente, garantizando que si se releva al líder, la nueva criatura asume la jefatura de combate de inmediato sin alterar el conteo total.
 - **Enriquecimiento del Contrato REST:** `GET /api/equipo` y `GET /api/almacen` entregan `limiteEquipo: 6`, `enLocalidadSegura: boolean` y `totalEnEquipo`, sirviendo como fuentes autoritativas de verdad para el cliente.
-- *Observación fuera de alcance:* Se mantiene sin modificaciones la regla de combate documentada en la subfase 10e (S-5) donde el cambio de criatura mediante `PATCH /equipo/orden` no consume turno.
 
 ---
 
 ### 6.3 Verificación de Calidad y Cero Regresiones
-- **Pruebas Automatizadas Front-End (`apps/web/test/verificacion-equipo-almacen.spec.ts`):** 10 pruebas unitarias exhaustivas validando:
-  1. Pureza e inmutabilidad de la función de reordenamiento `moverEnLista`.
-  2. Comportamiento ante índices fuera de rango o extremos.
-  3. Contratos tipados de `RespuestaEquipo`, `RespuestaAlmacen` y `PeticionTransferirCriatura`.
-  4. Cumplimiento de la regla R1 (0 emojis unicode detectados mecánicamente en `PantallaEquipo.tsx` y `PantallaAlmacen.tsx`).
-- **Suite Total Web (`pnpm --filter web test`):** 30 de 30 pruebas aprobadas (100% éxito).
-- **Pruebas Backend y Reglas de Servidor (`pnpm --filter api test`):** 47 de 47 pruebas aprobadas (100% éxito), incluyendo 9 nuevas pruebas en `apps/api/test/equipo.spec.ts` cubriendo permutaciones de orden, rechazo de duplicados, regla `A-6`, equipo mínimo, salvaguarda de localidad segura e intercambio atómico.
-- **Compilación de Producción (`pnpm --filter web build`):** 0 errores TypeScript en Vite, empaquetado exitoso en 1.34s.
-- **Linter Web (`pnpm --filter web lint`):** 0 errores.
-- **Inspección Responsive:** Sin scroll horizontal en anchos reducidos (320px, 375px y 768px).
+- **Pruebas Automatizadas Front-End (`apps/web/test/verificacion-equipo-almacen.spec.ts`):** 11 pruebas unitarias exhaustivas aprobadas al 100%:
+  1. Pureza e inmutabilidad de la función de reordenamiento `moverEnLista` (designación de líder al índice 0).
+  2. Subida táctica de una posición ($i \to i - 1$).
+  3. Bajada táctica de una posición ($i \to i + 1$).
+  4. Comportamiento ante índices fuera de rango o iguales (conservación de copia intacta).
+  5. Inmutabilidad de la entrada y conservación del multiconjunto de identificadores.
+  6. Contrato tipado de `RespuestaEquipo` modelando `limiteEquipo` y `enLocalidadSegura`.
+  7. Contrato tipado de `RespuestaAlmacen` modelando estadísticas completas y `totalEnEquipo`.
+  8. Contrato tipado de `PeticionTransferirCriatura` soportando intercambio atómico con `intercambiarConId`.
+  9. Regla R1 Estricta: Ausencia total de emojis unicode en `PantallaEquipo.tsx`.
+  10. Regla R1 Estricta: Ausencia total de emojis unicode en `PantallaAlmacen.tsx`.
+  11. Hardening, Ergonomía y Estética Retro-Brutalist: Verificación estática de marco supremo de líder `border-4 border-black shadow-[6px_6px_0_0_#000]`, marcos tácticos `border-2 border-black shadow-[4px_4px_0_0_#000]`, sombras sólidas `shadow-[2px_2px_0_0_#000]`, ranuras discontinuas `border-2 border-dashed border-black/80`, protección `aria-busy={estaOrdenando}`, `aria-busy={estaTransfiriendo}`, bloqueo `disabled={operacion !== null`, leyenda retro `PROCESANDO...` e integración de `HealthBar` y `XpBar`.
+- **Suite Total Web (`pnpm --filter web test`):** 74 de 74 pruebas aprobadas (100% éxito).
+- **Pruebas Backend y Reglas de Servidor (`pnpm --filter api test`):** 47 de 47 pruebas aprobadas (100% éxito), incluyendo permutaciones de orden, rechazo de duplicados, regla `A-6`, equipo mínimo, salvaguarda de localidad segura e intercambio atómico.
+- **Compilación de Producción (`pnpm --filter web build`):** 0 errores TypeScript en Vite, empaquetado exitoso en 1.93s.
+- **Linter Web (`pnpm --filter web lint`):** 0 errores en 80 archivos evaluados.
+- **Inspección Responsive:** Cero desbordamiento horizontal en resoluciones móviles estrechas (360px, 375px, 420px) y escritorio (768px, 1024px).
 
 ---
 
