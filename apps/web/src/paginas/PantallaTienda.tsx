@@ -181,38 +181,52 @@ export function PantallaTienda() {
     : null;
 
   return (
-    <div className="space-y-6 max-w-5xl mx-auto py-2 sm:py-4">
-      {/* Cabecera Táctica y Saldo en Vivo */}
-      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 border-2 border-border bg-bastion p-4 rounded-none">
-        <div>
+    <div className="w-full max-w-5xl mx-auto py-2 sm:py-4 px-2 sm:px-4 overflow-x-hidden space-y-4 sm:space-y-6">
+      {/* Cabecera Mercantil y Saldo en Vivo */}
+      <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 sm:gap-4 border-2 border-black shadow-[4px_4px_0_0_#000] bg-card p-3 sm:p-4 rounded-none">
+        <div className="space-y-2 min-w-0">
           <div className="flex items-center gap-2 flex-wrap">
-            <h1 className="retro text-base sm:text-lg text-primary tracking-wide">
+            <h1 className="retro text-xs sm:text-base text-primary tracking-wide drop-shadow-[1px_1px_0_#000]">
               Bazar de Provisiones
             </h1>
-            <div className="inline-flex items-center gap-1.5 text-amber-400 font-mono font-bold text-xs sm:text-sm border-2 border-amber-500/60 bg-amber-500/10 px-2.5 py-1 rounded-none">
-              <Coins className="size-4 text-amber-400" />
+            <div className="inline-flex items-center gap-1.5 text-amber-400 retro text-[8px] sm:text-[9px] border-2 border-black shadow-[2px_2px_0_0_#000] bg-amber-500/10 px-2 py-1 rounded-none">
+              <Coins className="size-3 sm:size-3.5 text-amber-400 shrink-0" />
               <span>{monedas} Oro</span>
             </div>
+            <div className="inline-flex items-center gap-1.5 text-sky-400 retro text-[8px] sm:text-[9px] border-2 border-black shadow-[2px_2px_0_0_#000] bg-sky-500/10 px-2 py-1 rounded-none">
+              <Package className="size-3 sm:size-3.5 text-sky-400 shrink-0" />
+              <span>{items.length} artículos en venta</span>
+            </div>
           </div>
-          <p className="text-xs sm:text-sm text-muted-foreground mt-1">
+          <p className="retro text-[8px] sm:text-[9px] text-muted-foreground leading-relaxed break-words">
             Ubicación:{" "}
-            <span className="font-semibold text-foreground">
+            <span className="text-foreground font-bold">
               {catalogo?.ubicacionActual.nombre ?? "Cargando asentamiento..."}
             </span>{" "}
             • Aprovisiona consumibles y talismanes antes de partir en expedición.
           </p>
         </div>
 
-        <div className="flex items-center gap-2 flex-wrap">
-          <Button asChild variant="outline" size="sm" className="text-xs rounded-none">
-            <Link to="/inventario" className="flex items-center gap-1.5">
-              <Package className="size-3.5" />
+        <div className="flex items-center gap-2 flex-wrap sm:flex-nowrap shrink-0">
+          <Button
+            asChild
+            variant="outline"
+            size="sm"
+            className="flex-1 sm:flex-none text-[8px] sm:text-[9px] retro rounded-none border-2 border-black shadow-[2px_2px_0_0_#000] active:translate-y-0.5 active:shadow-none hover:bg-muted cursor-pointer"
+          >
+            <Link to="/inventario" className="flex items-center justify-center gap-1.5">
+              <Package className="size-3 sm:size-3.5" />
               <span>Ver Bolsa</span>
             </Link>
           </Button>
-          <Button asChild variant="outline" size="sm" className="text-xs rounded-none">
-            <Link to="/hub" className="flex items-center gap-1.5">
-              <ArrowLeft className="size-3.5" />
+          <Button
+            asChild
+            variant="outline"
+            size="sm"
+            className="flex-1 sm:flex-none text-[8px] sm:text-[9px] retro rounded-none border-2 border-black shadow-[2px_2px_0_0_#000] active:translate-y-0.5 active:shadow-none hover:bg-muted cursor-pointer"
+          >
+            <Link to="/hub" className="flex items-center justify-center gap-1.5">
+              <ArrowLeft className="size-3 sm:size-3.5" />
               <span>Asentamiento</span>
             </Link>
           </Button>
@@ -221,13 +235,13 @@ export function PantallaTienda() {
 
       {/* Alerta si la ubicación no tiene servicio TIENDA */}
       {!servicioDisponible && (
-        <div className="rounded-none border-2 border-amber-500/70 bg-amber-500/10 p-4 flex items-start gap-3 text-amber-300">
-          <MapPinOff className="size-5 shrink-0 text-amber-400 mt-0.5" />
-          <div className="text-xs space-y-1">
-            <p className="font-bold retro text-[11px] text-amber-200">
+        <div className="rounded-none border-2 border-black shadow-[4px_4px_0_0_#000] bg-amber-500/10 p-3 sm:p-4 flex items-start gap-3 text-amber-300">
+          <MapPinOff className="size-4 sm:size-5 shrink-0 text-amber-400 mt-0.5" />
+          <div className="space-y-1 min-w-0">
+            <p className="retro text-[9px] sm:text-[10px] text-amber-200">
               Servicio de Bazar No Disponible
             </p>
-            <p className="font-sans leading-relaxed text-amber-300/90">
+            <p className="retro text-[8px] sm:text-[9px] leading-relaxed text-amber-300/90 break-words">
               Esta ubicación no dispone de bazar comercial activo. Viaja a un asentamiento mercantil
               como el Puesto Fronterizo del Río o el Bastión del Norte para realizar adquisiciones.
             </p>
@@ -237,24 +251,25 @@ export function PantallaTienda() {
 
       {/* Estado de carga */}
       {cargando && (
-        <div className="border-2 border-border p-8 text-center bg-bastion rounded-none space-y-3">
+        <div className="border-2 border-black shadow-[4px_4px_0_0_#000] p-8 text-center bg-card rounded-none space-y-3">
           <Spinner className="size-6 mx-auto text-primary" />
-          <p className="retro text-xs text-muted-foreground">Consultando catálogo mercantil...</p>
+          <p className="retro text-[9px] sm:text-[10px] text-muted-foreground">Consultando catálogo mercantil...</p>
         </div>
       )}
 
-      {/* Catálogo de Artículos */}
+      {/* Catálogo de Artículos Vacío */}
       {!cargando && items.length === 0 && (
-        <div className="border-2 border-border p-8 text-center bg-bastion rounded-none space-y-3">
+        <div className="border-2 border-black shadow-[4px_4px_0_0_#000] p-8 text-center bg-card rounded-none space-y-3">
           <Package className="size-8 mx-auto text-muted-foreground" />
-          <p className="retro text-xs text-muted-foreground">
+          <p className="retro text-[9px] sm:text-[10px] text-muted-foreground">
             El bazar no dispone de artículos en este momento.
           </p>
         </div>
       )}
 
+      {/* Catálogo de Artículos Mercantiles (8bitcn/ui Brutalist) */}
       {!cargando && items.length > 0 && (
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-4">
           {items.map((articulo) => {
             const cantidad = cantidades[articulo.codigo] || 1;
             const resumen = calcularResumenCompra(articulo.precioCompra, cantidad, monedas);
@@ -263,24 +278,24 @@ export function PantallaTienda() {
             return (
               <Card
                 key={articulo.codigo}
-                className="rounded-none border-2 bg-bastion flex flex-col justify-between"
+                className="rounded-none border-2 border-black shadow-[4px_4px_0_0_#000] hover:shadow-[6px_6px_0_0_#000] bg-card transition-shadow flex flex-col justify-between"
               >
-                <CardHeader className="p-4 pb-2">
+                <CardHeader className="p-3 sm:p-4 pb-2">
                   <div className="flex items-start gap-3">
                     {/* Marco de Sprite Pixelado */}
-                    <div className="border-2 border-border bg-abismo/60 p-1.5 size-16 shrink-0 flex items-center justify-center rounded-none">
+                    <div className="border-2 border-black bg-black/40 shadow-[inset_2px_2px_0_0_rgba(0,0,0,0.6)] p-1.5 size-14 sm:size-16 shrink-0 flex items-center justify-center rounded-none">
                       <img
                         src={obtenerImagenObjeto(articulo.codigo)}
                         alt={articulo.nombre}
                         onError={(e) => manejarErrorImagen(e, "objeto")}
-                        className="pixelated h-12 w-12 object-contain"
+                        className="pixelated size-10 sm:size-12 object-contain"
                         loading="lazy"
                       />
                     </div>
 
-                    <div className="space-y-1 min-w-0 flex-1">
-                      <div className="flex items-center justify-between gap-1 flex-wrap">
-                        <CardTitle className="retro text-xs leading-relaxed text-foreground truncate">
+                    <div className="space-y-1.5 min-w-0 flex-1">
+                      <div className="flex items-center justify-between gap-1.5 flex-wrap">
+                        <CardTitle className="retro text-[10px] sm:text-xs leading-relaxed text-foreground break-words">
                           {articulo.nombre}
                         </CardTitle>
                         <Badge
@@ -291,11 +306,11 @@ export function PantallaTienda() {
                               ? "default"
                               : "outline"
                           }
-                          className="rounded-none text-[10px] uppercase font-mono flex items-center gap-1"
+                          className="rounded-none text-[8px] sm:text-[9px] retro uppercase border-2 border-black flex items-center gap-1 shadow-[2px_2px_0_0_#000] py-0.5 px-1.5"
                         >
-                          {articulo.tipo === "CAPTURA" && <Crosshair className="size-3" />}
-                          {articulo.tipo === "CURACION" && <HeartPulse className="size-3" />}
-                          {articulo.tipo === "ESPECIAL" && <Sparkles className="size-3" />}
+                          {articulo.tipo === "CAPTURA" && <Crosshair className="size-2.5 sm:size-3" />}
+                          {articulo.tipo === "CURACION" && <HeartPulse className="size-2.5 sm:size-3" />}
+                          {articulo.tipo === "ESPECIAL" && <Sparkles className="size-2.5 sm:size-3" />}
                           <span>
                             {articulo.tipo === "CAPTURA"
                               ? "Captura"
@@ -306,24 +321,24 @@ export function PantallaTienda() {
                         </Badge>
                       </div>
 
-                      <CardDescription className="text-xs text-muted-foreground line-clamp-2">
+                      <CardDescription className="retro text-[8px] sm:text-[9px] text-muted-foreground leading-relaxed break-words">
                         {articulo.descripcion}
                       </CardDescription>
 
-                      <div className="flex items-center gap-2 pt-1 flex-wrap">
+                      <div className="flex items-center gap-1.5 sm:gap-2 pt-0.5 flex-wrap">
                         {articulo.tipo === "CURACION" && articulo.efectoValor > 0 && (
-                          <span className="text-[11px] font-mono font-bold text-emerald-400 bg-emerald-950/40 border border-emerald-500/40 px-1.5 py-0.5 rounded-none">
+                          <span className="text-[8px] sm:text-[9px] retro text-emerald-400 bg-emerald-950/40 border-2 border-black px-1.5 py-0.5 rounded-none shadow-[2px_2px_0_0_#000]">
                             +{articulo.efectoValor} HP
                           </span>
                         )}
                         {articulo.tipo === "CAPTURA" && articulo.efectoValor > 0 && (
-                          <span className="text-[11px] font-mono font-bold text-sky-400 bg-sky-950/40 border border-sky-500/40 px-1.5 py-0.5 rounded-none">
+                          <span className="text-[8px] sm:text-[9px] retro text-sky-400 bg-sky-950/40 border-2 border-black px-1.5 py-0.5 rounded-none shadow-[2px_2px_0_0_#000]">
                             Bono Captura Nv.{articulo.efectoValor}
                           </span>
                         )}
-                        <span className="text-[11px] font-mono text-muted-foreground">
-                          En tu bolsa:{" "}
-                          <strong className="text-foreground">
+                        <span className="text-[8px] sm:text-[9px] retro text-muted-foreground">
+                          En bolsa:{" "}
+                          <strong className="text-amber-400">
                             x{articulo.cantidadEnInventario}
                           </strong>
                         </span>
@@ -332,11 +347,11 @@ export function PantallaTienda() {
                   </div>
                 </CardHeader>
 
-                <CardContent className="p-4 pt-2 space-y-3">
+                <CardContent className="p-3 sm:p-4 pt-2 space-y-2.5 sm:space-y-3">
                   {/* Selector Rápido de Lotes y Botones Unitarios */}
-                  <div className="space-y-1.5 pt-2 border-t border-border/50">
-                    <div className="flex items-center justify-between gap-2">
-                      <span className="text-xs font-semibold text-muted-foreground">
+                  <div className="space-y-2 pt-2 border-t-2 border-black/40">
+                    <div className="flex items-center justify-between gap-2 flex-wrap">
+                      <span className="retro text-[8px] sm:text-[9px] text-muted-foreground">
                         Elegir Lote:
                       </span>
                       <div className="flex items-center gap-1">
@@ -345,7 +360,7 @@ export function PantallaTienda() {
                             key={lote}
                             size="sm"
                             variant={cantidad === lote ? "default" : "outline"}
-                            className="h-7 px-2 text-xs font-mono rounded-none"
+                            className="h-6 sm:h-7 px-2 text-[8px] sm:text-[9px] retro rounded-none border-2 border-black shadow-[2px_2px_0_0_#000] active:translate-y-0.5 active:shadow-none"
                             onClick={() => fijarCantidad(articulo.codigo, lote)}
                             disabled={!servicioDisponible}
                           >
@@ -355,41 +370,41 @@ export function PantallaTienda() {
                       </div>
                     </div>
 
-                    <div className="flex items-center justify-between gap-2">
-                      <span className="text-xs text-muted-foreground">Ajuste fino:</span>
+                    <div className="flex items-center justify-between gap-2 flex-wrap">
+                      <span className="retro text-[8px] sm:text-[9px] text-muted-foreground">Ajuste fino:</span>
                       <div className="flex items-center gap-1.5">
                         <Button
                           size="sm"
                           variant="outline"
-                          className="size-7 p-0 rounded-none"
+                          className="size-6 sm:size-7 p-0 rounded-none border-2 border-black shadow-[2px_2px_0_0_#000] active:translate-y-0.5 active:shadow-none"
                           onClick={() => ajustarCantidad(articulo.codigo, -1)}
                           disabled={cantidad <= 1 || !servicioDisponible}
                           aria-label={`Reducir cantidad de ${articulo.nombre}`}
                         >
-                          <Minus className="size-3" />
+                          <Minus className="size-2.5 sm:size-3" />
                         </Button>
-                        <span className="font-mono font-bold w-7 text-center text-xs">
+                        <span className="retro text-[9px] sm:text-[10px] w-7 text-center">
                           {cantidad}
                         </span>
                         <Button
                           size="sm"
                           variant="outline"
-                          className="size-7 p-0 rounded-none"
+                          className="size-6 sm:size-7 p-0 rounded-none border-2 border-black shadow-[2px_2px_0_0_#000] active:translate-y-0.5 active:shadow-none"
                           onClick={() => ajustarCantidad(articulo.codigo, 1)}
                           disabled={cantidad >= 99 || !servicioDisponible}
                           aria-label={`Incrementar cantidad de ${articulo.nombre}`}
                         >
-                          <Plus className="size-3" />
+                          <Plus className="size-2.5 sm:size-3" />
                         </Button>
                       </div>
                     </div>
                   </div>
 
                   {/* Desglose Económico */}
-                  <div className="grid grid-cols-2 gap-2 text-[11px] font-mono p-2 bg-abismo/40 border-2 border-border/60 rounded-none">
+                  <div className="grid grid-cols-2 gap-2 retro text-[8px] sm:text-[9px] p-2 bg-black/40 border-2 border-black shadow-[inset_2px_2px_0_0_rgba(0,0,0,0.4)] rounded-none">
                     <div>
                       <span className="text-muted-foreground block">Precio unitario:</span>
-                      <span className="font-bold text-amber-400">
+                      <span className="text-amber-400 font-bold">
                         {articulo.precioCompra} oro
                       </span>
                     </div>
@@ -406,19 +421,19 @@ export function PantallaTienda() {
                   </div>
                 </CardContent>
 
-                <CardFooter className="p-4 pt-2 border-t border-border/50">
+                <CardFooter className="p-3 sm:p-4 pt-2 border-t-2 border-black/40">
                   <Button
-                    className="w-full text-xs rounded-none flex items-center justify-center gap-2"
+                    className="w-full text-[8px] sm:text-[9px] retro rounded-none border-2 border-black shadow-[2px_2px_0_0_#000] active:translate-y-0.5 active:shadow-none flex items-center justify-center gap-2 py-2 sm:py-2.5"
                     disabled={!puedeComprar || comprando}
                     onClick={() => abrirConfirmacion(articulo)}
                   >
-                    <ShoppingCart className="size-3.5" />
+                    <ShoppingCart className="size-3 sm:size-3.5" />
                     {!servicioDisponible ? (
                       <span>Bazar Inactivo</span>
                     ) : resumen.puedeComprar ? (
                       <span>Adquirir lote ({resumen.costoTotal} oro)</span>
                     ) : (
-                      <span>Oro insuficiente</span>
+                      <span className="text-destructive-foreground">Oro insuficiente</span>
                     )}
                   </Button>
                 </CardFooter>
@@ -428,7 +443,7 @@ export function PantallaTienda() {
         </div>
       )}
 
-      {/* Modal de Confirmación de Compra Sellado contra Overflow */}
+      {/* Modal de Confirmación de Compra Sellado contra Overflow (Dialog 8-bit Brutalist) */}
       <Dialog
         open={Boolean(articuloConfirmar)}
         onOpenChange={(abierto) => {
@@ -437,53 +452,53 @@ export function PantallaTienda() {
           }
         }}
       >
-        <DialogContent className="w-[calc(100vw-2rem)] sm:max-w-md overflow-hidden rounded-none border-2 border-border bg-bastion p-5">
+        <DialogContent className="w-[calc(100vw-2rem)] sm:max-w-md border-4 border-black shadow-[8px_8px_0_0_#000] bg-card overflow-hidden p-4 sm:p-5 rounded-none">
           {articuloConfirmar && resumenModal && (
             <>
-              <DialogHeader className="text-left space-y-2">
-                <DialogTitle className="retro text-sm text-primary">
+              <DialogHeader className="text-left space-y-1.5">
+                <DialogTitle className="retro text-[10px] sm:text-xs text-primary leading-relaxed">
                   Confirmación de Adquisición
                 </DialogTitle>
-                <DialogDescription className="text-xs text-muted-foreground">
+                <DialogDescription className="retro text-[8px] sm:text-[9px] text-muted-foreground leading-relaxed break-words">
                   Revisa las condiciones y el saldo proyectado antes de sellar la transacción.
                 </DialogDescription>
               </DialogHeader>
 
-              <div className="space-y-4 py-2">
+              <div className="space-y-3 sm:space-y-4 py-2">
                 {/* Resumen del Artículo */}
-                <div className="flex items-center gap-3 border-2 border-border bg-abismo/50 p-3 rounded-none">
-                  <div className="border border-border bg-abismo p-1 size-14 shrink-0 flex items-center justify-center rounded-none">
+                <div className="flex items-center gap-3 border-2 border-black shadow-[2px_2px_0_0_#000] bg-black/40 p-2.5 sm:p-3 rounded-none">
+                  <div className="border-2 border-black bg-black/60 shadow-[inset_2px_2px_0_0_rgba(0,0,0,0.6)] p-1 size-12 sm:size-14 shrink-0 flex items-center justify-center rounded-none">
                     <img
                       src={obtenerImagenObjeto(articuloConfirmar.codigo)}
                       alt={articuloConfirmar.nombre}
                       onError={(e) => manejarErrorImagen(e, "objeto")}
-                      className="pixelated h-10 w-10 object-contain"
+                      className="pixelated size-9 sm:size-10 object-contain"
                     />
                   </div>
-                  <div className="min-w-0 flex-1">
-                    <h3 className="retro text-xs text-foreground truncate">
+                  <div className="min-w-0 flex-1 space-y-1">
+                    <h3 className="retro text-[9px] sm:text-[10px] text-foreground leading-relaxed break-words">
                       {articuloConfirmar.nombre}
                     </h3>
-                    <p className="text-[11px] text-muted-foreground mt-0.5">
+                    <p className="retro text-[8px] sm:text-[9px] text-muted-foreground leading-relaxed break-words">
                       {articuloConfirmar.descripcion}
                     </p>
-                    <p className="text-[11px] font-mono text-amber-400 mt-1">
+                    <p className="retro text-[8px] sm:text-[9px] text-amber-400 font-bold">
                       {articuloConfirmar.precioCompra} oro por unidad
                     </p>
                   </div>
                 </div>
 
                 {/* Ajuste de Lote en Modal */}
-                <div className="space-y-2">
-                  <div className="flex items-center justify-between text-xs">
-                    <span className="text-muted-foreground font-semibold">Unidades a comprar:</span>
+                <div className="space-y-2 border-2 border-black shadow-[2px_2px_0_0_#000] bg-black/20 p-2.5 sm:p-3 rounded-none">
+                  <div className="flex items-center justify-between gap-2 flex-wrap">
+                    <span className="retro text-[8px] sm:text-[9px] text-muted-foreground">Unidades a comprar:</span>
                     <div className="flex items-center gap-1">
                       {LOTES_COMPRA.map((lote) => (
                         <Button
                           key={lote}
                           size="sm"
                           variant={cantidadConfirmar === lote ? "default" : "outline"}
-                          className="h-6 px-2 text-[11px] font-mono rounded-none"
+                          className="h-6 px-2 text-[8px] sm:text-[9px] retro rounded-none border-2 border-black shadow-[2px_2px_0_0_#000] active:translate-y-0.5 active:shadow-none"
                           disabled={comprando}
                           onClick={() => fijarCantidadModal(lote)}
                         >
@@ -493,24 +508,24 @@ export function PantallaTienda() {
                     </div>
                   </div>
 
-                  <div className="flex items-center justify-center gap-3 border border-border/60 p-2 bg-bastion rounded-none">
+                  <div className="flex items-center justify-center gap-3 border-2 border-black p-2 bg-black/40 shadow-[inset_2px_2px_0_0_rgba(0,0,0,0.4)] rounded-none">
                     <Button
                       size="sm"
                       variant="outline"
-                      className="size-7 p-0 rounded-none"
+                      className="size-7 p-0 rounded-none border-2 border-black shadow-[2px_2px_0_0_#000] active:translate-y-0.5 active:shadow-none"
                       disabled={cantidadConfirmar <= 1 || comprando}
                       onClick={() => ajustarCantidadModal(-1)}
                       aria-label="Restar una unidad"
                     >
                       <Minus className="size-3" />
                     </Button>
-                    <span className="font-mono font-bold text-sm text-foreground w-12 text-center">
+                    <span className="retro text-xs text-foreground w-12 text-center">
                       x{cantidadConfirmar}
                     </span>
                     <Button
                       size="sm"
                       variant="outline"
-                      className="size-7 p-0 rounded-none"
+                      className="size-7 p-0 rounded-none border-2 border-black shadow-[2px_2px_0_0_#000] active:translate-y-0.5 active:shadow-none"
                       disabled={cantidadConfirmar >= 99 || comprando}
                       onClick={() => ajustarCantidadModal(1)}
                       aria-label="Sumar una unidad"
@@ -520,19 +535,19 @@ export function PantallaTienda() {
                   </div>
                 </div>
 
-                {/* Balances Financieros */}
-                <div className="space-y-1.5 text-xs font-mono border-2 border-border/80 bg-abismo/60 p-3 rounded-none">
-                  <div className="flex justify-between text-muted-foreground">
+                {/* Balances Financieros con código de color dinámico */}
+                <div className="space-y-1.5 retro text-[8px] sm:text-[9px] border-2 border-black shadow-[2px_2px_0_0_#000] bg-black/50 p-2.5 sm:p-3 rounded-none">
+                  <div className="flex justify-between items-center text-muted-foreground">
                     <span>Saldo actual:</span>
-                    <span className="text-amber-400">{monedas} oro</span>
+                    <span className="text-amber-400 font-bold">{monedas} oro</span>
                   </div>
-                  <div className="flex justify-between text-muted-foreground">
+                  <div className="flex justify-between items-center text-muted-foreground">
                     <span>Costo total ({resumenModal.cantidad}x):</span>
                     <span className="text-destructive font-bold">
                       -{resumenModal.costoTotal} oro
                     </span>
                   </div>
-                  <div className="flex justify-between pt-1.5 border-t border-border/50 font-bold">
+                  <div className="flex justify-between items-center pt-1.5 border-t-2 border-black/40 font-bold">
                     <span>Saldo restante:</span>
                     <span
                       className={
@@ -548,26 +563,26 @@ export function PantallaTienda() {
               {/* Botonera Apilada Verticalmente para Evitar Desbordes */}
               <DialogFooter className="flex flex-col gap-2 sm:flex-col w-full mt-2">
                 <Button
-                  className="w-full text-xs rounded-none retro py-3"
+                  className="w-full text-[8px] sm:text-[9px] retro py-3 rounded-none border-2 border-black shadow-[2px_2px_0_0_#000] active:translate-y-0.5 active:shadow-none"
                   disabled={comprando || !resumenModal.puedeComprar}
                   aria-busy={comprando}
                   onClick={ejecutarCompra}
                 >
                   {comprando ? (
                     <div className="flex items-center justify-center gap-2">
-                      <Spinner className="size-4" />
+                      <Spinner className="size-3.5 sm:size-4" />
                       <span>PROCESANDO...</span>
                     </div>
                   ) : resumenModal.puedeComprar ? (
                     <span>Confirmar Adquisición ({resumenModal.costoTotal} oro)</span>
                   ) : (
-                    <span>Oro Insuficiente</span>
+                    <span className="text-destructive-foreground">Oro Insuficiente</span>
                   )}
                 </Button>
 
                 <Button
                   variant="outline"
-                  className="w-full text-xs rounded-none"
+                  className="w-full text-[8px] sm:text-[9px] retro rounded-none border-2 border-black shadow-[2px_2px_0_0_#000] active:translate-y-0.5 active:shadow-none"
                   disabled={comprando}
                   onClick={() => setArticuloConfirmar(null)}
                 >
