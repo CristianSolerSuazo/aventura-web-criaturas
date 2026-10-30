@@ -223,3 +223,39 @@ test('Multimedia y Audio: assets.ts sintetiza tonos retro para monedas/compra y 
     'assets.ts debe sintetizar tonos para curar y pocion',
   );
 });
+
+
+test('Hardening, Ergonomía y Estética Retro-Brutalist: PantallaInventario cuenta con marcos 8bitcn, sombras sólidas, prevención de doble clic y confinamiento sin overflow', () => {
+  const ruta = join(__dirname, '../src/paginas/PantallaInventario.tsx');
+  const contenido = readFileSync(ruta, 'utf-8');
+
+  assert.strictEqual(
+    contenido.includes('border-2 border-black') && contenido.includes('border-4 border-black'),
+    true,
+    'PantallaInventario debe emplear marcos retro-brutalistas de 2px y 4px negros',
+  );
+
+  assert.strictEqual(
+    contenido.includes('shadow-[4px_4px_0_0_#000]') && contenido.includes('shadow-[8px_8px_0_0_#000]'),
+    true,
+    'PantallaInventario debe emplear sombras ortogonales sólidas retro 8-bit',
+  );
+
+  assert.strictEqual(
+    contenido.includes('overflow-x-hidden'),
+    true,
+    'El contenedor principal debe incluir overflow-x-hidden para sellar el ancho móvil',
+  );
+
+  assert.strictEqual(
+    contenido.includes('aria-busy={enProceso}') && contenido.includes('disabled={usando || vista.yaSaludCompleta}'),
+    true,
+    'El botón de curación de compañero debe incluir hardening contra doble clic y aria-busy',
+  );
+
+  assert.strictEqual(
+    contenido.includes('line-clamp'),
+    false,
+    'PantallaInventario no debe truncar descripciones tácticas con line-clamp rígido',
+  );
+});

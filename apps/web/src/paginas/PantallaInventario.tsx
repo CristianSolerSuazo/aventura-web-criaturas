@@ -198,43 +198,54 @@ export function PantallaInventario() {
   const cuentaCaptura = items.filter((i) => i.tipo === "CAPTURA").length;
   const cuentaEspecial = items.filter((i) => i.tipo === "ESPECIAL").length;
 
+  // simplificacion: filtrado en memoria de items; suficiente para el límite de 20 ranuras de bolsa del explorador.
   const itemsFiltrados = filtrarItemsPorCategoria(items, categoriaActiva);
 
   return (
-    <div className="space-y-6 max-w-5xl mx-auto py-2 sm:py-4">
-      {/* Cabecera y Balances Tácticos */}
-      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 border-2 border-border bg-bastion p-4 rounded-none">
-        <div>
+    <div className="w-full max-w-5xl mx-auto py-2 sm:py-4 px-2 sm:px-4 overflow-x-hidden space-y-4 sm:space-y-6">
+      {/* Cabecera y Balances Tácticos de Bolsa */}
+      <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 sm:gap-4 border-2 border-black shadow-[4px_4px_0_0_#000] bg-card p-3 sm:p-4 rounded-none">
+        <div className="space-y-2 min-w-0">
           <div className="flex items-center gap-2 flex-wrap">
-            <h1 className="retro text-base sm:text-lg text-primary tracking-wide">
+            <h1 className="retro text-xs sm:text-base text-primary tracking-wide drop-shadow-[1px_1px_0_#000]">
               Bolsa e Inventario
             </h1>
-            <div className="inline-flex items-center gap-1.5 text-amber-400 font-mono font-bold text-xs sm:text-sm border-2 border-amber-500/60 bg-amber-500/10 px-2.5 py-1 rounded-none">
-              <Coins className="size-4 text-amber-400" />
+            <div className="inline-flex items-center gap-1.5 text-amber-400 retro text-[8px] sm:text-[9px] border-2 border-black shadow-[2px_2px_0_0_#000] bg-amber-500/10 px-2 py-1 rounded-none">
+              <Coins className="size-3 sm:size-3.5 text-amber-400 shrink-0" />
               <span>{monedas} Oro</span>
             </div>
-            <div className="inline-flex items-center gap-1.5 text-sky-400 font-mono font-bold text-xs sm:text-sm border-2 border-sky-500/60 bg-sky-500/10 px-2.5 py-1 rounded-none">
-              <Package className="size-4 text-sky-400" />
+            <div className="inline-flex items-center gap-1.5 text-sky-400 retro text-[8px] sm:text-[9px] border-2 border-black shadow-[2px_2px_0_0_#000] bg-sky-500/10 px-2 py-1 rounded-none">
+              <Package className="size-3 sm:size-3.5 text-sky-400 shrink-0" />
               <span>
                 Ranuras: {ranurasOcupadas}/{capacidadMaxima} • {totalUnidades} uds.
               </span>
             </div>
           </div>
-          <p className="text-xs sm:text-sm text-muted-foreground mt-1">
+          <p className="retro text-[8px] sm:text-[9px] text-muted-foreground leading-relaxed break-words">
             Gestión táctica de provisiones medicinales, talismanes de expedición y reliquias.
           </p>
         </div>
 
-        <div className="flex items-center gap-2 flex-wrap">
-          <Button asChild variant="outline" size="sm" className="text-xs rounded-none">
-            <Link to="/tienda" className="flex items-center gap-1.5">
-              <Store className="size-3.5" />
+        <div className="flex items-center gap-2 flex-wrap sm:flex-nowrap shrink-0">
+          <Button
+            asChild
+            variant="outline"
+            size="sm"
+            className="flex-1 sm:flex-none text-[8px] sm:text-[9px] retro rounded-none border-2 border-black shadow-[2px_2px_0_0_#000] active:translate-y-0.5 active:shadow-none hover:bg-muted cursor-pointer"
+          >
+            <Link to="/tienda" className="flex items-center justify-center gap-1.5">
+              <Store className="size-3 sm:size-3.5" />
               <span>Ir al Bazar</span>
             </Link>
           </Button>
-          <Button asChild variant="outline" size="sm" className="text-xs rounded-none">
-            <Link to="/hub" className="flex items-center gap-1.5">
-              <ArrowLeft className="size-3.5" />
+          <Button
+            asChild
+            variant="outline"
+            size="sm"
+            className="flex-1 sm:flex-none text-[8px] sm:text-[9px] retro rounded-none border-2 border-black shadow-[2px_2px_0_0_#000] active:translate-y-0.5 active:shadow-none hover:bg-muted cursor-pointer"
+          >
+            <Link to="/hub" className="flex items-center justify-center gap-1.5">
+              <ArrowLeft className="size-3 sm:size-3.5" />
               <span>Asentamiento</span>
             </Link>
           </Button>
@@ -242,16 +253,16 @@ export function PantallaInventario() {
       </div>
 
       {/* Indicador Visual de Capacidad de Carga */}
-      <div className="border-2 border-border bg-bastion p-3 rounded-none space-y-2">
-        <div className="flex justify-between items-center text-xs font-mono">
+      <div className="border-2 border-black shadow-[4px_4px_0_0_#000] bg-card p-3 rounded-none space-y-2">
+        <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-1 retro text-[8px] sm:text-[9px]">
           <span className="text-muted-foreground">Capacidad de carga de la bolsa:</span>
-          <span className="font-bold text-foreground">
+          <span className="text-foreground">
             {ranurasOcupadas} de {capacidadMaxima} ranuras ocupadas ({porcentajeCapacidad}%)
           </span>
         </div>
 
         {/* Barra de Progreso Ortogonal */}
-        <div className="h-3 w-full bg-abismo border-2 border-border/80 rounded-none overflow-hidden p-0.5">
+        <div className="h-3 w-full bg-black/60 border-2 border-black rounded-none overflow-hidden p-0.5">
           <div
             className={`h-full transition-all duration-300 ${
               porcentajeCapacidad >= 90
@@ -271,8 +282,8 @@ export function PantallaInventario() {
             return (
               <div
                 key={idx}
-                className={`h-2 border border-border/50 ${
-                  ocupada ? "bg-primary/80" : "bg-abismo/40"
+                className={`h-2 border border-black ${
+                  ocupada ? "bg-primary" : "bg-black/30"
                 }`}
                 title={ocupada ? `Ranura ${idx + 1}: Ocupada` : `Ranura ${idx + 1}: Vacía`}
               />
@@ -285,67 +296,69 @@ export function PantallaInventario() {
       <div
         role="tablist"
         aria-label="Filtros de categoría de inventario"
-        className="flex flex-wrap gap-2 border-2 border-border bg-bastion p-2.5 rounded-none"
+        className="flex flex-wrap gap-1.5 sm:gap-2 border-2 border-black shadow-[4px_4px_0_0_#000] bg-card p-2 sm:p-2.5 rounded-none"
       >
         <Button
           size="sm"
           variant={categoriaActiva === "TODOS" ? "default" : "outline"}
-          className="text-xs rounded-none flex items-center gap-1.5"
+          className="retro text-[8px] sm:text-[9px] rounded-none border-2 border-black shadow-[2px_2px_0_0_#000] active:translate-y-0.5 active:shadow-none cursor-pointer flex items-center gap-1.5 px-2 py-1"
           onClick={() => cambiarCategoria("TODOS")}
         >
-          <Layers className="size-3.5" />
+          <Layers className="size-3 sm:size-3.5 shrink-0" />
           <span>Todos ({items.length})</span>
         </Button>
 
         <Button
           size="sm"
           variant={categoriaActiva === "CURACION" ? "default" : "outline"}
-          className="text-xs rounded-none flex items-center gap-1.5"
+          className="retro text-[8px] sm:text-[9px] rounded-none border-2 border-black shadow-[2px_2px_0_0_#000] active:translate-y-0.5 active:shadow-none cursor-pointer flex items-center gap-1.5 px-2 py-1"
           onClick={() => cambiarCategoria("CURACION")}
         >
-          <HeartPulse className="size-3.5" />
-          <span>Consumibles Curativos ({cuentaCuracion})</span>
+          <HeartPulse className="size-3 sm:size-3.5 shrink-0" />
+          <span>Curación ({cuentaCuracion})</span>
         </Button>
 
         <Button
           size="sm"
           variant={categoriaActiva === "CAPTURA" ? "default" : "outline"}
-          className="text-xs rounded-none flex items-center gap-1.5"
+          className="retro text-[8px] sm:text-[9px] rounded-none border-2 border-black shadow-[2px_2px_0_0_#000] active:translate-y-0.5 active:shadow-none cursor-pointer flex items-center gap-1.5 px-2 py-1"
           onClick={() => cambiarCategoria("CAPTURA")}
         >
-          <Crosshair className="size-3.5" />
-          <span>Talismanes de Captura ({cuentaCaptura})</span>
+          <Crosshair className="size-3 sm:size-3.5 shrink-0" />
+          <span>Captura ({cuentaCaptura})</span>
         </Button>
 
         <Button
           size="sm"
           variant={categoriaActiva === "ESPECIAL" ? "default" : "outline"}
-          className="text-xs rounded-none flex items-center gap-1.5"
+          className="retro text-[8px] sm:text-[9px] rounded-none border-2 border-black shadow-[2px_2px_0_0_#000] active:translate-y-0.5 active:shadow-none cursor-pointer flex items-center gap-1.5 px-2 py-1"
           onClick={() => cambiarCategoria("ESPECIAL")}
         >
-          <Sparkles className="size-3.5" />
-          <span>Objetos Especiales ({cuentaEspecial})</span>
+          <Sparkles className="size-3 sm:size-3.5 shrink-0" />
+          <span>Especial ({cuentaEspecial})</span>
         </Button>
       </div>
 
       {/* Estado de Carga */}
       {cargando && (
-        <div className="border-2 border-border p-8 text-center bg-bastion rounded-none space-y-3">
+        <div className="border-2 border-black shadow-[4px_4px_0_0_#000] p-6 sm:p-8 text-center bg-card rounded-none space-y-3">
           <Spinner className="size-6 mx-auto text-primary" />
-          <p className="retro text-xs text-muted-foreground">Inspeccionando bolsa de explorador...</p>
+          <p className="retro text-[8px] sm:text-[9px] text-muted-foreground">
+            Inspeccionando bolsa de explorador...
+          </p>
         </div>
       )}
 
       {/* Estado Vacío General o por Filtro */}
       {!cargando && itemsFiltrados.length === 0 && (
-        <Card className="text-center p-8 border-2 border-border bg-bastion rounded-none space-y-3">
+        <Card className="text-center p-6 sm:p-8 border-2 border-black shadow-[4px_4px_0_0_#000] bg-card rounded-none space-y-3">
           <Package className="size-8 mx-auto text-muted-foreground" />
-          <CardTitle className="retro text-xs text-foreground">
+          <CardTitle className="retro text-[10px] sm:text-xs text-foreground">
             {items.length === 0
               ? "Tu bolsa de provisiones está vacía"
               : "No se encontraron objetos en esta categoría"}
           </CardTitle>
-          <CardDescription className="text-xs text-muted-foreground max-w-md mx-auto">
+          <CardDescription className="retro text-[8px] sm:text-[9px] leading-relaxed text-muted-foreground max-w-md mx-auto">
             {items.length === 0
               ? "Visita el bazar comercial en un asentamiento para adquirir pociones reconstituyentes y talismanes de expedición."
               : "Selecciona otra pestaña o restablece los filtros para ver los demás objetos de tu bolsa."}
@@ -353,7 +366,11 @@ export function PantallaInventario() {
 
           <div className="pt-2 flex justify-center gap-2 flex-wrap">
             {items.length === 0 ? (
-              <Button asChild size="sm" className="text-xs rounded-none">
+              <Button
+                asChild
+                size="sm"
+                className="retro text-[8px] sm:text-[9px] rounded-none border-2 border-black shadow-[2px_2px_0_0_#000] active:translate-y-0.5 active:shadow-none cursor-pointer"
+              >
                 <Link to="/tienda" className="flex items-center gap-1.5">
                   <Store className="size-3.5" />
                   <span>Ir al Bazar</span>
@@ -363,7 +380,7 @@ export function PantallaInventario() {
               <Button
                 size="sm"
                 variant="outline"
-                className="text-xs rounded-none"
+                className="retro text-[8px] sm:text-[9px] rounded-none border-2 border-black shadow-[2px_2px_0_0_#000] active:translate-y-0.5 active:shadow-none cursor-pointer"
                 onClick={() => cambiarCategoria("TODOS")}
               >
                 Ver todos los objetos
@@ -375,16 +392,16 @@ export function PantallaInventario() {
 
       {/* Cuadrícula Táctica de Tarjetas de Inventario (Cero Scroll Horizontal) */}
       {!cargando && itemsFiltrados.length > 0 && (
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-4">
           {itemsFiltrados.map((item) => (
             <Card
               key={item.codigo}
-              className="rounded-none border-2 bg-bastion flex flex-col justify-between"
+              className="rounded-none border-2 border-black shadow-[4px_4px_0_0_#000] hover:shadow-[6px_6px_0_0_#000] transition-shadow bg-card flex flex-col justify-between"
             >
-              <CardHeader className="p-4 pb-2">
+              <CardHeader className="p-3 sm:p-4 pb-2">
                 <div className="flex items-start gap-3">
-                  {/* Sprite Pixelado del Objeto */}
-                  <div className="border-2 border-border bg-abismo/60 p-1.5 size-14 shrink-0 flex items-center justify-center rounded-none">
+                  {/* Sprite Pixelado del Objeto con marco y relieve */}
+                  <div className="border-2 border-black bg-black/40 shadow-[inset_2px_2px_0_0_rgba(0,0,0,0.6)] p-1.5 size-14 shrink-0 flex items-center justify-center rounded-none">
                     <img
                       src={obtenerImagenObjeto(item.codigo)}
                       alt={item.nombre}
@@ -394,9 +411,9 @@ export function PantallaInventario() {
                     />
                   </div>
 
-                  <div className="space-y-1 min-w-0 flex-1">
-                    <div className="flex items-center justify-between gap-1 flex-wrap">
-                      <CardTitle className="retro text-xs leading-relaxed text-foreground truncate">
+                  <div className="space-y-1.5 min-w-0 flex-1">
+                    <div className="flex items-start justify-between gap-1.5 flex-wrap">
+                      <CardTitle className="retro text-[10px] sm:text-xs leading-snug text-foreground break-words">
                         {item.nombre}
                       </CardTitle>
                       <Badge
@@ -407,11 +424,11 @@ export function PantallaInventario() {
                             ? "secondary"
                             : "outline"
                         }
-                        className="rounded-none text-[10px] uppercase font-mono flex items-center gap-1"
+                        className="rounded-none text-[8px] sm:text-[9px] uppercase retro border-2 border-black shadow-[1px_1px_0_0_#000] flex items-center gap-1 px-1.5 py-0.5"
                       >
-                        {item.tipo === "CURACION" && <HeartPulse className="size-3" />}
-                        {item.tipo === "CAPTURA" && <Crosshair className="size-3" />}
-                        {item.tipo === "ESPECIAL" && <Sparkles className="size-3" />}
+                        {item.tipo === "CURACION" && <HeartPulse className="size-2.5 sm:size-3" />}
+                        {item.tipo === "CAPTURA" && <Crosshair className="size-2.5 sm:size-3" />}
+                        {item.tipo === "ESPECIAL" && <Sparkles className="size-2.5 sm:size-3" />}
                         <span>
                           {item.tipo === "CURACION"
                             ? "Curación"
@@ -422,12 +439,12 @@ export function PantallaInventario() {
                       </Badge>
                     </div>
 
-                    <p className="text-[11px] font-mono text-muted-foreground truncate">
+                    <p className="retro text-[8px] text-muted-foreground break-all">
                       Cód: {item.codigo}
                     </p>
 
                     {item.descripcion && (
-                      <CardDescription className="text-xs text-muted-foreground line-clamp-2">
+                      <CardDescription className="retro text-[8px] sm:text-[9px] leading-relaxed text-muted-foreground break-words">
                         {item.descripcion}
                       </CardDescription>
                     )}
@@ -435,52 +452,56 @@ export function PantallaInventario() {
                 </div>
               </CardHeader>
 
-              <CardContent className="p-4 pt-1 space-y-2">
-                <div className="flex items-center justify-between text-xs font-mono p-2 bg-abismo/40 border border-border/60 rounded-none">
-                  <span className="text-muted-foreground">Efecto:</span>
-                  <span className="font-bold text-foreground">
-                    {item.tipo === "CURACION" && (item.efectoValor ?? 0) > 0
-                      ? `Restaura +${item.efectoValor} HP`
-                      : item.tipo === "CAPTURA" && (item.efectoValor ?? 0) > 0
-                      ? `Bono de captura Nv.${item.efectoValor}`
-                      : "Uso táctico"}
-                  </span>
-                </div>
+              <CardContent className="p-3 sm:p-4 pt-1 space-y-2">
+                <div className="border-2 border-black bg-black/30 p-2 sm:p-2.5 rounded-none space-y-1.5">
+                  <div className="flex items-center justify-between retro text-[8px] sm:text-[9px] gap-2">
+                    <span className="text-muted-foreground">Efecto:</span>
+                    <span className="text-foreground text-right break-words">
+                      {item.tipo === "CURACION" && (item.efectoValor ?? 0) > 0
+                        ? `Restaura +${item.efectoValor} HP`
+                        : item.tipo === "CAPTURA" && (item.efectoValor ?? 0) > 0
+                        ? `Bono de captura Nv.${item.efectoValor}`
+                        : "Uso táctico"}
+                    </span>
+                  </div>
 
-                <div className="flex items-center justify-between text-xs font-mono pt-1">
-                  <span className="text-muted-foreground">Existencias disponibles:</span>
-                  <span className="font-bold text-amber-400 text-sm">x{item.cantidad}</span>
+                  <div className="flex items-center justify-between retro text-[8px] sm:text-[9px] pt-1 border-t border-black/40">
+                    <span className="text-muted-foreground">Existencias:</span>
+                    <span className="text-amber-400 font-bold retro text-[9px] sm:text-[10px]">
+                      x{item.cantidad}
+                    </span>
+                  </div>
                 </div>
               </CardContent>
 
-              <CardFooter className="p-4 pt-2 border-t border-border/50">
+              <CardFooter className="p-3 sm:p-4 pt-1 border-t-2 border-black/30">
                 {item.tipo === "CURACION" ? (
                   <Button
                     size="sm"
-                    className="w-full text-xs rounded-none flex items-center justify-center gap-1.5"
+                    className="w-full retro text-[8px] sm:text-[9px] rounded-none border-2 border-black shadow-[2px_2px_0_0_#000] active:translate-y-0.5 active:shadow-none cursor-pointer flex items-center justify-center gap-1.5 py-2"
                     onClick={() => abrirModalUso(item)}
                   >
-                    <HeartPulse className="size-3.5" />
+                    <HeartPulse className="size-3 sm:size-3.5" />
                     <span>Aplicar a criatura</span>
                   </Button>
                 ) : item.tipo === "CAPTURA" ? (
                   <Button
                     size="sm"
                     variant="outline"
-                    className="w-full text-xs rounded-none flex items-center justify-center gap-1.5 cursor-default text-muted-foreground"
+                    className="w-full retro text-[8px] sm:text-[9px] rounded-none border-2 border-black shadow-[2px_2px_0_0_#000] active:translate-y-0.5 active:shadow-none cursor-pointer flex items-center justify-center gap-1.5 py-2 text-muted-foreground"
                     onClick={() => abrirModalUso(item)}
                   >
-                    <Crosshair className="size-3.5" />
+                    <Crosshair className="size-3 sm:size-3.5" />
                     <span>Uso en combate</span>
                   </Button>
                 ) : (
                   <Button
                     size="sm"
                     variant="outline"
-                    className="w-full text-xs rounded-none flex items-center justify-center gap-1.5 cursor-default text-muted-foreground"
+                    className="w-full retro text-[8px] sm:text-[9px] rounded-none border-2 border-black shadow-[2px_2px_0_0_#000] active:translate-y-0.5 active:shadow-none cursor-pointer flex items-center justify-center gap-1.5 py-2 text-muted-foreground"
                     onClick={() => abrirModalUso(item)}
                   >
-                    <Sparkles className="size-3.5" />
+                    <Sparkles className="size-3 sm:size-3.5" />
                     <span>Reliquia / Especial</span>
                   </Button>
                 )}
@@ -500,24 +521,24 @@ export function PantallaInventario() {
           }
         }}
       >
-        <DialogContent className="w-[calc(100vw-2rem)] sm:max-w-md overflow-hidden rounded-none border-2 border-border bg-bastion p-5">
+        <DialogContent className="w-[calc(100vw-2rem)] sm:max-w-md border-4 border-black shadow-[8px_8px_0_0_#000] bg-card overflow-hidden p-4 sm:p-5 rounded-none">
           {itemSeleccionado && (
             <>
               <DialogHeader className="text-left space-y-2">
                 <div className="flex items-center gap-2">
                   <HeartPulse className="size-4 text-emerald-400 shrink-0" />
-                  <DialogTitle className="retro text-sm text-primary">
+                  <DialogTitle className="retro text-xs sm:text-sm text-primary drop-shadow-[1px_1px_0_#000]">
                     Curación de Compañero
                   </DialogTitle>
                 </div>
-                <DialogDescription className="text-xs text-muted-foreground">
+                <DialogDescription className="retro text-[8px] sm:text-[9px] text-muted-foreground leading-relaxed break-words">
                   Aplica {itemSeleccionado.nombre} para restablecer la vitalidad de tu equipo.
                 </DialogDescription>
               </DialogHeader>
 
               {/* Ficha del Consumible Activo */}
-              <div className="flex items-center gap-3 border-2 border-border bg-abismo/60 p-2.5 rounded-none text-xs font-mono">
-                <div className="border border-border bg-abismo p-1 size-12 shrink-0 flex items-center justify-center rounded-none">
+              <div className="flex items-center gap-2.5 sm:gap-3 border-2 border-black shadow-[2px_2px_0_0_#000] bg-black/40 p-2.5 rounded-none">
+                <div className="border-2 border-black bg-black/60 p-1 size-11 sm:size-12 shrink-0 flex items-center justify-center rounded-none">
                   <img
                     src={obtenerImagenObjeto(itemSeleccionado.codigo)}
                     alt={itemSeleccionado.nombre}
@@ -526,16 +547,16 @@ export function PantallaInventario() {
                   />
                 </div>
                 <div className="min-w-0 flex-1">
-                  <span className="font-bold block text-foreground truncate">
+                  <span className="retro text-[9px] sm:text-[10px] block text-foreground break-words">
                     {itemSeleccionado.nombre}
                   </span>
-                  <div className="flex items-center gap-3 text-muted-foreground text-[11px] mt-0.5">
+                  <div className="flex items-center gap-2.5 text-muted-foreground retro text-[8px] sm:text-[9px] mt-1 flex-wrap">
                     <span>
-                      Disponibles:{" "}
+                      Existencias:{" "}
                       <strong className="text-amber-400">x{itemSeleccionado.cantidad}</strong>
                     </span>
                     {(itemSeleccionado.efectoValor ?? 0) > 0 && (
-                      <span className="text-emerald-400 font-bold">
+                      <span className="text-emerald-400">
                         +{itemSeleccionado.efectoValor} HP
                       </span>
                     )}
@@ -546,7 +567,7 @@ export function PantallaInventario() {
               {/* Lista Desplazable del Equipo con HealthBar y Vista Previa */}
               <div className="max-h-[50vh] overflow-y-auto space-y-2 pr-1 py-1">
                 {equipo.length === 0 ? (
-                  <p className="retro text-xs text-muted-foreground text-center py-4">
+                  <p className="retro text-[8px] sm:text-[9px] text-muted-foreground text-center py-4">
                     No tienes criaturas asignadas en tu equipo activo.
                   </p>
                 ) : (
@@ -569,57 +590,57 @@ export function PantallaInventario() {
                     return (
                       <div
                         key={criatura.criaturaId}
-                        className={`p-2.5 border-2 border-border bg-abismo/40 rounded-none transition-all duration-300 ${
+                        className={`p-2.5 border-2 border-black shadow-[2px_2px_0_0_#000] bg-black/30 rounded-none transition-all duration-300 ${
                           acabaDeCurarse ? "anim-restauracion-salud border-emerald-500" : ""
                         }`}
                       >
                         <div className="flex items-center gap-2.5">
-                          {/* Sprite Pixelado de la Criatura */}
-                          <div className="size-12 shrink-0 border border-border bg-bastion/80 p-0.5 flex items-center justify-center rounded-none">
+                          {/* Sprite Pixelado de la Criatura con marco retro */}
+                          <div className="size-11 sm:size-12 shrink-0 border-2 border-black bg-black/40 p-0.5 flex items-center justify-center rounded-none">
                             <img
                               src={obtenerImagenCriatura(criatura.slug)}
                               alt={criatura.nombre}
                               onError={(e) => manejarErrorImagen(e, "criatura")}
-                              className="pixelated h-10 w-10 object-contain"
+                              className="pixelated h-9 w-9 sm:h-10 sm:w-10 object-contain"
                               loading="lazy"
                             />
                           </div>
 
                           <div className="flex-1 min-w-0 space-y-1">
-                            <div className="flex items-center justify-between gap-1">
-                              <div className="flex items-center gap-1.5 truncate">
-                                <span className="retro text-xs text-foreground truncate">
+                            <div className="flex items-center justify-between gap-1 flex-wrap">
+                              <div className="flex items-center gap-1.5 min-w-0">
+                                <span className="retro text-[9px] sm:text-[10px] text-foreground break-words">
                                   {criatura.apodo || criatura.nombre}
                                 </span>
                                 {criatura.orden === 1 && (
                                   <Badge
                                     variant="secondary"
-                                    className="rounded-none text-[9px] px-1 py-0 font-mono flex items-center gap-0.5"
+                                    className="rounded-none text-[7px] sm:text-[8px] px-1 py-0 retro border border-black flex items-center gap-0.5"
                                   >
-                                    <Crown className="size-2.5 text-amber-400" />
+                                    <Crown className="size-2 text-amber-400 shrink-0" />
                                     <span>LÍDER</span>
                                   </Badge>
                                 )}
                               </div>
-                              <span className="font-mono text-[10px] text-muted-foreground">
+                              <span className="retro text-[8px] sm:text-[9px] text-muted-foreground">
                                 Nv.{criatura.nivel}
                               </span>
                             </div>
 
                             {/* Barra de Salud Reactiva */}
-                            <HealthBar value={porcentajeActual} className="h-2 rounded-none" />
+                            <HealthBar value={porcentajeActual} className="h-2 rounded-none border border-black" />
 
-                            <div className="flex items-center justify-between text-[11px] font-mono">
+                            <div className="flex items-center justify-between retro text-[8px] sm:text-[9px] gap-1 flex-wrap">
                               <span className="text-muted-foreground">
                                 {criatura.hpActual} / {criatura.hpMaximo} HP
                               </span>
 
                               {!vista.yaSaludCompleta ? (
-                                <span className="text-emerald-400 font-bold">
+                                <span className="text-emerald-400">
                                   +{vista.curacionEfectiva} HP ({porcentajeProyectado}%)
                                 </span>
                               ) : (
-                                <span className="text-muted-foreground text-[10px]">
+                                <span className="text-muted-foreground text-[8px]">
                                   Salud Completa
                                 </span>
                               )}
@@ -627,17 +648,17 @@ export function PantallaInventario() {
                           </div>
                         </div>
 
-                        {/* Botón de Aplicación de Curación */}
-                        <div className="mt-2 pt-2 border-t border-border/40 flex justify-end">
+                        {/* Botón de Aplicación de Curación con Hardening */}
+                        <div className="mt-2 pt-2 border-t border-black/40 flex justify-end">
                           <Button
                             size="sm"
-                            className="text-xs rounded-none w-full sm:w-auto retro text-[10px]"
+                            className="w-full sm:w-auto retro text-[8px] sm:text-[9px] rounded-none border-2 border-black shadow-[2px_2px_0_0_#000] active:translate-y-0.5 active:shadow-none cursor-pointer py-1.5"
                             disabled={usando || vista.yaSaludCompleta}
                             aria-busy={enProceso}
                             onClick={() => handleCurarCriatura(criatura)}
                           >
                             {enProceso ? (
-                              <div className="flex items-center gap-1.5">
+                              <div className="flex items-center justify-center gap-1.5">
                                 <Spinner className="size-3" />
                                 <span>PROCESANDO...</span>
                               </div>
@@ -658,7 +679,7 @@ export function PantallaInventario() {
               <DialogFooter className="flex flex-col gap-2 sm:flex-col w-full mt-2">
                 <Button
                   variant="outline"
-                  className="w-full text-xs rounded-none"
+                  className="w-full retro text-[8px] sm:text-[9px] rounded-none border-2 border-black shadow-[2px_2px_0_0_#000] active:translate-y-0.5 active:shadow-none hover:bg-muted cursor-pointer py-2"
                   disabled={usando}
                   onClick={() => {
                     setModalCuracionAbierto(false);
