@@ -375,8 +375,10 @@ Previa a la intervención y consolidación retro-brutalist, la gestión táctica
 - **Erradicación de Truncamiento en Nombres de Criatura:** Se calibró el título a `text-[10px] sm:text-xs` con `break-words line-clamp-2 leading-snug` y se adaptó el sprite a `h-12 w-12 sm:h-16 sm:w-16`, permitiendo que nombres compuestos (como *"Mantarraya Espectral"*) se lean completos sin elipsis (`...`) en pantallas de 360px.
 - **Botonera Táctica con Feedback Físico y Simetría:** Botones de subida/bajada (`ChevronUp`, `ChevronDown`) de escala compacta (`h-7 w-7 sm:h-8 sm:w-8`) y botón `Designar líder` (`text-[8.5px] sm:text-[10px] retro`) con marco `border-2 border-black shadow-[2px_2px_0_0_#000]` y efecto de compresión física (`active:translate-y-0.5 active:shadow-none`). En la tarjeta líder, se proyecta la placa dorada `LÍDER ACTUAL` en lugar de un vacío asimétrico.
 - **Bloqueo Global Reactivo contra Doble Acción:** Se implementó el estado unificado `operacion: { tipo, criaturaId } | null`. Durante cualquier petición en vuelo, **todos** los botones de la tarjeta se inhabilitan (`disabled={operacion !== null}`), aplicando `aria-busy={true}`, spinners retro pixelados y la leyenda `PROCESANDO...`.
+- **Almacén de Custodia Retro-Brutalist (`PantallaAlmacen.tsx`):** Tarjetas de combatientes en reserva enmarcadas en `border-2 border-black shadow-[4px_4px_0_0_#000] bg-card`, con distintivo retro `CUSTODIA` en marco oscuro, insignia de nivel en alto contraste (`Nv. X`), sprite pixelado en relieve interior oscuro y nombre protegido con `break-words line-clamp-2 leading-snug` contra truncamiento prematuro.
+- **Modal de Relevo e Intercambio Atómico Sellado contra Overflow:** `DialogContent` confinado con `w-[calc(100vw-2rem)] sm:max-w-md overflow-hidden rounded-none border-4 border-black shadow-[6px_6px_0_0_#000]`, scroll vertical interno acotado (`max-h-[55vh]`), radio group accesible con avatares pixelados de compañeros, badge dorado `LÍDER` y separación vertical estricta (`gap-3`) entre botones para erradicar cualquier solapamiento físico derivado de las decoraciones pixeladas de 6px de `8bitcn/ui`.
 - **Adaptabilidad Móvil Estricta (320px–420px):** Contenedor elástico `max-w-5xl mx-auto py-2 sm:py-4 px-2 sm:px-4` y cuadrícula adaptable `grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4` con apilado fluido, garantizando cero desbordamiento horizontal en dispositivos móviles estrechos.
-- **Cumplimiento Estricto de la Regla R1:** Cero emojis unicode en código, comentarios y textos de UI. Toda la semántica gráfica se canaliza exclusivamente mediante iconos SVG de Lucide (`Crown`, `ChevronUp`, `ChevronDown`, `Archive`, `MapPinOff`, `Warehouse`, `ArrowLeft`, `Swords`, `Shield`, `Zap`, `Heart`, `Repeat`, `ArrowUpFromLine`).
+- **Cumplimiento Estricto de la Regla R1:** Cero emojis unicode en código, comentarios y textos de UI. Toda la semántica gráfica se canaliza exclusivamente mediante iconos SVG de Lucide (`Crown`, `ChevronUp`, `ChevronDown`, `Archive`, `MapPinOff`, `Warehouse`, `ArrowLeft`, `Swords`, `Shield`, `Zap`, `Heart`, `Repeat`, `ArrowUpFromLine`, `PackageOpen`).
 
 #### C. Integración Multimedia y Audio Retro Centralizado (`assets.ts`)
 - **Erradicación de Fugas de `AudioContext`:** Inserción de la directiva `osc.onended = () => void ctx.close();` en `sintetizarTonoRetro`, asegurando la liberación inmediata del canal acústico tras reproducir cualquier efecto de sonido.
@@ -395,7 +397,7 @@ Previa a la intervención y consolidación retro-brutalist, la gestión táctica
 ---
 
 ### 6.3 Verificación de Calidad y Cero Regresiones
-- **Pruebas Automatizadas Front-End (`apps/web/test/verificacion-equipo-almacen.spec.ts`):** 11 pruebas unitarias exhaustivas aprobadas al 100%:
+- **Pruebas Automatizadas Front-End (`apps/web/test/verificacion-equipo-almacen.spec.ts`):** 12 pruebas unitarias exhaustivas aprobadas al 100%:
   1. Pureza e inmutabilidad de la función de reordenamiento `moverEnLista` (designación de líder al índice 0).
   2. Subida táctica de una posición ($i \to i - 1$).
   3. Bajada táctica de una posición ($i \to i + 1$).
@@ -406,8 +408,9 @@ Previa a la intervención y consolidación retro-brutalist, la gestión táctica
   8. Contrato tipado de `PeticionTransferirCriatura` soportando intercambio atómico con `intercambiarConId`.
   9. Regla R1 Estricta: Ausencia total de emojis unicode en `PantallaEquipo.tsx`.
   10. Regla R1 Estricta: Ausencia total de emojis unicode en `PantallaAlmacen.tsx`.
-  11. Hardening, Ergonomía y Estética Retro-Brutalist: Verificación estática de marco supremo de líder `border-4 border-black shadow-[6px_6px_0_0_#000]`, marcos tácticos `border-2 border-black shadow-[4px_4px_0_0_#000]`, sombras sólidas `shadow-[2px_2px_0_0_#000]`, ranuras discontinuas `border-2 border-dashed border-black/80`, protección `aria-busy={estaOrdenando}`, `aria-busy={estaTransfiriendo}`, bloqueo `disabled={operacion !== null`, leyenda retro `PROCESANDO...` e integración de `HealthBar` y `XpBar`.
-- **Suite Total Web (`pnpm --filter web test Corto`):** 74 de 74 pruebas aprobadas (100% éxito).
+  11. Hardening, Ergonomía y Estética Retro-Brutalist: Verificación estática en `PantallaEquipo.tsx` de marco supremo de líder `border-4 border-black shadow-[6px_6px_0_0_#000]`, marcos tácticos `border-2 border-black shadow-[4px_4px_0_0_#000]`, sombras sólidas `shadow-[2px_2px_0_0_#000]`, ranuras discontinuas `border-2 border-dashed border-black/80`, protección `aria-busy={estaOrdenando}`, `aria-busy={estaTransfiriendo}`, bloqueo `disabled={operacion !== null`, leyenda retro `PROCESANDO...` e integración de `HealthBar` y `XpBar`.
+  12. Hardening, Ergonomía y Estética Retro-Brutalist: Verificación estática en `PantallaAlmacen.tsx` de marcos tácticos `border-2 border-black shadow-[4px_4px_0_0_#000]`, modal sellado `w-[calc(100vw-2rem)] sm:max-w-md`, protección `aria-busy={operacionActiva}`, bloqueo `disabled={operacion !== null`, tipografía bimodal `font="normal"`, leyenda `PROCESANDO...` e integración de `HealthBar` y `XpBar`.
+- **Suite Total Web (`pnpm --filter web test Corto`):** 75 de 75 pruebas aprobadas (100% éxito).
 - **Pruebas Backend y Reglas de Servidor (`pnpm --filter api test Corto`):** 47 de 47 pruebas aprobadas (100% éxito).
 - **Compilación de Producción (`pnpm --filter web build`):** 0 errores TypeScript en Vite, empaquetado exitoso en 1.77s.
 - **Linter Web (`pnpm --filter web lint`):** 0 errores en 80 archivos evaluados.
