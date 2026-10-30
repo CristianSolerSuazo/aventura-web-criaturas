@@ -195,3 +195,55 @@ test('Hardening, Ergonomía y Estética Retro-Brutalist: PantallaEquipo cuenta c
     'Debe incluir el componente XpBar retro',
   );
 });
+
+
+test('Hardening, Ergonomía y Estética Retro-Brutalist: PantallaAlmacen cuenta con marcos 8bitcn, diálogo sellado y protección contra doble acción', () => {
+  const ruta = join(__dirname, '../src/paginas/PantallaAlmacen.tsx');
+  const contenido = readFileSync(ruta, 'utf-8');
+
+  // Marcos y sombras retro-brutalist 8-bit
+  assert.ok(
+    contenido.includes('border-2 border-black shadow-[4px_4px_0_0_#000]'),
+    'Las tarjetas de almacén deben contar con marco táctico border-2 border-black shadow-[4px_4px_0_0_#000]',
+  );
+  assert.ok(
+    contenido.includes('border-4 border-black shadow-[6px_6px_0_0_#000]'),
+    'El modal de intercambio y almacén vacío deben contar con marco retro border-4 border-black shadow-[6px_6px_0_0_#000]',
+  );
+  assert.ok(
+    contenido.includes('shadow-[2px_2px_0_0_#000]'),
+    'Los botones y badges deben tener sombra sólida shadow-[2px_2px_0_0_#000]',
+  );
+  assert.ok(
+    contenido.includes('w-[calc(100vw-2rem)] sm:max-w-md'),
+    'El modal de intercambio debe estar sellado contra desbordamiento responsive w-[calc(100vw-2rem)]',
+  );
+
+  // Hardening y protección contra doble acción
+  assert.ok(
+    contenido.includes('aria-busy={operacionActiva}'),
+    'El botón de mover a equipo / intercambiar debe exponer aria-busy={operacionActiva}',
+  );
+  assert.ok(
+    contenido.includes('disabled={operacion !== null'),
+    'Los controles interactivos deben bloquearse si hay una operación en curso',
+  );
+  assert.ok(
+    contenido.includes('PROCESANDO...'),
+    'Debe desplegar el texto de estado retro PROCESANDO... durante mutaciones activas',
+  );
+
+  // Tipografía bimodal y barras 8-bit
+  assert.ok(
+    contenido.includes('font="normal"'),
+    'Card debe usar font="normal" para preservar legibilidad de datos densos y monoespaciados',
+  );
+  assert.ok(
+    contenido.includes('<HealthBar'),
+    'Debe incluir el componente HealthBar retro',
+  );
+  assert.ok(
+    contenido.includes('<XpBar'),
+    'Debe incluir el componente XpBar retro',
+  );
+});
