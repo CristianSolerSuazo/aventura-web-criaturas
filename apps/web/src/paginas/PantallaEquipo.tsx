@@ -163,30 +163,43 @@ export function PantallaEquipo() {
 
   return (
     <div className="space-y-6 max-w-5xl mx-auto py-2 sm:py-4 px-2 sm:px-4">
-      {/* Cabecera */}
-      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
-        <div>
-          <div className="flex items-center gap-2 flex-wrap">
-            <h1 className="retro text-base sm:text-lg text-primary tracking-wide">
+      {/* Cabecera y Navegación Rápida */}
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 sm:gap-4 pb-2 border-b-2 border-black/40">
+        <div className="space-y-1">
+          <div className="flex items-center gap-2.5 flex-wrap">
+            <h1 className="retro text-base sm:text-lg text-primary tracking-wide drop-shadow-[2px_2px_0_#000]">
               Equipo Activo
             </h1>
-            <Badge variant="secondary" className="rounded-none font-mono">
+            <Badge
+              variant="secondary"
+              className="rounded-none font-mono text-xs border-2 border-black shadow-[2px_2px_0_0_#000] bg-card text-foreground px-2 py-0.5"
+            >
               {equipo.length} / {limiteEquipo}
             </Badge>
           </div>
-          <p className="text-xs sm:text-sm text-muted-foreground mt-1 font-sans">
-            Gestiona los miembros que te acompañan en combate y expedición.
+          <p className="text-xs sm:text-sm text-muted-foreground font-sans">
+            Mesa táctica de mando: gestiona el combatiente líder y compañeros de expedición.
           </p>
         </div>
 
         <div className="flex flex-wrap items-center gap-2 w-full sm:w-auto">
-          <Button asChild variant="outline" size="sm" className="w-full sm:w-auto text-xs rounded-none">
+          <Button
+            asChild
+            variant="outline"
+            size="sm"
+            className="w-full sm:w-auto text-xs rounded-none border-2 border-black shadow-[2px_2px_0_0_#000] active:translate-y-0.5 active:shadow-none hover:bg-muted cursor-pointer"
+          >
             <Link to="/almacen">
               <Warehouse className="h-4 w-4 mr-1.5" />
               Ir al Almacén
             </Link>
           </Button>
-          <Button asChild variant="outline" size="sm" className="w-full sm:w-auto text-xs rounded-none">
+          <Button
+            asChild
+            variant="outline"
+            size="sm"
+            className="w-full sm:w-auto text-xs rounded-none border-2 border-black shadow-[2px_2px_0_0_#000] active:translate-y-0.5 active:shadow-none hover:bg-muted cursor-pointer"
+          >
             <Link to="/hub">
               <ArrowLeft className="h-4 w-4 mr-1.5" />
               Volver al Asentamiento
@@ -197,8 +210,8 @@ export function PantallaEquipo() {
 
       {/* Aviso de localidad no segura */}
       {!enLocalidadSegura && (
-        <div className="flex items-center gap-2.5 p-3 bg-amber-500/10 border-2 border-amber-500/30 text-amber-500 text-xs font-sans rounded-none">
-          <MapPinOff className="h-4 w-4 shrink-0" />
+        <div className="flex items-center gap-2.5 p-3 bg-amber-500/10 border-2 border-black shadow-[2px_2px_0_0_#000] text-amber-400 text-xs font-sans rounded-none">
+          <MapPinOff className="h-4 w-4 shrink-0 text-amber-400" />
           <span>
             Las transferencias solo están disponibles en un asentamiento seguro. El orden táctico sí puede ajustarse aquí.
           </span>
@@ -206,20 +219,38 @@ export function PantallaEquipo() {
       )}
 
       {cargando ? (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
           {Array.from({ length: 3 }).map((_, i) => (
-            <Skeleton key={i} className="h-64 w-full rounded-none" />
+            <div
+              key={i}
+              className="bg-card border-2 border-black shadow-[4px_4px_0_0_#000] p-4 space-y-3"
+            >
+              <Skeleton className="h-6 w-3/4 bg-muted/40 border border-black rounded-none" />
+              <div className="flex items-center gap-3">
+                <Skeleton className="h-16 w-16 bg-muted/40 border border-black rounded-none shrink-0" />
+                <div className="space-y-2 flex-1">
+                  <Skeleton className="h-4 w-full bg-muted/40 border border-black rounded-none" />
+                  <Skeleton className="h-3 w-1/2 bg-muted/40 border border-black rounded-none" />
+                </div>
+              </div>
+              <Skeleton className="h-12 w-full bg-muted/40 border border-black rounded-none" />
+              <Skeleton className="h-8 w-full bg-muted/40 border border-black rounded-none" />
+            </div>
           ))}
         </div>
       ) : equipo.length === 0 ? (
-        <Card className="text-center p-8 border-2 rounded-none">
+        <Card className="text-center p-8 border-4 border-black shadow-[6px_6px_0_0_#000] bg-card rounded-none">
           <CardTitle className="retro text-sm text-muted-foreground mb-2">
             No tienes criaturas en tu equipo activo
           </CardTitle>
           <p className="text-xs text-muted-foreground mb-4 font-sans">
             Ve al almacén para transferir compañeros a tu equipo.
           </p>
-          <Button asChild size="sm" className="rounded-none">
+          <Button
+            asChild
+            size="sm"
+            className="rounded-none border-2 border-black shadow-[2px_2px_0_0_#000] active:translate-y-0.5 active:shadow-none cursor-pointer"
+          >
             <Link to="/almacen">
               <Warehouse className="h-4 w-4 mr-1.5" />
               Ver Almacén
@@ -227,7 +258,7 @@ export function PantallaEquipo() {
           </Button>
         </Card>
       ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
           {equipo.map((criatura, index) => {
             const porcentajeHp = Math.round(
               (criatura.hpActual / criatura.hpMaximo) * 100,
@@ -243,22 +274,23 @@ export function PantallaEquipo() {
             return (
               <Card
                 key={criatura.criaturaId}
-                className={`flex flex-col justify-between rounded-none ${
+                className={`flex flex-col justify-between rounded-none transition-all ${
                   esLider
-                    ? "border-4 border-amber-500/80 bg-amber-500/5 shadow-md"
-                    : "border-2"
+                    ? "border-4 border-black shadow-[6px_6px_0_0_#000] bg-amber-500/10 ring-1 ring-amber-400/40"
+                    : "border-2 border-black shadow-[4px_4px_0_0_#000] bg-card"
                 }`}
               >
-                <CardHeader className="p-3 pb-2 space-y-2">
+                <CardHeader className="p-3 pb-2 space-y-2.5">
+                  {/* Fila superior: Orden/Líder/Debilitada y Nivel */}
                   <div className="flex items-center justify-between gap-2">
-                    <div className="flex items-center gap-1.5">
-                      <span className="font-mono text-xs font-semibold text-muted-foreground">
+                    <div className="flex items-center gap-1.5 flex-wrap">
+                      <span className="font-mono text-xs font-bold text-muted-foreground bg-black/40 border border-black px-1.5 py-0.5 shadow-[1px_1px_0_0_#000]">
                         #{criatura.orden}
                       </span>
                       {esLider && (
                         <Badge
                           variant="default"
-                          className="bg-amber-500 text-black font-bold text-[9px] retro rounded-none gap-1 py-0.5 px-1.5"
+                          className="bg-amber-400 text-black font-bold text-[9px] retro rounded-none gap-1 py-0.5 px-2 border-2 border-black shadow-[2px_2px_0_0_#000]"
                         >
                           <Crown className="h-3 w-3 fill-current" />
                           LÍDER
@@ -267,31 +299,43 @@ export function PantallaEquipo() {
                       {estaDebilitada && (
                         <Badge
                           variant="destructive"
-                          className="text-[9px] retro rounded-none py-0.5 px-1.5"
+                          className="bg-red-600 text-white text-[9px] retro rounded-none py-0.5 px-2 border-2 border-black shadow-[2px_2px_0_0_#000]"
                         >
                           DEBILITADA
                         </Badge>
                       )}
                     </div>
-                    <Badge variant="outline" className="text-[10px] font-mono rounded-none">
+                    <Badge
+                      variant="outline"
+                      className="text-[10px] font-mono font-bold rounded-none border-2 border-black bg-black/50 shadow-[2px_2px_0_0_#000] text-foreground"
+                    >
                       Nv. {criatura.nivel}
                     </Badge>
                   </div>
 
+                  {/* Fila del Sprite y Nombre */}
                   <div className="flex items-center gap-3">
-                    <img
-                      src={obtenerImagenCriatura(criatura.slug)}
-                      alt={criatura.nombre}
-                      onError={(e) => manejarErrorImagen(e, "criatura")}
-                      className="pixelated h-16 w-16 object-contain shrink-0 bg-muted/20 border border-border/40 p-1"
-                      loading="lazy"
-                    />
+                    <div
+                      className={`relative shrink-0 flex items-center justify-center ${
+                        esLider
+                          ? "bg-amber-500/20 border-2 border-amber-400 shadow-[0_0_12px_rgba(251,191,36,0.35)]"
+                          : "bg-black/40 border-2 border-black shadow-[inset_2px_2px_0_0_rgba(0,0,0,0.6)]"
+                      } p-1`}
+                    >
+                      <img
+                        src={obtenerImagenCriatura(criatura.slug)}
+                        alt={criatura.nombre}
+                        onError={(e) => manejarErrorImagen(e, "criatura")}
+                        className="pixelated h-16 w-16 object-contain"
+                        loading="lazy"
+                      />
+                    </div>
                     <div className="min-w-0 flex-1">
-                      <CardTitle className="retro text-xs text-foreground truncate">
+                      <CardTitle className="retro text-xs text-foreground truncate drop-shadow-[1px_1px_0_#000]">
                         {criatura.nombre}
                       </CardTitle>
                       {criatura.apodo && (
-                        <p className="text-xs text-muted-foreground font-sans truncate mt-0.5">
+                        <p className="text-xs text-muted-foreground font-sans truncate mt-0.5 italic">
                           &ldquo;{criatura.apodo}&rdquo;
                         </p>
                       )}
@@ -299,79 +343,83 @@ export function PantallaEquipo() {
                   </div>
                 </CardHeader>
 
-                <CardContent className="p-3 pt-1 space-y-2.5">
+                <CardContent className="p-3 pt-1 space-y-3">
                   {/* Salud */}
                   <div className="space-y-1">
                     <div className="flex items-center justify-between text-xs">
                       <span className="font-sans text-muted-foreground flex items-center gap-1 text-[11px]">
                         <Heart className="h-3 w-3 text-red-500" /> Salud
                       </span>
-                      <span className="font-mono text-[11px]">
+                      <span className="font-mono text-[11px] font-bold">
                         {criatura.hpActual} / {criatura.hpMaximo} HP
                       </span>
                     </div>
-                    <HealthBar
-                      value={porcentajeHp}
-                      variant="retro"
-                      className="h-2.5 rounded-none"
-                    />
+                    <div className="border border-black bg-black/60 p-0.5 shadow-[1px_1px_0_0_#000]">
+                      <HealthBar
+                        value={porcentajeHp}
+                        variant="retro"
+                        className="h-2.5 rounded-none"
+                      />
+                    </div>
                   </div>
 
-                  {/* Progreso EXP (solo etiqueta de la barra, sin porcentaje duplicado) */}
+                  {/* Progreso EXP */}
                   <div className="space-y-1">
                     <div className="flex items-center justify-between text-xs">
                       <span className="font-sans text-muted-foreground text-[11px]">
                         Progreso EXP
                       </span>
-                      <span className="font-mono text-[11px] text-accent">
+                      <span className="font-mono text-[11px] font-bold text-accent">
                         {criatura.porcentajeXp ?? 0}%
                       </span>
                     </div>
-                    <XpBar
-                      value={criatura.porcentajeXp ?? 0}
-                      variant="retro"
-                      className="h-2 rounded-none"
-                    />
+                    <div className="border border-black bg-black/60 p-0.5 shadow-[1px_1px_0_0_#000]">
+                      <XpBar
+                        value={criatura.porcentajeXp ?? 0}
+                        variant="retro"
+                        className="h-2 rounded-none"
+                      />
+                    </div>
                   </div>
 
-                  {/* Estadísticas */}
-                  <div className="grid grid-cols-3 gap-1 p-1.5 bg-muted/40 rounded-none border border-border/50 text-center font-mono text-xs">
+                  {/* Matriz de Atributos Base */}
+                  <div className="grid grid-cols-3 gap-1 p-1.5 bg-black/40 border-2 border-black shadow-[2px_2px_0_0_#000] text-center font-mono text-xs">
                     <div className="flex flex-col items-center">
                       <span className="text-[10px] text-muted-foreground flex items-center gap-0.5 uppercase">
-                        <Swords className="h-3 w-3" /> ATQ
+                        <Swords className="h-3 w-3 text-red-400" /> ATQ
                       </span>
-                      <span className="font-semibold">{criatura.ataque}</span>
+                      <span className="font-bold text-foreground">{criatura.ataque}</span>
                     </div>
                     <div className="flex flex-col items-center">
                       <span className="text-[10px] text-muted-foreground flex items-center gap-0.5 uppercase">
-                        <Shield className="h-3 w-3" /> DEF
+                        <Shield className="h-3 w-3 text-blue-400" /> DEF
                       </span>
-                      <span className="font-semibold">{criatura.defensa}</span>
+                      <span className="font-bold text-foreground">{criatura.defensa}</span>
                     </div>
                     <div className="flex flex-col items-center">
                       <span className="text-[10px] text-muted-foreground flex items-center gap-0.5 uppercase">
-                        <Zap className="h-3 w-3" /> VEL
+                        <Zap className="h-3 w-3 text-amber-400" /> VEL
                       </span>
-                      <span className="font-semibold">{criatura.velocidad}</span>
+                      <span className="font-bold text-foreground">{criatura.velocidad}</span>
                     </div>
                   </div>
 
                   {estaDebilitada && (
-                    <p className="text-[11px] text-destructive font-sans">
+                    <div className="p-1.5 bg-red-950/40 border border-red-500/40 text-[11px] text-red-400 font-sans">
                       El combate la omitirá hasta curarla.
-                    </p>
+                    </div>
                   )}
                 </CardContent>
 
-                <CardFooter className="p-3 pt-2 border-t border-border/40 flex flex-col gap-2">
+                <CardFooter className="p-3 pt-2 border-t-2 border-black/40 flex flex-col gap-2">
                   {/* Botones de orden táctico */}
-                  <div className="flex items-center justify-between gap-1 w-full">
-                    <div className="flex items-center gap-1">
+                  <div className="flex items-center justify-between gap-1.5 w-full">
+                    <div className="flex items-center gap-1.5">
                       <Button
                         type="button"
                         variant="outline"
                         size="icon"
-                        className="h-8 w-8 rounded-none"
+                        className="h-8 w-8 rounded-none border-2 border-black shadow-[2px_2px_0_0_#000] active:translate-y-0.5 active:shadow-none hover:bg-muted cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed"
                         disabled={operacion !== null || index === 0}
                         onClick={() => handleSubir(index)}
                         aria-label={`Subir a ${criatura.nombre}`}
@@ -382,7 +430,7 @@ export function PantallaEquipo() {
                         type="button"
                         variant="outline"
                         size="icon"
-                        className="h-8 w-8 rounded-none"
+                        className="h-8 w-8 rounded-none border-2 border-black shadow-[2px_2px_0_0_#000] active:translate-y-0.5 active:shadow-none hover:bg-muted cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed"
                         disabled={operacion !== null || index === equipo.length - 1}
                         onClick={() => handleBajar(index)}
                         aria-label={`Bajar a ${criatura.nombre}`}
@@ -396,7 +444,7 @@ export function PantallaEquipo() {
                         type="button"
                         variant="secondary"
                         size="sm"
-                        className="h-8 text-[10px] retro rounded-none gap-1 flex-1 sm:flex-initial"
+                        className="h-8 text-[10px] retro rounded-none gap-1 flex-1 sm:flex-initial border-2 border-black shadow-[2px_2px_0_0_#000] active:translate-y-0.5 active:shadow-none cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed"
                         disabled={operacion !== null || estaDebilitada}
                         onClick={() => handleDesignarLider(index)}
                         aria-busy={estaOrdenando}
@@ -404,7 +452,7 @@ export function PantallaEquipo() {
                         {estaOrdenando ? (
                           <>
                             <Spinner className="h-3 w-3" />
-                            <span>...</span>
+                            <span>PROCESANDO...</span>
                           </>
                         ) : (
                           <>
@@ -421,7 +469,7 @@ export function PantallaEquipo() {
                     type="button"
                     variant="outline"
                     size="sm"
-                    className="w-full text-xs rounded-none gap-1.5"
+                    className="w-full text-xs rounded-none gap-1.5 border-2 border-black shadow-[2px_2px_0_0_#000] active:translate-y-0.5 active:shadow-none hover:bg-muted cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed"
                     disabled={
                       operacion !== null ||
                       equipo.length <= 1 ||
@@ -453,13 +501,13 @@ export function PantallaEquipo() {
             return (
               <div
                 key={`ranura-vacia-${numeroRanura}`}
-                className="border-2 border-dashed border-border/60 p-6 flex flex-col items-center justify-center text-center gap-2 min-h-[260px] bg-muted/10 rounded-none"
+                className="border-2 border-dashed border-black/80 bg-black/20 shadow-[2px_2px_0_0_#000] p-6 flex flex-col items-center justify-center text-center gap-2 min-h-[260px] rounded-none"
                 aria-label={`Ranura libre ${numeroRanura} de ${limiteEquipo}`}
               >
                 <span className="retro text-[10px] text-muted-foreground uppercase">
                   Ranura libre
                 </span>
-                <span className="font-mono text-xs text-muted-foreground/70">
+                <span className="font-mono text-xs text-muted-foreground/80 font-bold">
                   {numeroRanura} de {limiteEquipo}
                 </span>
               </div>
