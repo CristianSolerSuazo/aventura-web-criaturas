@@ -182,7 +182,7 @@ export function PantallaEquipo() {
           </p>
         </div>
 
-        <div className="flex flex-wrap items-center gap-2 w-full sm:w-auto">
+        <div className="flex flex-col sm:flex-row items-center gap-3 sm:gap-2.5 w-full sm:w-auto">
           <Button
             asChild
             variant="outline"
@@ -249,7 +249,7 @@ export function PantallaEquipo() {
           <Button
             asChild
             size="sm"
-            className="rounded-none border-2 border-black shadow-[2px_2px_0_0_#000] active:translate-y-0.5 active:shadow-none cursor-pointer text-xs"
+            className="rounded-none border-2 border-black shadow-[2px_2px_0_0_#000] active:translate-y-0.5 active:shadow-none cursor-pointer text-xs mt-2"
           >
             <Link to="/almacen">
               <Warehouse className="h-3.5 w-3.5 sm:h-4 sm:w-4 mr-1.5" />
@@ -412,10 +412,10 @@ export function PantallaEquipo() {
                   )}
                 </CardContent>
 
-                <CardFooter font="normal" className="p-2.5 sm:p-3 pt-2 border-t-2 border-black/40 flex flex-col gap-1.5 sm:gap-2">
+                <CardFooter font="normal" className="p-3 sm:p-3.5 pt-3 border-t-2 border-black/40 flex flex-col gap-3.5 sm:gap-4">
                   {/* Botones de orden táctico */}
-                  <div className="flex items-center justify-between gap-1.5 w-full">
-                    <div className="flex items-center gap-1 sm:gap-1.5">
+                  <div className="flex items-center justify-between gap-3 sm:gap-3.5 w-full">
+                    <div className="flex items-center gap-2.5 sm:gap-3 shrink-0">
                       <Button
                         type="button"
                         variant="outline"
