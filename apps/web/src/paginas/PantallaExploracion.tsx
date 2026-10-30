@@ -268,7 +268,7 @@ export function PantallaExploracion() {
       <div className="w-full max-w-5xl mx-auto px-2 sm:px-4 py-2 sm:py-4 space-y-4 sm:space-y-6 animate-pulse">
         {/* Skeleton del Hero Panorámico Brutalist */}
         <div className="bg-card border-4 border-black shadow-[6px_6px_0_0_#000] p-3 sm:p-4 space-y-3">
-          <Skeleton className="h-44 sm:h-56 md:h-64 w-full bg-[#1a2332] border-2 border-black" />
+          <Skeleton className="h-48 sm:h-56 md:h-64 w-full bg-[#1a2332] border-2 border-black" />
           <div className="flex justify-between items-center gap-3">
             <Skeleton className="h-5 w-48 bg-[#1a2332] border border-black" />
             <Skeleton className="h-5 w-24 bg-[#1a2332] border border-black" />
@@ -299,7 +299,7 @@ export function PantallaExploracion() {
       {/* 1. Panel de Entorno: Hero Panorámico Brutalist 8-Bit */}
       <div className="relative bg-card border-4 border-black shadow-[6px_6px_0_0_#000] overflow-hidden">
         {/* Paisaje Panorámico de la Ruta con altura responsiva y marco retro */}
-        <div className="relative w-full h-44 sm:h-56 md:h-64 bg-[#090d16] border-b-4 border-black overflow-hidden">
+        <div className="relative w-full h-48 sm:h-56 md:h-64 bg-[#090d16] border-b-4 border-black overflow-hidden">
           <img
             src={obtenerImagenZona(slugZona)}
             onError={(e) => manejarErrorImagen(e, "zona")}
@@ -310,25 +310,25 @@ export function PantallaExploracion() {
           {/* Degradado oscuro para integrar con el bastión y maximizar contraste WCAG AAA */}
           <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-black/30 pointer-events-none" />
 
-          {/* Badges superiores sobre el paisaje: diseño retro brutalista sin colisiones */}
-          <div className="absolute top-2.5 left-2.5 right-2.5 sm:top-3 sm:left-3 sm:right-3 flex items-center justify-between gap-2 pointer-events-auto z-10">
-            <div className="flex items-center gap-1.5 sm:gap-2 flex-wrap">
+          {/* Badges superiores sobre el paisaje: diseño retro brutalista adaptable sin colisiones */}
+          <div className="absolute top-2 left-2 right-2 sm:top-3 sm:left-3 sm:right-3 flex items-start justify-between gap-1.5 sm:gap-2 pointer-events-auto z-10">
+            <div className="flex items-center gap-1 sm:gap-1.5 flex-wrap min-w-0 max-w-[calc(100%-85px)] sm:max-w-none">
               {ubicacion?.esSegura ? (
                 <Badge
                   variant="outline"
                   font="retro"
-                  className="bg-emerald-950/90 text-emerald-400 border-2 border-black shadow-[2px_2px_0_0_#000] gap-1.5 py-1 px-2.5 text-[9px] sm:text-[10px]"
+                  className="bg-emerald-950/90 text-emerald-400 border-2 border-black shadow-[2px_2px_0_0_#000] gap-1 py-0.5 sm:py-1 px-1.5 sm:px-2.5 text-[8px] sm:text-[10px]"
                 >
-                  <ShieldCheck className="size-3 text-emerald-400 shrink-0" />
+                  <ShieldCheck className="size-2.5 sm:size-3 text-emerald-400 shrink-0" />
                   <span>LOCALIDAD SEGURA</span>
                 </Badge>
               ) : (
                 <Badge
                   variant="outline"
                   font="retro"
-                  className="bg-red-950/90 text-red-400 border-2 border-black shadow-[2px_2px_0_0_#000] gap-1.5 py-1 px-2.5 text-[9px] sm:text-[10px]"
+                  className="bg-red-950/90 text-red-400 border-2 border-black shadow-[2px_2px_0_0_#000] gap-1 py-0.5 sm:py-1 px-1.5 sm:px-2.5 text-[8px] sm:text-[10px]"
                 >
-                  <AlertTriangle className="size-3 text-red-400 shrink-0" />
+                  <AlertTriangle className="size-2.5 sm:size-3 text-red-400 shrink-0" />
                   <span>ZONA HOSTIL</span>
                 </Badge>
               )}
@@ -337,9 +337,9 @@ export function PantallaExploracion() {
                 <Badge
                   variant="outline"
                   font="retro"
-                  className="bg-[#1a2332]/95 text-[#14d1e8] border-2 border-black shadow-[2px_2px_0_0_#000] gap-1.5 py-1 px-2.5 text-[9px] sm:text-[10px]"
+                  className="bg-[#1a2332]/95 text-[#14d1e8] border-2 border-black shadow-[2px_2px_0_0_#000] gap-1 py-0.5 sm:py-1 px-1.5 sm:px-2.5 text-[8px] sm:text-[10px]"
                 >
-                  <MapPin className="size-3 text-[#14d1e8] shrink-0" />
+                  <MapPin className="size-2.5 sm:size-3 text-[#14d1e8] shrink-0" />
                   <span>NV. SUGERIDO: {ubicacion?.nivelSugerido || "1-3"}</span>
                 </Badge>
               )}
@@ -348,10 +348,10 @@ export function PantallaExploracion() {
                 <Badge
                   variant="outline"
                   font="retro"
-                  className="bg-amber-950/90 text-[#f5b724] border-2 border-black shadow-[2px_2px_0_0_#000] gap-1.5 py-1 px-2.5 text-[9px] sm:text-[10px]"
+                  className="bg-amber-950/90 text-[#f5b724] border-2 border-black shadow-[2px_2px_0_0_#000] gap-1 py-0.5 sm:py-1 px-1.5 sm:px-2.5 text-[8px] sm:text-[10px]"
                 >
-                  <Sparkles className="size-3 text-[#f5b724] shrink-0" />
-                  <span>100% CARTOGRAFÍA</span>
+                  <Sparkles className="size-2.5 sm:size-3 text-[#f5b724] shrink-0" />
+                  <span>100% CARTOGRAFIA</span>
                 </Badge>
               )}
             </div>
@@ -366,17 +366,17 @@ export function PantallaExploracion() {
                 font="retro"
                 disabled={explorando}
                 onClick={() => reproducirSonido("click", 0.3)}
-                className="bg-black/85 hover:bg-[#1a2332] text-slate-200 hover:text-[#14d1e8] border-2 border-black shadow-[2px_2px_0_0_#000] active:translate-y-0.5 text-[9px] sm:text-[10px] gap-1.5 px-2.5 py-1 cursor-pointer"
+                className="bg-black/85 hover:bg-[#1a2332] text-slate-200 hover:text-[#14d1e8] border-2 border-black shadow-[2px_2px_0_0_#000] active:translate-y-0.5 text-[8px] sm:text-[10px] gap-1 px-2 sm:px-2.5 py-0.5 sm:py-1 cursor-pointer"
               >
-                <ArrowLeft className="size-3" />
+                <ArrowLeft className="size-2.5 sm:size-3 shrink-0" />
                 <span>CAMPAMENTO</span>
               </Button>
             </Link>
           </div>
 
           {/* Nombre de la zona sobre la franja inferior del paisaje */}
-          <div className="absolute bottom-2.5 left-2.5 right-2.5 sm:bottom-3 sm:left-3 sm:right-3 pointer-events-none">
-            <h1 className="retro text-sm sm:text-lg md:text-xl text-[#14d1e8] tracking-wider uppercase drop-shadow-[0_2px_4px_rgba(0,0,0,0.95)] truncate">
+          <div className="absolute bottom-2 left-2 right-2 sm:bottom-3 sm:left-3 sm:right-3 pointer-events-none">
+            <h1 className="retro text-[11px] sm:text-base md:text-xl text-[#14d1e8] tracking-wider uppercase drop-shadow-[0_2px_4px_rgba(0,0,0,0.95)] line-clamp-2 sm:truncate break-words leading-tight">
               {ubicacion?.nombre ?? "Senda Silvestre"}
             </h1>
           </div>
@@ -400,7 +400,7 @@ export function PantallaExploracion() {
               </span>
             </div>
 
-            <span className="font-mono text-[10px] sm:text-[11px] text-[#14d1e8] bg-[#090d16] px-2.5 py-1 border-2 border-black shadow-[2px_2px_0_0_#000] shrink-0 font-bold">
+            <span className="font-mono text-[10px] sm:text-[11px] text-[#14d1e8] bg-[#090d16] px-2 sm:px-2.5 py-0.5 sm:py-1 border-2 border-black shadow-[2px_2px_0_0_#000] shrink-0 font-bold">
               PROGRESO: {progresoZona}%
             </span>
           </div>
@@ -411,7 +411,7 @@ export function PantallaExploracion() {
       {rivalActivo && (
         <div
           className={cn(
-            "p-3.5 sm:p-4 space-y-3 bg-card border-2 border-black shadow-[4px_4px_0_0_#000]",
+            "p-3 sm:p-4 space-y-3 bg-card border-2 border-black shadow-[4px_4px_0_0_#000]",
             rivalActivo.esLegendaria
               ? "border-amber-400 anim-halo-legendario shadow-[0_0_16px_rgba(251,191,36,0.35)]"
               : "border-red-600/80",
@@ -421,14 +421,14 @@ export function PantallaExploracion() {
             {rivalActivo.esLegendaria ? (
               <div className="flex items-center gap-2">
                 <Crown className="size-4 sm:size-5 text-amber-400 animate-pulse shrink-0" />
-                <h2 className="retro text-xs sm:text-sm text-amber-400 uppercase tracking-wider">
+                <h2 className="retro text-[10px] sm:text-xs md:text-sm text-amber-400 uppercase tracking-wider leading-tight">
                   ¡CRIATURA LEGENDARIA AL ACECHO!
                 </h2>
               </div>
             ) : (
               <div className="flex items-center gap-2">
                 <Swords className="size-4 sm:size-5 text-red-400 animate-pulse shrink-0" />
-                <h2 className="retro text-xs sm:text-sm text-red-400 uppercase tracking-wider">
+                <h2 className="retro text-[10px] sm:text-xs md:text-sm text-red-400 uppercase tracking-wider leading-tight">
                   ¡CRIATURA HOSTIL AL ACECHO!
                 </h2>
               </div>
@@ -437,7 +437,7 @@ export function PantallaExploracion() {
               variant="outline"
               font="retro"
               className={cn(
-                "border-2 border-black shadow-[2px_2px_0_0_#000] text-[9px] sm:text-[10px] shrink-0",
+                "border-2 border-black shadow-[2px_2px_0_0_#000] text-[8px] sm:text-[10px] shrink-0 py-0.5 px-1.5 sm:px-2",
                 rivalActivo.esLegendaria
                   ? "bg-amber-900 text-amber-200 border-amber-400"
                   : "bg-red-900 text-white border-red-400",
@@ -447,7 +447,7 @@ export function PantallaExploracion() {
             </Badge>
           </div>
 
-          <div className="flex items-center gap-3 bg-[#090d16] p-2.5 border-2 border-black shadow-[inset_2px_2px_0_0_rgba(0,0,0,0.7)]">
+          <div className="flex items-center gap-3 bg-[#090d16] p-2 sm:p-2.5 border-2 border-black shadow-[inset_2px_2px_0_0_rgba(0,0,0,0.7)]">
             <div className="size-12 sm:size-14 bg-[#121927] border-2 border-black flex items-center justify-center shrink-0">
               <img
                 src={obtenerImagenCriatura(rivalActivo.slug)}
@@ -458,8 +458,10 @@ export function PantallaExploracion() {
             </div>
             <div className="min-w-0 flex-1">
               <div className="flex items-center gap-2 flex-wrap">
-                <span className="retro text-xs text-white truncate">{rivalActivo.nombre}</span>
-                <span className="font-mono text-[10px] text-amber-300 bg-[#1a2332] px-1.5 py-0.5 border-2 border-black shadow-[2px_2px_0_0_#000]">
+                <span className="retro text-[11px] sm:text-xs text-white truncate max-w-full">
+                  {rivalActivo.nombre}
+                </span>
+                <span className="font-mono text-[9px] sm:text-[10px] text-amber-300 bg-[#1a2332] px-1.5 py-0.5 border-2 border-black shadow-[2px_2px_0_0_#000]">
                   Nv. {rivalActivo.nivel}
                 </span>
               </div>
@@ -478,10 +480,10 @@ export function PantallaExploracion() {
             <Button
               font="retro"
               onClick={handleIniciarCombate}
-              className="w-full sm:w-auto flex-1 bg-red-600 hover:bg-red-500 text-white border-2 border-black shadow-[2px_2px_0_0_#000] text-xs py-3 gap-2 cursor-pointer active:translate-y-0.5"
+              className="w-full sm:w-auto flex-1 bg-red-600 hover:bg-red-500 text-white border-2 border-black shadow-[2px_2px_0_0_#000] text-[9.5px] sm:text-xs py-2.5 sm:py-3 px-2 sm:px-4 gap-2 cursor-pointer active:translate-y-0.5 text-center whitespace-normal leading-snug"
             >
-              <Swords className="size-4" />
-              <span>ENTRAR EN COMBATE AHORA</span>
+              <Swords className="size-3.5 sm:size-4 shrink-0" />
+              <span className="break-words">ENTRAR EN COMBATE AHORA</span>
             </Button>
             <Button
               variant="outline"
@@ -490,9 +492,9 @@ export function PantallaExploracion() {
                 reproducirSonido("click", 0.3);
                 setModalEncuentroAbierto(true);
               }}
-              className="w-full sm:w-auto bg-[#1a2332] text-[#14d1e8] hover:text-white border-2 border-black shadow-[2px_2px_0_0_#000] text-xs py-3 gap-2 cursor-pointer active:translate-y-0.5"
+              className="w-full sm:w-auto bg-[#1a2332] text-[#14d1e8] hover:text-white border-2 border-black shadow-[2px_2px_0_0_#000] text-[9.5px] sm:text-xs py-2.5 sm:py-3 px-2 sm:px-4 gap-2 cursor-pointer active:translate-y-0.5 text-center whitespace-normal leading-snug"
             >
-              <Eye className="size-4" />
+              <Eye className="size-3.5 sm:size-4 shrink-0" />
               <span>INSPECCIONAR RIVAL</span>
             </Button>
           </div>
@@ -500,12 +502,12 @@ export function PantallaExploracion() {
       )}
 
       {/* 3. Medidor de Progreso de la Zona y Botonera Táctil Brutalist */}
-      <div className="bg-card border-2 border-black shadow-[4px_4px_0_0_#000] p-4 sm:p-5 space-y-4">
+      <div className="bg-card border-2 border-black shadow-[4px_4px_0_0_#000] p-3.5 sm:p-5 space-y-3.5 sm:space-y-4">
         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2">
           <div className="flex items-center gap-2">
-            <Compass className="size-4 text-[#14d1e8]" />
-            <h2 className="retro text-xs sm:text-sm text-[#14d1e8] tracking-wider uppercase">
-              CARTOGRAFÍA Y AVANCE
+            <Compass className="size-4 text-[#14d1e8] shrink-0" />
+            <h2 className="retro text-[10px] sm:text-xs md:text-sm text-[#14d1e8] tracking-wider uppercase">
+              CARTOGRAFIA Y AVANCE
             </h2>
           </div>
           <span className="font-mono font-bold text-xs sm:text-sm text-[#14d1e8] bg-[#090d16] px-2.5 py-1 border-2 border-black shadow-[2px_2px_0_0_#000]">
@@ -526,7 +528,7 @@ export function PantallaExploracion() {
 
         {/* Mensaje descriptivo contextual según el estado de la zona */}
         {ubicacion?.esSegura ? (
-          <div className="p-3 bg-[#1a2332] border-2 border-black shadow-[2px_2px_0_0_#000] flex items-start gap-2.5">
+          <div className="p-2.5 sm:p-3 bg-[#1a2332] border-2 border-black shadow-[2px_2px_0_0_#000] flex items-start gap-2.5">
             <ShieldCheck className="size-4 text-[#f5b724] shrink-0 mt-0.5" />
             <div className="font-sans text-xs text-slate-300 leading-relaxed">
               <strong className="text-[#f5b724]">Localidad pacífica protegida:</strong> No
@@ -558,7 +560,7 @@ export function PantallaExploracion() {
           </p>
         )}
 
-        {/* Botón Principal de Inmersión Brutalist 8-Bit */}
+        {/* Botón Principal de Inmersión Brutalist 8-Bit con protección responsive total */}
         {ubicacion?.esSegura ? (
           <Link
             to="/hub"
@@ -569,20 +571,20 @@ export function PantallaExploracion() {
               font="retro"
               disabled={explorando}
               onClick={() => reproducirSonido("click", 0.4)}
-              className="w-full py-3.5 sm:py-4 bg-[#1a2332] hover:bg-[#1a2332]/80 text-[#14d1e8] border-4 border-black shadow-[6px_6px_0_0_#000] active:translate-y-1 active:shadow-[2px_2px_0_0_#000] text-xs sm:text-sm tracking-wider uppercase gap-2 cursor-pointer"
+              className="w-full py-3 sm:py-4 px-2 sm:px-4 bg-[#1a2332] hover:bg-[#1a2332]/80 text-[#14d1e8] border-4 border-black shadow-[6px_6px_0_0_#000] active:translate-y-1 active:shadow-[2px_2px_0_0_#000] text-[9.5px] sm:text-xs md:text-sm tracking-normal sm:tracking-wider uppercase gap-2 cursor-pointer text-center whitespace-normal leading-snug"
             >
-              <Compass className="size-4 text-[#14d1e8]" />
-              <span>VIAJAR A SENDA SILVESTRE DESDE EL CAMPAMENTO</span>
+              <Compass className="size-4 text-[#14d1e8] shrink-0" />
+              <span className="break-words">VIAJAR A SENDA SILVESTRE DESDE EL CAMPAMENTO</span>
             </Button>
           </Link>
         ) : rivalActivo ? (
           <Button
             font="retro"
             onClick={handleIniciarCombate}
-            className="w-full py-3.5 sm:py-4 bg-red-600 hover:bg-red-500 text-white border-4 border-black shadow-[6px_6px_0_0_#000] text-xs sm:text-sm tracking-wider uppercase transition-transform active:translate-y-1 active:shadow-[2px_2px_0_0_#000] cursor-pointer flex items-center justify-center gap-2"
+            className="w-full py-3 sm:py-4 px-2 sm:px-4 bg-red-600 hover:bg-red-500 text-white border-4 border-black shadow-[6px_6px_0_0_#000] text-[9.5px] sm:text-xs md:text-sm tracking-normal sm:tracking-wider uppercase transition-transform active:translate-y-1 active:shadow-[2px_2px_0_0_#000] cursor-pointer flex items-center justify-center gap-2 text-center whitespace-normal leading-snug"
           >
-            <Swords className="size-4 text-white" />
-            <span>RESOLVER COMBATE CON {rivalActivo.nombre.toUpperCase()}</span>
+            <Swords className="size-4 text-white shrink-0" />
+            <span className="break-words">RESOLVER COMBATE CON {rivalActivo.nombre.toUpperCase()}</span>
           </Button>
         ) : (
           <Button
@@ -590,16 +592,16 @@ export function PantallaExploracion() {
             disabled={explorando}
             onClick={handleExplorar}
             aria-busy={explorando}
-            className="w-full py-3.5 sm:py-4 bg-[#14d1e8] hover:bg-[#14d1e8]/90 text-[#090d16] border-4 border-black shadow-[6px_6px_0_0_#000] text-xs sm:text-sm tracking-wider uppercase transition-transform active:translate-y-1 active:shadow-[2px_2px_0_0_#000] cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+            className="w-full py-3 sm:py-4 px-2 sm:px-4 bg-[#14d1e8] hover:bg-[#14d1e8]/90 text-[#090d16] border-4 border-black shadow-[6px_6px_0_0_#000] text-[10px] sm:text-xs md:text-sm tracking-normal sm:tracking-wider uppercase transition-transform active:translate-y-1 active:shadow-[2px_2px_0_0_#000] cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed flex items-center justify-center gap-2 text-center whitespace-normal leading-snug"
           >
             {explorando ? (
               <>
-                <Loader2 className="size-4 animate-spin text-[#090d16]" />
+                <Loader2 className="size-4 animate-spin text-[#090d16] shrink-0" />
                 <span>EXPLORANDO SENDA...</span>
               </>
             ) : (
               <>
-                <Footprints className="size-4 text-[#090d16]" />
+                <Footprints className="size-4 text-[#090d16] shrink-0" />
                 <span>{progresoZona >= 100 ? "PATRULLAR SENDA" : "EXPLORAR SENDA"}</span>
               </>
             )}
@@ -608,15 +610,15 @@ export function PantallaExploracion() {
       </div>
 
       {/* 4. Bitácora de Incursión: Registro Secuencial Retro Brutalist */}
-      <div className="bg-card border-2 border-black shadow-[4px_4px_0_0_#000] p-4 sm:p-5 space-y-3">
+      <div className="bg-card border-2 border-black shadow-[4px_4px_0_0_#000] p-3.5 sm:p-5 space-y-3">
         <div className="flex items-center justify-between border-b-2 border-black/60 pb-2">
           <div className="flex items-center gap-2">
-            <Scroll className="size-4 text-[#14d1e8]" />
-            <h3 className="retro text-xs text-slate-200 tracking-wider uppercase">
-              BITÁCORA DE INCURSIÓN
+            <Scroll className="size-4 text-[#14d1e8] shrink-0" />
+            <h3 className="retro text-[10px] sm:text-xs text-slate-200 tracking-wider uppercase">
+              BITACORA DE INCURSION
             </h3>
           </div>
-          <span className="font-mono text-[10px] text-slate-400">
+          <span className="font-mono text-[9px] sm:text-[10px] text-slate-400">
             EVENTOS: {bitacoraExploracion.length}
           </span>
         </div>
@@ -631,7 +633,7 @@ export function PantallaExploracion() {
               <li
                 key={registro.id}
                 className={cn(
-                  "p-2.5 sm:p-3 border-2 border-black shadow-[2px_2px_0_0_#000] flex items-start gap-2.5 transition-colors",
+                  "p-2 sm:p-2.5 border-2 border-black shadow-[2px_2px_0_0_#000] flex items-start gap-2.5 transition-colors",
                   esEncuentro
                     ? "bg-red-950/30 text-red-200"
                     : esObjeto
@@ -657,7 +659,7 @@ export function PantallaExploracion() {
                   <div className="flex items-center justify-between gap-2 mb-0.5 flex-wrap">
                     <span
                       className={cn(
-                        "retro text-[9px] uppercase tracking-wider",
+                        "retro text-[8.5px] sm:text-[9px] uppercase tracking-wider",
                         esEncuentro
                           ? "text-red-400"
                           : esObjeto
@@ -699,22 +701,22 @@ export function PantallaExploracion() {
           )}
         >
           {/* Header fijo anclado arriba */}
-          <DialogHeader className="shrink-0 px-4 pt-3.5 pb-2 text-center border-b-2 border-black/80 relative pr-10 bg-[#090d16]">
+          <DialogHeader className="shrink-0 px-3.5 sm:px-4 pt-3.5 pb-2 text-center border-b-2 border-black/80 relative pr-10 bg-[#090d16]">
             <DialogTitle
               font="normal"
               className={cn(
-                "retro text-xs sm:text-sm text-center flex items-center justify-center gap-2 uppercase tracking-wider",
+                "retro text-[10px] sm:text-xs md:text-sm text-center flex items-center justify-center gap-1.5 sm:gap-2 uppercase tracking-wider whitespace-normal leading-snug",
                 rivalActivo?.esLegendaria ? "text-amber-400" : "text-red-400",
               )}
             >
               {rivalActivo?.esLegendaria ? (
                 <>
-                  <Crown className="size-4 text-amber-400 animate-pulse shrink-0" />
+                  <Crown className="size-3.5 sm:size-4 text-amber-400 animate-pulse shrink-0" />
                   <span>¡AVISTAMIENTO LEGENDARIO!</span>
                 </>
               ) : (
                 <>
-                  <Swords className="size-4 text-red-400 animate-pulse shrink-0" />
+                  <Swords className="size-3.5 sm:size-4 text-red-400 animate-pulse shrink-0" />
                   <span>¡CRIATURA SALVAJE!</span>
                 </>
               )}
@@ -726,33 +728,33 @@ export function PantallaExploracion() {
 
           {/* Cuerpo scrolleable interior: adaptable a pantallas 360px-420px */}
           {rivalActivo && (
-            <div className="flex-1 min-h-0 overflow-y-auto px-3.5 sm:px-5 py-3 space-y-3 overscroll-contain">
+            <div className="flex-1 min-h-0 overflow-y-auto px-3 sm:px-5 py-2.5 sm:py-3 space-y-2.5 sm:space-y-3 overscroll-contain">
               <div
                 className={cn(
-                  "p-3 sm:p-4 bg-[#090d16] border-2 border-black shadow-[inset_2px_2px_0_0_rgba(0,0,0,0.7)] space-y-3 text-center",
+                  "p-2.5 sm:p-4 bg-[#090d16] border-2 border-black shadow-[inset_2px_2px_0_0_rgba(0,0,0,0.7)] space-y-2.5 sm:space-y-3 text-center",
                   rivalActivo.esLegendaria && "bg-amber-950/20",
                 )}
               >
                 {/* Sprite de la criatura rival con relieve interior y clase .pixelated */}
-                <div className="relative mx-auto size-24 sm:size-28 flex items-center justify-center bg-[#121927] border-2 border-black shadow-[inset_2px_2px_0_0_rgba(0,0,0,0.7)] p-2">
+                <div className="relative mx-auto size-20 sm:size-28 flex items-center justify-center bg-[#121927] border-2 border-black shadow-[inset_2px_2px_0_0_rgba(0,0,0,0.7)] p-1.5 sm:p-2">
                   <img
                     src={obtenerImagenCriatura(rivalActivo.slug)}
                     onError={(e) => manejarErrorImagen(e, "criatura")}
                     alt={rivalActivo.nombre}
-                    className="pixelated max-h-20 sm:max-h-24 max-w-20 sm:max-w-24 object-contain drop-shadow-[0_4px_8px_rgba(0,0,0,0.8)] filter brightness-105"
+                    className="pixelated max-h-16 sm:max-h-24 max-w-16 sm:max-w-24 object-contain drop-shadow-[0_4px_8px_rgba(0,0,0,0.8)] filter brightness-105"
                   />
                 </div>
 
                 {/* Nombre en Press Start 2P e Insignia de Nivel */}
                 <div className="space-y-1">
-                  <h3 className="retro text-xs sm:text-sm text-[#14d1e8] uppercase tracking-wider truncate">
+                  <h3 className="retro text-[11px] sm:text-xs md:text-sm text-[#14d1e8] uppercase tracking-wider truncate max-w-full">
                     {rivalActivo.nombre}
                   </h3>
                   <div className="flex items-center justify-center gap-1.5 flex-wrap">
                     <Badge
                       variant="outline"
                       font="retro"
-                      className="bg-[#1a2332] text-amber-300 border-2 border-black shadow-[2px_2px_0_0_#000] text-[9px] sm:text-[10px]"
+                      className="bg-[#1a2332] text-amber-300 border-2 border-black shadow-[2px_2px_0_0_#000] text-[8.5px] sm:text-[10px] py-0.5 px-1.5"
                     >
                       Nv. {rivalActivo.nivel}
                     </Badge>
@@ -760,7 +762,7 @@ export function PantallaExploracion() {
                       <Badge
                         variant="outline"
                         font="retro"
-                        className="bg-amber-500/30 text-amber-300 border-2 border-black shadow-[2px_2px_0_0_#000] text-[9px] sm:text-[10px] flex items-center gap-1"
+                        className="bg-amber-500/30 text-amber-300 border-2 border-black shadow-[2px_2px_0_0_#000] text-[8.5px] sm:text-[10px] py-0.5 px-1.5 flex items-center gap-1"
                       >
                         <Crown className="size-2.5 text-amber-400" />
                         <span>LEGENDARIA</span>
@@ -790,26 +792,26 @@ export function PantallaExploracion() {
                 </div>
 
                 {/* Ficha Táctica del Rival: 4 atributos base con mini-chips monoespaciados */}
-                <div className="grid grid-cols-3 gap-2 pt-0.5 font-mono text-[9px] sm:text-[10px] text-slate-300 w-full">
-                  <div className="bg-[#1a2332] border-2 border-black shadow-[2px_2px_0_0_#000] p-1.5 text-center flex flex-col items-center gap-0.5 min-w-0">
+                <div className="grid grid-cols-3 gap-1.5 sm:gap-2 pt-0.5 font-mono text-[9px] sm:text-[10px] text-slate-300 w-full">
+                  <div className="bg-[#1a2332] border-2 border-black shadow-[2px_2px_0_0_#000] p-1 sm:p-1.5 text-center flex flex-col items-center gap-0.5 min-w-0">
                     <div className="flex items-center gap-1 text-red-400">
-                      <Swords className="size-3 shrink-0" />
+                      <Swords className="size-2.5 sm:size-3 shrink-0" />
                       <span className="truncate">ATQ</span>
                     </div>
                     <span className="font-bold text-slate-100">{rivalActivo.ataque ?? 10}</span>
                   </div>
 
-                  <div className="bg-[#1a2332] border-2 border-black shadow-[2px_2px_0_0_#000] p-1.5 text-center flex flex-col items-center gap-0.5 min-w-0">
+                  <div className="bg-[#1a2332] border-2 border-black shadow-[2px_2px_0_0_#000] p-1 sm:p-1.5 text-center flex flex-col items-center gap-0.5 min-w-0">
                     <div className="flex items-center gap-1 text-blue-400">
-                      <Shield className="size-3 shrink-0" />
+                      <Shield className="size-2.5 sm:size-3 shrink-0" />
                       <span className="truncate">DEF</span>
                     </div>
                     <span className="font-bold text-slate-100">{rivalActivo.defensa ?? 10}</span>
                   </div>
 
-                  <div className="bg-[#1a2332] border-2 border-black shadow-[2px_2px_0_0_#000] p-1.5 text-center flex flex-col items-center gap-0.5 min-w-0">
+                  <div className="bg-[#1a2332] border-2 border-black shadow-[2px_2px_0_0_#000] p-1 sm:p-1.5 text-center flex flex-col items-center gap-0.5 min-w-0">
                     <div className="flex items-center gap-1 text-amber-400">
-                      <Zap className="size-3 shrink-0" />
+                      <Zap className="size-2.5 sm:size-3 shrink-0" />
                       <span className="truncate">VEL</span>
                     </div>
                     <span className="font-bold text-slate-100">{rivalActivo.velocidad ?? 10}</span>
@@ -823,7 +825,7 @@ export function PantallaExploracion() {
           <div className="shrink-0 px-3.5 sm:px-5 py-2.5 sm:py-3 border-t-2 border-black bg-[#090d16] flex flex-col gap-2 w-full">
             <Button
               font="retro"
-              className="w-full bg-red-600 hover:bg-red-500 text-white border-2 border-black shadow-[2px_2px_0_0_#000] text-xs py-2.5 sm:py-3 gap-2 cursor-pointer active:translate-y-0.5"
+              className="w-full bg-red-600 hover:bg-red-500 text-white border-2 border-black shadow-[2px_2px_0_0_#000] text-[10px] sm:text-xs py-2.5 sm:py-3 gap-2 cursor-pointer active:translate-y-0.5 text-center whitespace-normal leading-snug"
               onClick={handleIniciarCombate}
             >
               <Swords className="size-3.5 shrink-0" />
@@ -832,7 +834,7 @@ export function PantallaExploracion() {
             <Button
               variant="outline"
               font="retro"
-              className="w-full bg-[#1a2332] text-slate-300 hover:text-white border-2 border-black shadow-[2px_2px_0_0_#000] text-xs py-2 sm:py-2.5 gap-2 cursor-pointer active:translate-y-0.5"
+              className="w-full bg-[#1a2332] text-slate-300 hover:text-white border-2 border-black shadow-[2px_2px_0_0_#000] text-[10px] sm:text-xs py-2 sm:py-2.5 gap-2 cursor-pointer active:translate-y-0.5 text-center whitespace-normal leading-snug"
               onClick={() => {
                 reproducirSonido("click", 0.3);
                 setModalEncuentroAbierto(false);
@@ -851,10 +853,10 @@ export function PantallaExploracion() {
           font="normal"
           className="!flex flex-col w-[calc(100vw-2rem)] sm:max-w-md max-h-[85vh] bg-card border-4 border-black shadow-[8px_8px_0_0_#000] text-slate-100 !p-0 !gap-0 overflow-hidden"
         >
-          <DialogHeader className="shrink-0 px-4 pt-3.5 pb-2 text-center border-b-2 border-black/80 relative pr-10 bg-[#090d16]">
+          <DialogHeader className="shrink-0 px-3.5 sm:px-4 pt-3.5 pb-2 text-center border-b-2 border-black/80 relative pr-10 bg-[#090d16]">
             <DialogTitle
               font="normal"
-              className="retro text-xs sm:text-sm text-[#f5b724] text-center flex items-center justify-center gap-2 uppercase tracking-wider"
+              className="retro text-[10px] sm:text-xs md:text-sm text-[#f5b724] text-center flex items-center justify-center gap-2 uppercase tracking-wider whitespace-normal leading-snug"
             >
               <Coins className="size-4 text-[#f5b724] shrink-0" />
               <span>¡BOTIN DESCUBIERTO!</span>
@@ -865,15 +867,15 @@ export function PantallaExploracion() {
           </DialogHeader>
 
           {ultimaRecompensa && (
-            <div className="flex-1 min-h-0 overflow-y-auto px-4 sm:px-5 py-3 overscroll-contain">
-              <div className="p-3.5 sm:p-4 bg-[#090d16] border-2 border-black shadow-[inset_2px_2px_0_0_rgba(0,0,0,0.7)] text-center space-y-3">
+            <div className="flex-1 min-h-0 overflow-y-auto px-3.5 sm:px-5 py-3 overscroll-contain">
+              <div className="p-3 sm:p-4 bg-[#090d16] border-2 border-black shadow-[inset_2px_2px_0_0_rgba(0,0,0,0.7)] text-center space-y-3">
                 {ultimaRecompensa.tipo === "MONEDAS" ? (
                   <>
                     <div className="mx-auto size-12 sm:size-14 bg-[#1a2332] border-2 border-black shadow-[2px_2px_0_0_#000] flex items-center justify-center">
                       <Coins className="size-6 sm:size-7 text-[#f5b724]" />
                     </div>
                     <div className="space-y-1">
-                      <h3 className="retro text-xs sm:text-sm text-[#f5b724] uppercase tracking-wider">
+                      <h3 className="retro text-[10px] sm:text-xs md:text-sm text-[#f5b724] uppercase tracking-wider leading-snug">
                         +{ultimaRecompensa.cantidad} MONEDAS DE ORO
                       </h3>
                       <p className="font-sans text-xs text-slate-300">
@@ -892,7 +894,7 @@ export function PantallaExploracion() {
                       />
                     </div>
                     <div className="space-y-1">
-                      <h3 className="retro text-xs sm:text-sm text-[#14d1e8] uppercase tracking-wider truncate">
+                      <h3 className="retro text-[10px] sm:text-xs md:text-sm text-[#14d1e8] uppercase tracking-wider truncate max-w-full leading-snug">
                         {ultimaRecompensa.itemCodigo || "OBJETO ÚTIL"} (x{ultimaRecompensa.cantidad})
                       </h3>
                       <p className="font-sans text-xs text-slate-300">
@@ -905,14 +907,14 @@ export function PantallaExploracion() {
             </div>
           )}
 
-          <div className="shrink-0 px-4 sm:px-5 py-2.5 sm:py-3 border-t-2 border-black bg-[#090d16] w-full">
+          <div className="shrink-0 px-3.5 sm:px-5 py-2.5 sm:py-3 border-t-2 border-black bg-[#090d16] w-full">
             <Button
               font="retro"
               onClick={() => {
                 reproducirSonido("confirmar", 0.4);
                 setModalBotinAbierto(false);
               }}
-              className="w-full bg-[#f5b724] hover:bg-[#f5b724]/90 text-[#090d16] border-2 border-black shadow-[2px_2px_0_0_#000] text-xs py-2.5 sm:py-3 gap-2 cursor-pointer active:translate-y-0.5"
+              className="w-full bg-[#f5b724] hover:bg-[#f5b724]/90 text-[#090d16] border-2 border-black shadow-[2px_2px_0_0_#000] text-[10px] sm:text-xs py-2.5 sm:py-3 gap-2 cursor-pointer active:translate-y-0.5 text-center whitespace-normal leading-snug"
             >
               <Backpack className="size-4 shrink-0" />
               <span>GUARDAR EN BOLSA</span>
