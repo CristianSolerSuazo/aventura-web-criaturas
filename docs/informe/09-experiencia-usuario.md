@@ -421,11 +421,11 @@ Previa a la intervención y consolidación retro-brutalist, la gestión táctica
 ## 7. Sub-Fase 10g: Bolsa de Inventario y Bazar de Provisiones (`PantallaInventario.tsx` y `PantallaTienda.tsx`)
 
 ### 7.1 Diagnóstico Inicial y Auditoría Impeccable
-Previa a la intervención de la Sub-Fase 10g y en la auditoría heurística Impeccable, la gestión de objetos poseídos y el comercio de provisiones presentaban las siguientes deficiencias críticas a nivel de experiencia de usuario, diseño retro y arquitectura:
-1. **Desplazamiento Horizontal en Móvil (360px–420px):** El contenedor principal carecía de `overflow-x-hidden` y de confinamiento elástico, provocando que la cabecera de balances y los botones de categorías forzaran desbordamiento lateral en viewports móviles estrechos.
-2. **Acortamiento y Truncamiento Excesivo de Textos:** Empleo de `truncate` y `line-clamp-2` rígidos que cortaban nombres largos de ítems y mutilaban descripciones de objetos consumibles, impidiendo la lectura completa de su efecto táctico.
-3. **Disparidad Tipográfica (Falta de Fuente Retro Integral):** Presencia de tipografías sans y monospace estándar en medidores de oro/ranuras, descripciones, botones de categorías, efectos y existencias, diluyendo la inmersión retro.
-4. **Fragilidad Ergonómica en el Modal de Curación:** El diálogo carecía de marco hermético 8-bit de alto contraste, y la interacción requería protección estricta contra doble clic concurrente (`aria-busy`, `disabled={usando}`).
+Previa a la intervención de la Sub-Fase 10g y bajo la auditoría heurística Impeccable, la gestión de objetos poseídos (`PantallaInventario.tsx`) y el comercio mercantil de provisiones (`PantallaTienda.tsx`) presentaban deficiencias críticas a nivel de experiencia de usuario, diseño retro y arquitectura:
+1. **Desplazamiento Horizontal en Móvil (360px–420px):** Los contenedores principales carecían de `overflow-x-hidden` y confinamiento elástico. En la tienda, la cabecera mercantil y los controles de lotes (`x1`, `x5`, `x10`) junto al ajuste fino (`+/-`) y el desglose de precios forzaban desbordamiento lateral en dispositivos móviles compactos.
+2. **Acortamiento y Truncamiento Excesivo de Textos:** Empleo de `truncate` y `line-clamp-2` rígidos que cortaban nombres largos de consumibles o talismanes y mutilaban sus descripciones tácticas, impidiendo conocer el impacto real de los artículos.
+3. **Disparidad Tipográfica (Falta de Fuente Retro Integral):** Presencia de tipografías sans y monospace estándar en contadores de oro, existencias en bolsa, etiquetas de categoría, botones de lote, ajustes finos y balances económicos, diluyendo la inmersión 8-bit de Aethelgard.
+4. **Fragilidad Ergonómica en el Modal de Adquisición:** El diálogo de compra carecía de sellado estricto contra desbordamiento en viewports reducidos y de un balance dinámico en vivo con código de color (verde para saldo remanente suficiente, rojo para déficit) y hardening contra doble clic concurrente.
 5. **Consumo Indiscriminado de Objetos no Curativos fuera de Combate:** `POST /api/inventario/usar` verificaba la existencia del objeto pero no su clasificación taxonómica (`objeto.tipo === 'CURACION'`), permitiendo consumir talismanes de captura fuera de combate sumando estadísticas erróneas.
 6. **Desperdicio de Consumibles sobre Criaturas con Salud Plena:** Si una criatura aliada poseía `hpActual >= hpMaximo`, el servidor descontaba la poción del inventario y registraba curación nula (+0 HP), violando el principio de salvaguarda del jugador y la regla `INV-03`.
 7. **Condición de Carrera (TOCTOU) en Curación y Comercio:** `InventarioService.usarObjeto` y `TiendaService.comprar` leían saldo y salud fuera de las transacciones interactivas, permitiendo que peticiones concurrentes por doble clic consumieran más unidades que las poseídas o duplicaran compras de lotes.
@@ -440,25 +440,25 @@ Previa a la intervención de la Sub-Fase 10g y en la auditoría heurística Impe
 ### 7.2 Mejoras Implementadas
 
 #### A. Identidad Retro-Brutalist 8-bit y Tipografía Integral (`docs/DESIGN.md`)
-- **Tipografía Retro 100% Integral (`Press Start 2P` / `.retro` para TODO):** Despliegue universal de la fuente pixelada en todos los elementos de la interfaz:
-  - Título principal con sombra de texto ortogonal (`drop-shadow-[1px_1px_0_#000]`).
-  - Medidores de monedas de oro y capacidad de ranuras/unidades (`retro text-[8px] sm:text-[9px]`).
-  - Botones de navegación al bazar y asentamiento (`retro text-[8px] sm:text-[9px]`).
-  - Botonera de filtros por categoría (`retro text-[8px] sm:text-[9px]`).
-  - Nombres de objetos, badges de tipo, códigos, descripciones completas, cajas de efecto y existencias en oro solar (`text-amber-400 font-bold`).
-  - Títulos, descripciones, fichas de consumibles y lista de aliados en el modal de curación.
-- **Calibración Antiacortamiento y Cero Overflow:** Sustitución de `truncate` por envoltura flexible multilínea (`break-words` y `break-all`) y eliminación de `line-clamp-2` en descripciones tácticas con interlineado adaptado (`leading-relaxed`), garantizando lectura completa sin mutilar información táctica.
-- **Confinamiento Responsivo Móvil (360px–420px):** Contenedor principal delimitado con `w-full max-w-5xl mx-auto px-2 sm:px-4 overflow-x-hidden`. Cabecera con apilado fluido (`flex-col sm:flex-row items-stretch sm:items-center gap-3 sm:gap-4`), medidor de capacidad con barra ortogonal empotrada y grilla adaptativa de ranuras 8-bit.
+- **Tipografía Retro 100% Integral (`Press Start 2P` / `.retro` para TODO):** Despliegue universal de la fuente pixelada en todos los elementos de la interfaz de bolsa e inventario (`PantallaInventario.tsx`) y del bazar mercantil (`PantallaTienda.tsx`):
+  - Título principal («Bazar de Provisiones») con sombra de texto ortogonal (`drop-shadow-[1px_1px_0_#000]`).
+  - Medidores de monedas de oro (`retro text-[8px] sm:text-[9px]`) con borde negro `border-2 border-black shadow-[2px_2px_0_0_#000] bg-amber-500/10` y conteo de artículos disponibles.
+  - Indicador de ubicación actual con asentamiento en negrita y botones de navegación rápida apilados fluidamente (`flex-1 sm:flex-none`).
+  - Nombres de artículos en envoltura flexible multilínea (`break-words`) erradicando `truncate`, badges de categoría enmarcadas en negro con sombra ortogonal, descripciones completas sin cortes artificiales, efectos numéricos (`+N HP`, `Bono Captura Nv.N`) y existencias en bolsa (`xN`).
+  - Selector de lotes (`x1`, `x5`, `x10`), controles táctiles de ajuste fino (`+/-`) y desglose de precio unitario vs costo total en caja negra retro.
+  - Títulos, descripciones, ficha del artículo, ajuste de lotes, balance proyectado dinámico y botones de acción del modal de confirmación.
+- **Calibración Antiacortamiento y Cero Overflow:** Sustitución de `truncate` por envoltura multilínea elástica y eliminación absoluta de `line-clamp-2` con interlineado adaptado (`leading-relaxed`) y tamaños compactos (`text-[8px] sm:text-[9px]`, `text-[10px] sm:text-xs`), permitiendo lectura completa en cualquier resolución móvil.
+- **Confinamiento Responsivo Móvil (360px–420px):** Contenedor principal delimitado con `w-full max-w-5xl mx-auto px-2 sm:px-4 overflow-x-hidden`. Cabecera mercantil elástica (`flex-col sm:flex-row items-stretch sm:items-center gap-3 sm:gap-4`) y banner de localidad sin bazar enmarcado con `border-2 border-black shadow-[4px_4px_0_0_#000] bg-amber-500/10`.
 
 #### B. Componentes Táctiles 8bitcn/ui y Hardening
-- **Tarjetas de Inventario Retro-Brutalist:** Enmarcadas con borde de alto contraste `border-2 border-black shadow-[4px_4px_0_0_#000] bg-card hover:shadow-[6px_6px_0_0_#000]`, contenedor de sprite con marco negro y relieve interior (`border-2 border-black bg-black/40 shadow-[inset_2px_2px_0_0_rgba(0,0,0,0.6)]`), imagen con `.pixelated` y fallback SVG, caja de efecto táctico destacada (`border-2 border-black bg-black/30 p-2 sm:p-2.5`) y botones de acción a ancho completo con feedback físico (`border-2 border-black shadow-[2px_2px_0_0_#000] active:translate-y-0.5 active:shadow-none`).
-- **Modal de Curación Sellado (Dialog 8-bit Brutalist):** `DialogContent` hermético con `w-[calc(100vw-2rem)] sm:max-w-md border-4 border-black shadow-[8px_8px_0_0_#000] bg-card overflow-hidden p-4 sm:p-5`, scroll vertical interno acotado (`max-h-[50vh] overflow-y-auto`), ficha del consumible con relieve, tarjetas de criaturas aliadas con `HealthBar` retro enmarcada en negro y botón de curación con blindaje contra doble acción concurrente (`usando`, `disabled={usando || vista.yaSaludCompleta}`, `aria-busy={enProceso}`).
-- **Cumplimiento Estricto de la Regla R1:** Cero emojis unicode en controles y botones retro; iconografía SVG provista exclusivamente por Lucide (`Coins`, `Package`, `Store`, `ArrowLeft`, `HeartPulse`, `Crosshair`, `Sparkles`, `Layers`, `Crown`).
+- **Tarjetas de Artículos Mercantiles Retro-Brutalist:** Enmarcadas con alto relieve `border-2 border-black shadow-[4px_4px_0_0_#000] bg-card hover:shadow-[6px_6px_0_0_#000]`, contenedor de sprite con marco negro y relieve interior (`border-2 border-black bg-black/40 shadow-[inset_2px_2px_0_0_rgba(0,0,0,0.6)]`), renderizado `.pixelated` con fallback SVG, selector de lotes con botones táctiles `border-2 border-black shadow-[2px_2px_0_0_#000] active:translate-y-0.5 active:shadow-none`, desglose económico en caja negra retro (`border-2 border-black bg-black/40 p-2 shadow-[inset_2px_2px_0_0_rgba(0,0,0,0.4)]`), y botón de compra a ancho completo con icono `ShoppingCart` y retroalimentación de estado (`Adquirir lote`, `Oro insuficiente`, `Bazar Inactivo`).
+- **Modal de Confirmación de Adquisición Sellado (Dialog 8-bit Brutalist):** `DialogContent` hermético con `w-[calc(100vw-2rem)] sm:max-w-md border-4 border-black shadow-[8px_8px_0_0_#000] bg-card overflow-hidden p-4 sm:p-5`, ficha de producto con relieve, ajuste de unidades interactivo, desglose de balances financieros con código de color dinámico y prevención estricta de doble compra (`comprando`, `disabled={comprando || !resumenModal.puedeComprar}`, `aria-busy={comprando}`, spinner retro y leyenda `PROCESANDO...`).
+- **Cumplimiento Estricto de la Regla R1:** Cero emojis unicode en controles y botones retro; iconografía SVG provista exclusivamente por Lucide (`Coins`, `Package`, `Store`, `ArrowLeft`, `MapPinOff`, `HeartPulse`, `Crosshair`, `Sparkles`, `ShoppingCart`, `Minus`, `Plus`, `Layers`, `Crown`).
 
 #### C. Multimedia y Audio Retro Centralizado (`assets.ts`)
 - **Síntesis Acústica Web Audio para Monedas (`monedas` / `compra`):** Doble pulso metálico en onda cuadrada (`square`: 987.77 Hz a 1318.51 Hz con decaimiento exponencial en 0.22 s), activado al formalizar compras en el bazar.
 - **Síntesis Acústica para Curación (`curar` / `pocion`):** Arpegio regenerativo ascendente en onda triangular suave (`triangle`: 523.25 Hz -> 659.25 Hz -> 783.99 Hz en 0.26 s), activado al aplicar consumibles sobre criaturas.
-- **Efectos Táctiles Adicionales:** Señalización acústica `seleccionar` en cambios de filtro y apertura de diálogos, y `error` ante saldo insuficiente o acciones inválidas.
+- **Efectos Táctiles Adicionales:** Señalización acústica `seleccionar` en cambios de filtro, ajuste de lotes y apertura de diálogos, y `error` ante saldo insuficiente o acciones inválidas.
 
 #### D. Reglas de Servidor, Seguridad S-4/S-6 y Transacciones
 - **Catálogo Centralizado desde PostgreSQL (`GET /api/tienda`):** Eliminación del catálogo hardcodeado. El endpoint sirve `servicioDisponible` (según `ubicacionActual.servicios.includes('TIENDA')`), `saldoMonedas` y `cantidadEnInventario` de cada objeto para actualización inmediata en Front-End.
@@ -472,7 +472,7 @@ Previa a la intervención de la Sub-Fase 10g y en la auditoría heurística Impe
 ---
 
 ### 7.3 Verificación de Calidad y Cero Regresiones
-- **Pruebas Automatizadas Front-End (`apps/web/test/verificacion-inventario-tienda.spec.ts`):** 9 pruebas unitarias exhaustivas aprobadas al 100%:
+- **Pruebas Automatizadas Front-End (`apps/web/test/verificacion-inventario-tienda.spec.ts`):** 10 pruebas unitarias exhaustivas aprobadas al 100%:
   1. Inmutabilidad y filtrado correcto por categoría en `filtrarItemsPorCategoria`.
   2. Normalización y acotamiento de lotes en `[1, 99]` en `normalizarCantidadCompra`.
   3. Proyección reactiva de costos y saldo en `calcularResumenCompra` (`x1`, `x5`, `x10`).
@@ -481,10 +481,11 @@ Previa a la intervención de la Sub-Fase 10g y en la auditoría heurística Impe
   6. Cumplimiento de Regla R1: lectura mecánica con `node:fs` de `PantallaInventario.tsx` confirmando 0 emojis unicode.
   7. Cumplimiento de Regla R1: lectura mecánica con `node:fs` de `PantallaTienda.tsx` confirmando 0 emojis unicode.
   8. Confirmación de soporte acústico nativo en `assets.ts` para `"monedas"`/`"compra"` y `"curar"`/`"pocion"`.
-  9. Hardening, Ergonomía y Estética Retro-Brutalist: Comprobación estática de marcos 8bitcn `border-2 border-black` y `border-4 border-black`, sombras ortogonales sólidas `shadow-[4px_4px_0_0_#000]` y `shadow-[8px_8px_0_0_#000]`, confinamiento `overflow-x-hidden`, hardening `aria-busy={enProceso}` y `disabled={usando || vista.yaSaludCompleta}`, y erradicación de `line-clamp` rígido.
-- **Suite Total Web (`pnpm --filter web test`):** 76 de 76 pruebas aprobadas (100% éxito).
+  9. Hardening, Ergonomía y Estética Retro-Brutalist (Inventario): Comprobación estática de marcos 8bitcn `border-2 border-black` y `border-4 border-black`, sombras ortogonales sólidas `shadow-[4px_4px_0_0_#000]` y `shadow-[8px_8px_0_0_#000]`, confinamiento `overflow-x-hidden`, hardening `aria-busy={enProceso}` y `disabled={usando || vista.yaSaludCompleta}`, y erradicación de `line-clamp` rígido.
+  10. Hardening, Ergonomía y Estética Retro-Brutalist (Tienda): Comprobación estática de marcos 8bitcn `border-2 border-black` y `border-4 border-black`, sombras ortogonales sólidas `shadow-[4px_4px_0_0_#000]` y `shadow-[8px_8px_0_0_#000]`, confinamiento `overflow-x-hidden`, hardening `aria-busy={comprando}` y `disabled={comprando || !resumenModal.puedeComprar}`, y erradicación de `line-clamp` y `truncate` rígidos.
+- **Suite Total Web (`pnpm --filter web test`):** 77 de 77 pruebas aprobadas (100% éxito).
 - **Pruebas Backend y Reglas de Servidor (`pnpm --filter api test`):** 52 de 52 pruebas aprobadas (100% éxito).
-- **Compilación de Producción (`pnpm --filter web build`):** 0 errores TypeScript en Vite, empaquetado exitoso en 2.55s.
+- **Compilación de Producción (`pnpm --filter web build`):** 0 errores TypeScript en Vite, empaquetado exitoso en 2.83s.
 - **Linter Web (`pnpm --filter web lint`):** 0 errores en 80 archivos analizados.
 - **Inspección Responsive y Anti-Overflow:** Cero desplazamiento horizontal en viewports móviles de 320 px a 420 px, legibilidad táctica íntegra y jerarquía retro-brutalista de alto contraste.
 
