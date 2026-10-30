@@ -232,6 +232,13 @@ La auditoría de diseño e interacción con la skill `impeccable` sobre la versi
 
 ---
 
+#### G. Resiliencia Responsive en Pantallas Móviles Estrechas (360px–420px)
+- **Erradicación de Desbordamiento en Botonera Arcade:** Se resolvió el desbordamiento horizontal en el botón de resolución táctica (`RESOLVER COMBATE CON [RIVAL]`) y en el botón de localidades pacíficas mediante `whitespace-normal text-center break-words leading-snug text-[9.5px] sm:text-xs md:text-sm px-2 sm:px-4`. Esto permite que títulos de criaturas largos (ej. "CANGREJO ABISMAL") se dividan armoniosamente en dos renglones sin desbordar los límites de la pantalla móvil.
+- **Protección contra Recorte del Botón de Escape:** En el Hero Panorámico superior, se acotó el contenedor de badges con `max-w-[calc(100%-85px)] sm:max-w-none` y se optimizó la escala tipográfica a `text-[8px] sm:text-[10px]`, garantizando que el botón `CAMPAMENTO` (`ArrowLeft`) conserve siempre visibilidad completa e interactividad sin ser empujado fuera del marco por el flexbox.
+- **Altura Adaptativa del Hero Silvestre:** Se ajustó la altura panorámica móvil a `h-48 sm:h-56 md:h-64`, dotando de respiro vertical al área de badges superiores y al título inferior de la ruta.
+- **Título de la Senda Multilínea:** Se sustituyó el truncamiento rígido unidimensional por `text-[11px] sm:text-base md:text-xl line-clamp-2 sm:truncate break-words leading-tight`, evitando que nombres largos como "Riberas del Lago Espejo" se recorten abruptamente con puntos suspensivos.
+- **Sanitización Tipográfica 8-Bit contra Glifos Rotos:** Se erradicaron diacríticos mayúsculos en textos bajo `Press Start 2P` (`100% CARTOGRAFIA`, `CARTOGRAFIA Y AVANCE`, `BITACORA DE INCURSION`), eliminando el carácter de reemplazo `±` que arruinaba la lectura retro en pantalla.
+
 ### 4.3 Verificación de Calidad y Cero Regresiones
 - **Pruebas Automatizadas Unitarias (`apps/web/test/verificacion-exploracion.spec.ts`):** 8 pruebas especializadas aprobadas al 100%:
   1. Estructura y contrato de `RespuestaExploracion` ante encuentros con criaturas.
