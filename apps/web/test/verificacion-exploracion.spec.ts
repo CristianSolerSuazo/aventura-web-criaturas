@@ -4,7 +4,6 @@ import {
   obtenerImagenZona,
   obtenerImagenCriatura,
   obtenerImagenObjeto,
-  RUTAS_PLACEHOLDERS,
   sanitizarSlugZona,
 } from "../src/lib/assets.ts";
 import type {
@@ -215,3 +214,85 @@ test("Los encuentros con criaturas preservan el progreso y no lo incrementan ant
   assert.strictEqual(resolverProgresoExploracion("SIN_EVENTO", 20), 40);
 });
 
+test("Regla R1 Estricta: PantallaExploracion.tsx no contiene emojis unicode en textos ni botones de UI", async () => {
+  const { readFileSync } = await import("node:fs");
+  const { join, dirname } = await import("node:path");
+  const { fileURLToPath } = await import("node:url");
+
+  const __dirname = dirname(fileURLToPath(import.meta.url));
+  const exploracionCodigo = readFileSync(
+    join(__dirname, "../src/paginas/PantallaExploracion.tsx"),
+    "utf-8",
+  );
+
+  const regexEmoji =
+    /[\u{1F300}-\u{1F6FF}\u{1F900}-\u{1F9FF}\u{2600}-\u{26FF}\u{2700}-\u{27BF}]/u;
+
+  const lineas = exploracionCodigo.split("\n");
+  for (let i = 0; i < lineas.length; i++) {
+    const linea = lineas[i];
+    assert.strictEqual(
+      regexEmoji.test(linea),
+      false,
+      `Emoji unicode no permitido en línea ${i + 1} de PantallaExploracion: "${linea.trim()}"`,
+    );
+  }
+});
+
+test("Hardening, Ergonomía y Estética Retro-Brutalist: PantallaExploracion cuenta con bordes 8bitcn, aria-busy, hero 8-bit y modales sellados", async () => {
+  const { readFileSync } = await import("node:fs");
+  const { join, dirname } = await import("node:path");
+  const { fileURLToPath } = await import("node:url");
+
+  const __dirname = dirname(fileURLToPath(import.meta.url));
+  const exploracionCodigo = readFileSync(
+    join(__dirname, "../src/paginas/PantallaExploracion.tsx"),
+    "utf-8",
+  );
+
+  // Hardening antirrebote y prevención de doble clic
+  assert.ok(
+    exploracionCodigo.includes("aria-busy={explorando}"),
+    "El botón de exploración debe declarar aria-busy={explorando}",
+  );
+  assert.ok(
+    exploracionCodigo.includes("if (explorando) return;"),
+    "handleExplorar debe protegerse con guarda inmediata si ya está explorando",
+  );
+  assert.ok(
+    exploracionCodigo.includes("disabled={explorando}"),
+    "El botón de exploración debe deshabilitarse durante la mutación asíncrona",
+  );
+  assert.ok(
+    exploracionCodigo.includes("EXPLORANDO SENDA..."),
+    "El botón debe desplegar el estado retro 'EXPLORANDO SENDA...' durante el avance",
+  );
+
+  // Hero panorámico con marco brutalist 8-bit de alto contraste
+  assert.ok(
+    exploracionCodigo.includes("border-4 border-black shadow-[6px_6px_0_0_#000]"),
+    "El hero silvestre debe utilizar el marco pixelado de alto relieve de 8bitcn",
+  );
+
+  // Panel de medidor cartográfico y bitácora con bordes retro de 2px
+  assert.ok(
+    exploracionCodigo.includes("border-2 border-black shadow-[4px_4px_0_0_#000]"),
+    "Los paneles táctiles deben emplear el marco retro brutalista con sombra pixelada",
+  );
+
+  // Modales de encuentro y botín con marco grueso de 8bitcn
+  assert.ok(
+    exploracionCodigo.includes("border-4 border-black shadow-[8px_8px_0_0_#000]"),
+    "Los modales Dialog deben contar con el marco pixelado grueso de 8bitcn",
+  );
+
+  // Sellado contra desbordamiento horizontal en móviles
+  assert.ok(
+    exploracionCodigo.includes("w-[calc(100vw-2rem)]"),
+    "Los modales deben acotarse al ancho de la ventana para prevenir desbordamiento en móviles",
+  );
+  assert.ok(
+    exploracionCodigo.includes("pointer-events-none opacity-50"),
+    "Los enlaces y botones secundarios deben bloquear interacción durante la exploración activa",
+  );
+});
