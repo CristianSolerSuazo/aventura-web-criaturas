@@ -170,11 +170,11 @@ export function PantallaHistorial() {
           </p>
         </div>
 
-        <div className="flex flex-wrap items-center gap-3 sm:gap-4 w-full sm:w-auto shrink-0 pt-1 sm:pt-0">
+        <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3.5 sm:gap-4 w-full sm:w-auto shrink-0 pt-2 sm:pt-0">
           <Button
             variant="outline"
             size="sm"
-            className="retro text-[8px] sm:text-[9px] min-h-[36px] sm:h-10 px-3 sm:px-4 rounded-none flex items-center gap-2 border-2 border-black shadow-[2px_2px_0_0_#000] active:translate-y-0.5 active:shadow-none hover:shadow-[3px_3px_0_0_#000] w-full sm:w-auto justify-center"
+            className="retro text-[8px] sm:text-[9px] min-h-[38px] sm:h-10 px-3.5 sm:px-4 rounded-none flex items-center gap-2 border-2 border-black shadow-[2px_2px_0_0_#000] active:translate-y-0.5 active:shadow-none hover:shadow-[3px_3px_0_0_#000] w-full sm:w-auto justify-center"
             onClick={() => {
               reproducirSonido("click");
               cargarHistorial(true);
@@ -189,7 +189,7 @@ export function PantallaHistorial() {
           <Button
             variant="secondary"
             size="sm"
-            className="retro text-[8px] sm:text-[9px] min-h-[36px] sm:h-10 px-3 sm:px-4 rounded-none flex items-center gap-2 border-2 border-black shadow-[2px_2px_0_0_#000] active:translate-y-0.5 active:shadow-none hover:shadow-[3px_3px_0_0_#000] w-full sm:w-auto justify-center"
+            className="retro text-[8px] sm:text-[9px] min-h-[38px] sm:h-10 px-3.5 sm:px-4 rounded-none flex items-center gap-2 border-2 border-black shadow-[2px_2px_0_0_#000] active:translate-y-0.5 active:shadow-none hover:shadow-[3px_3px_0_0_#000] w-full sm:w-auto justify-center"
             onClick={() => {
               reproducirSonido("click");
               navigate("/hub");
@@ -202,9 +202,9 @@ export function PantallaHistorial() {
       </div>
 
       {/* Panel de Control: Filtros Rápidos y Buscador de Crónicas */}
-      <div className="p-3.5 sm:p-4 bg-bastion border-2 border-black shadow-[4px_4px_0_0_#000] rounded-none space-y-4">
-        {/* Filtros Rápidos por Categoría Canónica */}
-        <div className="flex items-center gap-2 sm:gap-3 flex-wrap">
+      <div className="p-3.5 sm:p-4 bg-bastion border-2 border-black shadow-[4px_4px_0_0_#000] rounded-none space-y-4 sm:space-y-5">
+        {/* Filtros Rápidos por Categoría Canónica con separación holgada vertical y horizontal */}
+        <div className="flex items-center gap-x-2.5 gap-y-3 sm:gap-3.5 flex-wrap">
           {(
             [
               { id: "TODOS", etiqueta: "TODOS", icono: BookOpen },
@@ -250,16 +250,16 @@ export function PantallaHistorial() {
           })}
         </div>
 
-        {/* Buscador Textual y Botón Limpiar Filtros */}
-        <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 sm:gap-4 pt-2 border-t-2 border-black/40">
+        {/* Buscador Textual y Botón Limpiar Filtros con placeholder conciso sin truncamiento */}
+        <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 sm:gap-4 pt-3 border-t-2 border-black/40">
           <div className="relative flex-1">
-            <Search className="absolute left-3 top-3 w-4 h-4 text-muted-foreground pointer-events-none" aria-hidden="true" />
+            <Search className="absolute left-2.5 top-3 w-4 h-4 text-muted-foreground pointer-events-none" aria-hidden="true" />
             <Input
               value={busqueda}
               onChange={(e) => setBusqueda(e.target.value)}
-              placeholder="Buscar crónica por palabra clave..."
+              placeholder="Buscar crónica..."
               aria-label="Buscar crónica"
-              className="retro pl-9 text-[8px] sm:text-[9px] placeholder:text-[8px] sm:placeholder:text-[9px] rounded-none bg-background border-2 border-black shadow-[2px_2px_0_0_#000] h-10 w-full"
+              className="retro pl-8 sm:pl-9 text-[8px] sm:text-[9px] placeholder:text-[7.5px] sm:placeholder:text-[9px] rounded-none bg-background border-2 border-black shadow-[2px_2px_0_0_#000] h-10 w-full"
             />
           </div>
 
@@ -297,7 +297,7 @@ export function PantallaHistorial() {
               ? "Emprende expediciones, desafía criaturas y visita mercaderes para forjar tu historia en Aethelgard."
               : "Prueba seleccionando otra categoría o borrando el término de búsqueda."}
           </CardDescription>
-          <div className="flex justify-center pt-2 gap-3 flex-wrap">
+          <div className="flex justify-center pt-2 gap-3 sm:gap-4 flex-wrap">
             {eventos.length === 0 ? (
               <Button
                 size="sm"

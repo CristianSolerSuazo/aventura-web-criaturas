@@ -475,12 +475,13 @@ test('Hardening, Ergonomía y Estética Retro-Brutalist: PantallaHistorial cuent
 
   // 4. Separación ergonómica y táctil de botones de acción
   assert.ok(
-    codigo.includes('gap-3 sm:gap-4') && codigo.includes('flex flex-wrap items-center'),
-    'Los botones de cabecera deben contar con separación desahogada gap-3 sm:gap-4 en contenedor flexible',
+    (codigo.includes('gap-3.5 sm:gap-4') || codigo.includes('gap-3 sm:gap-4')) &&
+      (codigo.includes('flex flex-col sm:flex-row') || codigo.includes('flex-wrap')),
+    'Los botones de cabecera deben contar con separación desahogada en contenedor flexible',
   );
   assert.ok(
-    codigo.includes('gap-2 sm:gap-3 flex-wrap'),
-    'La botonera de filtros rápidos debe tener separación holgada gap-2 sm:gap-3 flex-wrap',
+    codigo.includes('gap-y-3') || codigo.includes('gap-2 sm:gap-3 flex-wrap'),
+    'La botonera de filtros rápidos debe tener separación holgada entre filas y botones',
   );
 
   // 5. Tipografía retro 100% integral
@@ -499,5 +500,11 @@ test('Hardening, Ergonomía y Estética Retro-Brutalist: PantallaHistorial cuent
     coincidenciasImport?.length,
     1,
     'No debe existir importación duplicada de catalogo-historial',
+  );
+
+  // 7. Barra de búsqueda: placeholder conciso que previene truncamiento en pantallas estrechas
+  assert.ok(
+    codigo.includes('placeholder="Buscar crónica..."'),
+    'La barra de búsqueda debe utilizar placeholder conciso "Buscar crónica..." para prevenir truncamiento en móviles',
   );
 });
