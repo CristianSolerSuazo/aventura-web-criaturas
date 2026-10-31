@@ -177,20 +177,20 @@ export function PantallaCuracion() {
       {/* Cabecera inmersiva del Santuario (8bitcn/ui Brutalist) */}
       <Card className="rounded-none border-4 border-black shadow-[6px_6px_0_0_#000] bg-card overflow-hidden text-center">
         {/* Banner panorámico con imagen de zona y fallback pixelado */}
-        <div className="relative h-28 sm:h-40 w-full overflow-hidden border-b-4 border-black bg-abismo">
+        <div className="relative h-48 sm:h-64 md:h-72 w-full overflow-hidden border-b-4 border-black bg-[#090d16]">
           <img
             src={obtenerImagenZona(slugZona)}
             alt={ubicacion?.nombre || "Santuario de Curación"}
             onError={(e) => manejarErrorImagen(e, "zona")}
-            className="pixelated w-full h-full object-cover object-center opacity-40 scale-105"
+            className="pixelated w-full h-full object-cover object-center filter brightness-95 contrast-105 scale-100 transition-transform duration-700 hover:scale-105"
           />
-          <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent pointer-events-none" />
+          <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/30 to-black/40 pointer-events-none" />
 
           {/* Insignias temáticas 8-bit */}
-          <div className="absolute top-2 left-2 right-2 flex flex-wrap gap-2 justify-between items-center pointer-events-none">
+          <div className="absolute top-2.5 left-2.5 right-2.5 flex flex-wrap gap-2 justify-between items-center pointer-events-auto z-10">
             <Badge
               variant="outline"
-              className="rounded-none border-2 border-black shadow-[2px_2px_0_0_#000] bg-black/85 text-primary retro text-[8px] sm:text-[9px] flex items-center gap-1.5 py-1 px-2"
+              className="rounded-none border-2 border-black shadow-[2px_2px_0_0_#000] bg-black/85 text-primary retro text-[8px] sm:text-[9px] flex items-center gap-1.5 py-1 px-2 backdrop-blur-xs"
             >
               <Sparkles className="size-3 text-amber-400 shrink-0" />
               <span>SANTUARIO ANCESTRAL</span>
@@ -198,18 +198,28 @@ export function PantallaCuracion() {
 
             <Badge
               variant="outline"
-              className="rounded-none border-2 border-black shadow-[2px_2px_0_0_#000] bg-black/85 text-emerald-300 retro text-[8px] sm:text-[9px] flex items-center gap-1.5 py-1 px-2"
+              className="rounded-none border-2 border-black shadow-[2px_2px_0_0_#000] bg-black/85 text-emerald-300 retro text-[8px] sm:text-[9px] flex items-center gap-1.5 py-1 px-2 backdrop-blur-xs"
             >
               <ShieldCheck className="size-3 text-emerald-400 shrink-0" />
               <span>SERVICIO GRATUITO</span>
             </Badge>
           </div>
+
+          {/* Título y locación integrados con protagonismo cinematográfico sobre el paisaje */}
+          <div className="absolute bottom-3 left-3 right-3 pointer-events-none z-10 text-center">
+            <div className="inline-flex items-center gap-1.5 bg-black/80 border border-black/80 px-2.5 py-1 mb-1.5 shadow-[2px_2px_0_0_#000]">
+              <Sparkles className="size-3 text-amber-400 shrink-0" />
+              <span className="retro text-[7px] sm:text-[8px] text-amber-300 uppercase tracking-widest">
+                Manantial Místico • {ubicacion?.nombre || "Villa Serena"}
+              </span>
+            </div>
+            <CardTitle className="retro text-base sm:text-2xl text-primary tracking-wide drop-shadow-[0_2px_4px_rgba(0,0,0,0.9)] [text-shadow:2px_2px_0_#000]">
+              SANTUARIO DE CURACIÓN
+            </CardTitle>
+          </div>
         </div>
 
-        <CardHeader className="p-3 sm:p-5 pb-2 space-y-2">
-          <CardTitle className="retro text-sm sm:text-xl md:text-2xl text-primary tracking-wide drop-shadow-[2px_2px_0_#000]">
-            SANTUARIO DE CURACIÓN
-          </CardTitle>
+        <CardHeader className="p-3 sm:p-4 pb-2 space-y-1">
           <CardDescription className="retro text-[8px] sm:text-[9px] text-muted-foreground max-w-xl mx-auto leading-relaxed break-words text-center">
             Las aguas místicas del manantial sagrado en{" "}
             <span className="font-bold text-foreground">
