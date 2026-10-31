@@ -419,4 +419,17 @@ test('Hardening, Ergonomía y Estética Retro-Brutalist: PaginaCreditos cuenta c
     codigo.includes('if (celebrando) return;') && codigo.includes('aria-busy={celebrando}'),
     'Debe evitar pulsaciones superpuestas de fanfarria con guarda y aria-busy',
   );
+
+  // 7. Especies verdaderas existentes en el catálogo canónico (sin especies obsoletas o inexistentes)
+  assert.ok(
+    codigo.includes('lobo-estepario') &&
+      codigo.includes('golem-granito') &&
+      codigo.includes('quimera-tricefala') &&
+      codigo.includes('remorhaz-glaciar'),
+    'Debe incluir especies verdaderas del compendio canónico (Lobo Estepario, Golem Granito, Quimera Tricéfala, Remorhaz Glaciar)',
+  );
+  assert.ok(
+    !codigo.includes('"grifo"') && !codigo.includes('"hidra-de-las-marismas"'),
+    'No debe incluir criaturas inexistentes en el catálogo canónico como grifo o hidra-de-las-marismas',
+  );
 });

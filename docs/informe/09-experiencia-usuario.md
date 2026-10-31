@@ -1016,15 +1016,15 @@ La auditoría heurística y de ergonomía visual sobre `PaginaCreditos.tsx` medi
 - **Título de Pantalla con Relieve y Sombra Densa:** Título principal «AETHELGARD: CRÉDITOS Y HONOR» en tipografía pixelada `Press Start 2P` con sombra proyectada ortogonal (`retro text-base sm:text-xl md:text-2xl font-bold tracking-tight text-primary drop-shadow-[2px_2px_0_#000] break-words leading-snug`).
 
 #### B. Separación Holgada y Relieve Táctil en Botones de Acción
-- **Botonera de Cabecera:** Separación táctil ampliada (`gap-3 sm:gap-4 flex-wrap`) que asegura un área de pulsación cómoda y holgada en terminales táctiles.
+- **Botonera de Cabecera:** Separación táctil y vertical ampliada (`flex flex-col sm:flex-row items-stretch sm:items-center gap-3 sm:gap-4 w-full sm:w-auto shrink-0 pt-2 sm:pt-0`), garantizando que en resoluciones móviles reducidas los botones cuenten con área de pulsación completa (`w-full sm:w-auto`), holgura superior e inferior y margen perimetral desahogado.
 - **Botón de Fanfarria Reactivo:**
-  - Estilizado en oro solar con `bg-amber-500 hover:bg-amber-400 text-black border-2 border-black shadow-[2px_2px_0_0_#000] active:translate-y-0.5 active:shadow-none hover:shadow-[4px_4px_0_0_#000]`.
+  - Estilizado en oro solar con `bg-amber-500 hover:bg-amber-400 text-black border-2 border-black shadow-[2px_2px_0_0_#000] active:translate-y-0.5 active:shadow-none hover:shadow-[4px_4px_0_0_#000] w-full sm:w-auto justify-center px-4 py-3`.
   - Icono `Volume2` con micro-animación de rebote (`animate-bounce`) y estado textual reactivo (`CELEBRANDO...` frente a `CELEBRAR FANFARRIA`).
   - Hardening antirrebote con guarda inmediata (`if (celebrando) return;`), `disabled={celebrando}` y atributo accesible `aria-busy={celebrando}`.
 - **Botones de Retorno al Asentamiento:**
   - Preservación estricta de identificadores de pruebas y accesibilidad: `id="boton-volver-inicio-creditos"` y `data-testid="boton-volver-inicio-creditos"`.
   - Navegación autoritativa hacia `/hub` con disparo de síntesis sonora retro mediante `reproducirSonido("victoria")`.
-- **Pie Ceremonial Separado:** Delimitación formal con `flex flex-col sm:flex-row items-center justify-between gap-4 pt-4 border-t-2 border-black`, separando el crédito institucional con `ShieldCheck` del botón de retorno secundario.
+- **Pie Ceremonial Separado:** Delimitación formal con `flex flex-col sm:flex-row items-center justify-between gap-4 pt-6 pb-2 border-t-2 border-black`, separando el crédito institucional con `ShieldCheck` del botón de retorno secundario (`w-full sm:w-auto px-5 py-3`).
 
 #### C. Tipografía Retro Integral (`Press Start 2P` / `.retro` 100%)
 - **Erradicación Total de Fuentes Sans-Serif y Mono Estándar:** Adopción universal de la clase `.retro` (`Press Start 2P`) en absolutamente todos los elementos de la vista:
@@ -1039,9 +1039,17 @@ La auditoría heurística y de ergonomía visual sobre `PaginaCreditos.tsx` medi
   - Módulos de arquitectura y principios rectores: `text-[9px] sm:text-[10px]`.
   - Títulos y botones: `text-[10px] sm:text-xs` con interlineado fluido.
 
-#### D. Ergonomía Móvil y Cero Desbordamiento Horizontal (360px–420px)
+#### D. Ergonomía Móvil y Rediseño Integral del Bestiario Victorioso (Vitrina de Trofeos 8-Bit)
 - **Confinamiento Seguro:** Contenedor raíz delimitado con `w-full max-w-5xl mx-auto px-2 sm:px-4 space-y-6 sm:space-y-8 py-4 sm:py-6 overflow-x-hidden`.
-- **Bestiario Victorioso:** Rejilla flexible `grid-cols-2 sm:grid-cols-4 gap-2.5 sm:gap-3` con tarjetas `bg-abismo/90 border-2 border-black shadow-[2px_2px_0_0_#000]`. Se eliminó la clase `truncate` permitiendo que nombres extensos como *Quimera Tricéfala* o *Hidra de las Marismas* fluyan limpiamente en dos líneas sin cortes abruptos.
+- **Sincronización con Especies Canónicas Reales:** Erradicación de especies obsoletas o inexistentes en el compendio (`grifo`, `hidra-de-las-marismas`), sustituyéndolas por las 4 criaturas canónicas vigentes del bestiario de Aethelgard:
+  1. `lobo-estepario` (*Lobo Estepario* · Bestia · Praderas del Amanecer).
+  2. `golem-granito` (*Golem Granito* · Constructo · Paso de los Riscos).
+  3. `quimera-tricefala` (*Quimera Tricéfala* · Monstruosidad · Cueva Umbría).
+  4. `remorhaz-glaciar` (*Remorhaz Glaciar* · Monstruosidad · Pico de la Cumbre · Insignia Legendaria).
+- **Vitrina de Trofeos Vertical (Eliminación de Cortes Silábicos):**
+  - Rediseño con pedestal centrado para el sprite pixel-art (`size-16 bg-bastion border-2 border-black shadow-[inset_2px_2px_0_0_rgba(0,0,0,0.7)]`), otorgando el ancho completo de la tarjeta para el nombre y los badges.
+  - Supresión definitiva de la partición de palabras ("Tricéfa / la" o "Estepar / io") mediante flujo centrado con tipografía retro compacta (`text-[8px] sm:text-[9px] font-bold leading-snug break-words`).
+  - Badges temáticos de Tipo (`text-amber-300`) y Zona de origen (`text-primary`), más badge dorado flotante `LEGENDARIA` para el Remorhaz Glaciar.
 - **Cajas de Licencias con Scroll Contenido:** Cajas legales configuradas con `max-h-48 overflow-y-auto overflow-x-hidden p-3 border-2 border-black bg-black/40 text-[8px] leading-relaxed break-words shadow-[inset_2px_2px_0_0_rgba(0,0,0,0.6)]`, permitiendo inspección íntegra del texto legal sin deformar la maquetación.
 
 #### E. Cumplimiento Estricto de la Regla R1 (Cero Emojis Unicode)
@@ -1060,6 +1068,7 @@ La auditoría heurística y de ergonomía visual sobre `PaginaCreditos.tsx` medi
     4. Cero clases `truncate` rígidas en los nombres de criaturas.
     5. Cajas de licencias con scroll vertical contenido y relieve hundido retro.
     6. Guarda antirrebote con `if (celebrando) return;` y accesibilidad con `aria-busy={celebrando}`.
+    7. Verificación de las especies canónicas del catálogo (`lobo-estepario`, `golem-granito`, `quimera-tricefala`, `remorhaz-glaciar`) y ausencia de criaturas espurias (`grifo`, `hidra-de-las-marismas`).
 - **Regla R1 Estricta:** Verificación de 0 emojis unicode en `PaginaCreditos.tsx` auditada por la suite automatizada.
 - **Linter Web (`pnpm --filter web lint`):** 0 errores de TypeScript y Oxlint en los 80 archivos del proyecto.
 - **Compilación de Producción (`pnpm --filter web build`):** 0 errores de compilación, empaquetado completado en Vite en 3.27s.

@@ -42,18 +42,42 @@ export function PaginaCreditos() {
   };
 
   const criaturasEmblematicas = [
-    { slug: "lobo-estepario", nombre: "Lobo Estepario", tipo: "Bestia" },
-    { slug: "grifo", nombre: "Grifo", tipo: "Monstruosidad" },
-    { slug: "quimera-tricefala", nombre: "Quimera Tricéfala", tipo: "Monstruosidad" },
-    { slug: "hidra-de-las-marismas", nombre: "Hidra de las Marismas", tipo: "Monstruosidad" },
+    {
+      slug: "lobo-estepario",
+      nombre: "Lobo Estepario",
+      tipo: "Bestia",
+      zona: "Praderas",
+      legendaria: false,
+    },
+    {
+      slug: "golem-granito",
+      nombre: "Golem Granito",
+      tipo: "Constructo",
+      zona: "Riscos",
+      legendaria: false,
+    },
+    {
+      slug: "quimera-tricefala",
+      nombre: "Quimera Tricéfala",
+      tipo: "Monstruosidad",
+      zona: "Abismo",
+      legendaria: false,
+    },
+    {
+      slug: "remorhaz-glaciar",
+      nombre: "Remorhaz Glaciar",
+      tipo: "Monstruosidad",
+      zona: "Glaciar",
+      legendaria: true,
+    },
   ];
 
   return (
     <div className="w-full max-w-5xl mx-auto px-2 sm:px-4 space-y-6 sm:space-y-8 py-4 sm:py-6 overflow-x-hidden">
       {/* Cabecera Ceremonial: Salón de la Fama / Ending RPG Retro Brutalist */}
-      <div className="border-4 border-black shadow-[6px_6px_0_0_#000] bg-bastion p-4 sm:p-6 rounded-none space-y-5">
-        <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
-          <div className="space-y-2 min-w-0 flex-1">
+      <div className="border-4 border-black shadow-[6px_6px_0_0_#000] bg-bastion p-4 sm:p-6 rounded-none space-y-6">
+        <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-5">
+          <div className="space-y-2.5 min-w-0 flex-1">
             <div className="flex items-center gap-2 flex-wrap">
               <Badge className="bg-amber-500/20 text-amber-400 border-2 border-black shadow-[2px_2px_0_0_#000] retro text-[8px] sm:text-[9px] px-2.5 py-1 rounded-none flex items-center gap-1.5">
                 <Crown className="w-3.5 h-3.5 shrink-0" aria-hidden="true" />
@@ -73,11 +97,11 @@ export function PaginaCreditos() {
           </div>
 
           {/* Botones de Cabecera con Separación Holgada y Relieve Táctil */}
-          <div className="flex items-center gap-3 sm:gap-4 flex-wrap self-stretch sm:self-auto shrink-0">
+          <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 sm:gap-4 flex-wrap w-full sm:w-auto shrink-0 pt-2 sm:pt-0">
             <Button
               variant="default"
               size="sm"
-              className="retro text-[8px] sm:text-[9px] font-bold rounded-none border-2 border-black shadow-[2px_2px_0_0_#000] active:translate-y-0.5 active:shadow-none hover:shadow-[4px_4px_0_0_#000] bg-amber-500 hover:bg-amber-400 text-black px-3.5 py-2.5 sm:px-4 sm:py-3 h-auto flex items-center gap-2 cursor-pointer transition-all"
+              className="w-full sm:w-auto justify-center retro text-[8px] sm:text-[9px] font-bold rounded-none border-2 border-black shadow-[2px_2px_0_0_#000] active:translate-y-0.5 active:shadow-none hover:shadow-[4px_4px_0_0_#000] bg-amber-500 hover:bg-amber-400 text-black px-4 py-3 h-auto flex items-center gap-2 cursor-pointer transition-all"
               onClick={festejarFanfarria}
               disabled={celebrando}
               aria-busy={celebrando}
@@ -91,7 +115,7 @@ export function PaginaCreditos() {
               data-testid="boton-volver-inicio-creditos"
               variant="outline"
               size="sm"
-              className="retro text-[8px] sm:text-[9px] font-bold rounded-none border-2 border-black shadow-[2px_2px_0_0_#000] active:translate-y-0.5 active:shadow-none hover:shadow-[4px_4px_0_0_#000] bg-bastion hover:bg-panel text-foreground px-3.5 py-2.5 sm:px-4 sm:py-3 h-auto flex items-center gap-2 cursor-pointer transition-all"
+              className="w-full sm:w-auto justify-center retro text-[8px] sm:text-[9px] font-bold rounded-none border-2 border-black shadow-[2px_2px_0_0_#000] active:translate-y-0.5 active:shadow-none hover:shadow-[4px_4px_0_0_#000] bg-bastion hover:bg-panel text-foreground px-4 py-3 h-auto flex items-center gap-2 cursor-pointer transition-all"
               onClick={() => {
                 reproducirSonido("victoria");
                 navigate("/hub");
@@ -103,32 +127,52 @@ export function PaginaCreditos() {
           </div>
         </div>
 
-        {/* Galería Decorativa de Criaturas Emblemáticas con Flujo Multilínea */}
-        <div className="pt-4 border-t-2 border-black/60 space-y-2.5">
-          <span className="retro text-[8px] sm:text-[9px] font-bold text-amber-400 uppercase tracking-wider block">
-            Bestiario Victorioso de Aethelgard
-          </span>
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 sm:gap-3">
+        {/* Galería Decorativa de Criaturas Emblemáticas Canónicas (Rediseño Vitrina 8-Bit) */}
+        <div className="pt-6 border-t-2 border-black/80 space-y-3.5">
+          <div className="flex items-center justify-between gap-2 flex-wrap">
+            <span className="retro text-[8px] sm:text-[9px] font-bold text-amber-400 uppercase tracking-wider block">
+              Bestiario Victorioso de Aethelgard
+            </span>
+            <span className="retro text-[7px] text-muted-foreground uppercase">
+              Especies Canónicas del Compendio
+            </span>
+          </div>
+
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4">
             {criaturasEmblematicas.map((criatura) => (
               <div
                 key={criatura.slug}
-                className="bg-abismo/90 border-2 border-black shadow-[2px_2px_0_0_#000] p-2 rounded-none flex items-center gap-2 min-w-0"
+                className="bg-abismo/95 border-2 border-black shadow-[3px_3px_0_0_#000] p-3 rounded-none flex flex-col items-center text-center justify-between gap-2.5 relative group hover:border-primary/80 transition-all min-w-0"
               >
-                <div className="w-11 h-11 shrink-0 bg-bastion border-2 border-black shadow-[inset_1px_1px_0_0_rgba(0,0,0,0.6)] flex items-center justify-center p-1">
+                {criatura.legendaria && (
+                  <span className="absolute -top-2 right-2 bg-amber-400 text-black border border-black shadow-[1px_1px_0_0_#000] retro text-[7px] font-bold px-1.5 py-0.5 z-10">
+                    LEGENDARIA
+                  </span>
+                )}
+
+                {/* Pedestal de Sprite Pixel-Art Centrado */}
+                <div className="w-16 h-16 bg-bastion border-2 border-black shadow-[inset_2px_2px_0_0_rgba(0,0,0,0.7)] flex items-center justify-center p-1.5 shrink-0">
                   <img
                     src={obtenerImagenCriatura(criatura.slug)}
                     alt={criatura.nombre}
                     onError={(e) => manejarErrorImagen(e, "criatura")}
-                    className="pixelated h-9 w-9 object-contain"
+                    className="pixelated h-12 w-12 object-contain group-hover:scale-105 transition-transform"
                   />
                 </div>
-                <div className="min-w-0 flex-1">
-                  <span className="retro text-[8px] sm:text-[9px] font-bold text-foreground block leading-tight break-words">
+
+                {/* Identificación y Atributos con Envoltura Limpia */}
+                <div className="w-full space-y-1.5 flex-1 flex flex-col justify-center">
+                  <span className="retro text-[8px] sm:text-[9px] font-bold text-foreground block leading-snug break-words">
                     {criatura.nombre}
                   </span>
-                  <span className="retro text-[7px] text-muted-foreground uppercase block mt-1">
-                    {criatura.tipo}
-                  </span>
+                  <div className="flex flex-wrap items-center justify-center gap-1">
+                    <span className="retro text-[7px] uppercase px-1.5 py-0.5 border border-black shadow-[1px_1px_0_0_#000] bg-black/60 text-amber-300">
+                      {criatura.tipo}
+                    </span>
+                    <span className="retro text-[7px] uppercase px-1.5 py-0.5 border border-black shadow-[1px_1px_0_0_#000] bg-primary/20 text-primary">
+                      {criatura.zona}
+                    </span>
+                  </div>
                 </div>
               </div>
             ))}
@@ -331,8 +375,8 @@ SOFTWARE.`}
         </Card>
       </section>
 
-      {/* Pie de Página Ceremonial con Retorno */}
-      <div className="flex flex-col sm:flex-row items-center justify-between gap-4 pt-4 border-t-2 border-black">
+      {/* Pie de Página Ceremonial con Retorno y Separación Amplia */}
+      <div className="flex flex-col sm:flex-row items-center justify-between gap-4 pt-6 pb-2 border-t-2 border-black">
         <div className="flex items-center gap-2 retro text-[8px] sm:text-[9px] text-muted-foreground text-center sm:text-left">
           <ShieldCheck className="w-4 h-4 text-emerald-400 shrink-0" aria-hidden="true" />
           <span className="leading-relaxed">Aethelgard: Sendas y Criaturas · Proyecto Integrador Final</span>
@@ -341,7 +385,7 @@ SOFTWARE.`}
         <Button
           variant="secondary"
           size="sm"
-          className="retro text-[8px] sm:text-[9px] font-bold rounded-none border-2 border-black shadow-[2px_2px_0_0_#000] active:translate-y-0.5 active:shadow-none hover:shadow-[4px_4px_0_0_#000] bg-bastion hover:bg-panel text-foreground px-4 py-3 h-auto flex items-center gap-2 cursor-pointer transition-all shrink-0"
+          className="w-full sm:w-auto justify-center retro text-[8px] sm:text-[9px] font-bold rounded-none border-2 border-black shadow-[2px_2px_0_0_#000] active:translate-y-0.5 active:shadow-none hover:shadow-[4px_4px_0_0_#000] bg-bastion hover:bg-panel text-foreground px-5 py-3 h-auto flex items-center gap-2 cursor-pointer transition-all shrink-0"
           onClick={() => {
             reproducirSonido("victoria");
             navigate("/hub");
