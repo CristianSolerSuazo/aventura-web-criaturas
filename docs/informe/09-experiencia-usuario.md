@@ -564,55 +564,61 @@ Previa a la auditoría heurística Impeccable y la consolidación visual retro-b
 
 ---
 
-## 9. Sub-Fase 10i: Compendio de Criaturas, Bitácora Transversal y Salón de la Fama (`PantallaCatalogo.tsx`, `PantallaHistorial.tsx`, `PaginaCreditos.tsx`)
+## 9. Sub-Fase 10i / 10l: Compendio de Criaturas, Bitácora Transversal y Salón de la Fama (`PantallaCatalogo.tsx`, `PantallaHistorial.tsx`, `PaginaCreditos.tsx`)
 
 ### 9.1 Diagnóstico Inicial y Auditoría Impeccable
-Previo a esta subfase, la experiencia del jugador en las pantallas finales de consulta y cierre presentaba importantes cuellos de botella de red, fallas heurísticas y de diseño:
+Previo a esta subfase y a su consolidación retro-brutalista, la experiencia del jugador en las pantallas finales de consulta y compendio presentaba importantes cuellos de botella de red, fallas heurísticas y limitaciones ergonómicas:
 1. **Cuello de botella $N+1$ de 26 peticiones HTTP en cascada en `PantallaCatalogo.tsx`:** Al ingresar al compendio o cambiar de tipo, el cliente invocaba `api.obtenerEspecies()` y de inmediato ejecutaba `Promise.all(res.especies.map(esp => api.obtenerEspecie(esp.slug)))`, disparando 26 peticiones en ráfaga cada vez.
-2. **Módulo `CriaturasModule` vacío en el servidor:** `apps/api/src/modulos/criaturas/criaturas.module.ts` carecía de controlador y servicio, delegando de forma improvisada o incompleta el acceso a los datos de especies.
-3. **Desalineación y falta de categorización canónica en `HistorialService`:** Aunque los distintos servicios del juego registraban eventos con tipos heterogéneos (`COMBATE`, `PROGRESO`, `CAPTURA`, `EXPLORACION`, `ENCUENTRO`, `OBJETO`, `COMERCIO`, `CURACION`), `HistorialService` no exponía la categoría táctica canónica ni permitía filtrado por categoría en servidor.
-4. **Ausencia total de sprites pixel-art (`obtenerImagenCriatura`) en `PantallaCatalogo.tsx`:** Las tarjetas del catálogo eran contenedores de texto plano sin sprites `.pixelated` ni fallback a SVG.
-5. **Selector de tipos incompleto con texto en inglés y sin buscador interactivo:** El selector solo listaba 3 de los 6 tipos (`beast`, `monstrosity`, `undead`) con etiquetas en inglés ("Beast", "Monstrosity"), violando R1 y dejando inaccesibles a `elemental`, `construct` y `plant`. No existía buscador por nombre ni filtro por arquetipo.
-6. **Falta de atributos base visibles y ausencia de Modal de Inspección Táctica:** No se mostraban atributos (`HP`, `ATQ`, `DEF`, `VEL`), y no existía un modal sellado para examinar lore, movimientos y estadísticas completas.
-7. **Tabla plana sin categorización ni filtros rápidos en `PantallaHistorial.tsx`:** La bitácora utilizaba una tabla plana sin iconografía SVG, dejando sin clasificar la gran mayoría de eventos reales.
-8. **Diseño incompleto en `PaginaCreditos.tsx`:** Carecía de navegación de retorno al Asentamiento (`boton-volver-inicio-creditos`), no destacaba al equipo ni el homenaje académico al Ingeniero Claudio, omitía el motor de síntesis Web Audio y no ejecutaba fanfarria sonora.
-9. **Anti-patrón `<Link><Button/></Link>` y falta de `aria-busy`:** Existían botones anidados dentro de enlaces y las acciones de actualización no contaban con hardening contra doble clic.
+2. **Apiñamiento y Falta de Separación Táctil en Botones de Acción:** Los botones de cabecera (`ACTUALIZAR`, `Asentamiento`) y la botonera de arquetipos (`ATACANTE`, `TANQUE`, `VELOZ`, etc.) disponían de márgenes insuficientes (`gap-1.5`), careciendo de sombras sólidas ortogonales y produciendo fricción en pantallas táctiles móviles.
+3. **Desplazamiento Horizontal en Móvil (360px–420px):** El contenedor principal carecía de confinamiento con `overflow-x-hidden` y relleno responsivo, lo que ante variaciones de pantalla provocaba scroll horizontal involuntario.
+4. **Acortamiento Excesivo de Nombres y Movimientos:** Clases `truncate` y `line-clamp` rígidas mutilaban los nombres de criaturas de varias palabras y los efectos de movimientos tácticos en dispositivos compactos.
+5. **Inconsistencia Tipográfica:** Presencia de fuentes sans-serif estándar en subtítulos, buscadores, selectores, estadísticas base y textos del modal de inspección, disonando con la estética 8-bit de Aethelgard.
+6. **Módulo `CriaturasModule` vacío en el servidor:** `apps/api/src/modulos/criaturas/criaturas.module.ts` carecía de controlador y servicio, delegando de forma improvisada o incompleta el acceso a los datos de especies.
+7. **Desalineación y falta de categorización canónica en `HistorialService`:** Aunque los distintos servicios del juego registraban eventos con tipos heterogéneos, `HistorialService` no exponía la categoría táctica canónica ni permitía filtrado por categoría en servidor.
+8. **Ausencia total de sprites pixel-art (`obtenerImagenCriatura`) en `PantallaCatalogo.tsx`:** Las tarjetas del catálogo eran contenedores de texto plano sin sprites `.pixelated` ni fallback a SVG.
+9. **Selector de tipos incompleto con texto en inglés y sin buscador interactivo:** El selector solo listaba 3 de los 6 tipos con etiquetas en inglés ("Beast", "Monstrosity"), violando R1.
+10. **Diseño incompleto en `PaginaCreditos.tsx`:** Carecía de navegación de retorno al Asentamiento (`boton-volver-inicio-creditos`), no destacaba al equipo ni el homenaje académico al Ingeniero Claudio, y omitía fanfarria sonora.
 
 ### 9.2 Mejoras Implementadas
 
-#### A. Identidad Retro y Jerarquía Visual (`docs/DESIGN.md`)
-- **Compendio de Criaturas:** Cabecera ceremonial con título en `Press Start 2P` (`COMPENDIO DE CRIATURAS`), insignia `25 ESPECIES SRD 5.2` con icono `BookOpen`, barra de avistamiento biológico (conteo de registradas, en vista, especiales y tipos biológicos), y **vitrina central destacada de sprites pixel-art** de `h-36 sm:h-40` con fondo abismo pixelado, micro-interacción hover con escala suave (`group-hover:scale-110`), sombras retro duras (`obtenerImagenCriatura`, `.pixelated`, `manejarErrorImagen`) y badges ortogonales.
-- **Clasificación por Arquetipos Tácticos:** Asignación visual de los 4 arquetipos tácticos calculados según atributos base (`TANQUE` con `Shield`, `ATACANTE` con `Swords`, `VELOZ` con `Zap`, `EQUILIBRADO` con `Scale`) e insignia dorada `ESPECIAL` (`Sparkles`) para criaturas legendarias de CR 6 y CR 8.
-- **Bitácora de Crónicas Retro:** Sustitución de la tabla plana por tarjetas de crónicas con sello de tiempo en `font-mono` (hora destacada y fecha), insignia con iconografía SVG de Lucide diferenciada por categoría y descripción en `font-sans` con alto contraste WCAG AA:
-  - `COMBATE`: icono `Swords`, acento carmesí/ámbar (`border-red-500/60 bg-red-500/15 text-red-300`).
-  - `CAPTURA`: icono `Sparkles`, acento púrpura arcano (`border-purple-500/60 bg-purple-500/15 text-purple-300`).
-  - `EXPLORACIÓN`: icono `Compass`, acento cian astral (`border-cyan-500/60 bg-cyan-500/15 text-cyan-300`).
-  - `TIENDA`: icono `ShoppingBag`, acento oro gremial (`border-amber-500/60 bg-amber-500/15 text-amber-300`).
-  - `CURACIÓN`: icono `HeartPulse`, acento verde esmeralda (`border-emerald-500/60 bg-emerald-500/15 text-emerald-300`).
-- **Salón de la Fama y Ending RPG 16-bit (`PaginaCreditos.tsx`):** Cabecera ceremonial con marco dorado (`border-amber-500/80 bg-bastion`), insignias `SALÓN DE LA FAMA` y `ISC-305 · III PAC 2026`, galería de sprites pixel-art de criaturas emblemáticas de Aethelgard (*Lobo Gris*, *Grifo*, *Quimera*, *Hidra*), reconocimiento de arquitectura full-stack, Homenaje Académico al **Ingeniero Claudio**, atribución legal literal del `SRD 5.2` (Wizards of the Coast LLC bajo CC BY 4.0), licencia MIT íntegra de `8bitcn/ui` y retorno limpio con sonido de victoria.
+#### A. Identidad Retro-Brutalist 8-bit y Jerarquía Visual (`docs/DESIGN.md`)
+- **Compendio de Criaturas Retro-Brutalist:** Cabecera ceremonial con título en `Press Start 2P` (`COMPENDIO DE CRIATURAS`), insignia `30 ESPECIES SRD 5.2` con icono `BookOpen`, barra de avistamiento biológico (conteo de registradas, en vista, legendarias, especiales y tipos biológicos), y **vitrina central destacada de sprites pixel-art** de `h-36 sm:h-40` con fondo oscuro pixelado, bisel interior `border-y-2 border-black shadow-[inset_2px_2px_0_0_rgba(0,0,0,0.7)]`, micro-interacción hover con escala suave (`group-hover:scale-110`), sombras retro duras (`obtenerImagenCriatura`, `.pixelated`, `manejarErrorImagen`) y badges ortogonales.
+- **Tipografía Retro 100% Integral (`Press Start 2P` / `.retro`):** Unificación tipográfica radical en todos los elementos textuales de `PantallaCatalogo.tsx`: títulos, subtítulos, métricas, inputs de búsqueda, selector biológico, botones de arquetipo, encabezados de hábitat, badges de tipo y elemento, estadísticas base (`HP`, `ATQ`, `DEF`, `VEL`), CR, Tasa de Captura, lore, barras de progreso comparativas sobre 100 y lista de movimientos tácticos M1..M4. Calibración ergonómica en `text-[8px] sm:text-[9px]` y `text-[9px] sm:text-[10px]` con `leading-relaxed` y erradicación de `truncate` rígidos mediante envoltura multilínea `break-words`.
+- **Marcos 8bitcn/ui Brutalistas y Sombras Ortogonales:** Enmarcado general con `border-2 border-black` y sombras duras `shadow-[4px_4px_0_0_#000]` y `shadow-[6px_6px_0_0_#000]`. Realce distintivo con marco dorado y animación pulsante `.anim-halo-legendario border-4 border-amber-400 bg-amber-950/25` junto a la corona `Crown` para especies legendarias.
+- **Separación Táctil y Desahogada en Botones de Acción:**
+  - Botones de cabecera (`ACTUALIZAR`, `Asentamiento`) con espaciado amplio `gap-2.5 sm:gap-3` y respuesta háptica retro `active:translate-y-0.5 active:shadow-none`.
+  - Filtros rápidos de arquetipo (`TODOS`, `ATACANTE`, `TANQUE`, `VELOZ`, `EQUILIBRADO`, `ESPECIALES`, `LEGENDARIAS`) con distribución elástica `gap-2 sm:gap-2.5 flex-wrap` y borde negro de alto contraste.
+  - Botón de limpiar filtros separado con margen autónomo `self-end sm:self-auto` y marco retro.
+  - Botón de tarjeta (`INSPECCIONAR FICHA`) con holgura superior `pt-1 sm:pt-2` y marco `border-2 border-black shadow-[2px_2px_0_0_#000]`.
+  - Botón de cierre en modal táctico con separación superior clara.
+- **Ergonomía Móvil y Cero Overflow (360px–420px):**
+  - Confinamiento estricto del contenedor raíz con `w-full max-w-5xl mx-auto px-2 sm:px-4 overflow-x-hidden`.
+  - Barra de resumen de 5 métricas responsiva (`grid-cols-2 sm:grid-cols-5 gap-2`) con asignación `col-span-2 sm:col-span-1` para el 5º elemento en móvil.
+  - Apilado vertical responsivo del buscador y selector de tipo (`flex-col sm:flex-row gap-2.5`).
+- **Modal Hermético de Inspección Táctica Detallada:** Componente `Dialog` de 8bitcn/ui sellado contra overflow (`w-[calc(100vw-2rem)] sm:max-w-md max-h-[85vh] border-4 border-black shadow-[8px_8px_0_0_#000] bg-card overflow-hidden p-0 flex flex-col rounded-none`), cabecera con botón `X` de alto contraste, scroll interno suave, barras sobre 100 y desglose íntegro de movimientos tácticos (M1..M4) sin truncamiento.
+- **Bitácora de Crónicas Retro:** Tarjetas de crónicas con sello de tiempo, insignia con iconografía SVG de Lucide diferenciada por categoría y descripción de alto contraste WCAG AA.
+- **Salón de la Fama y Ending RPG 16-bit (`PaginaCreditos.tsx`):** Cabecera ceremonial con marco dorado (`border-amber-500/80 bg-bastion`), insignias `SALÓN DE LA FAMA` y `ISC-305 · III PAC 2026`, galería de sprites pixel-art, Homenaje Académico al **Ingeniero Claudio**, atribución legal literal del `SRD 5.2` (CC BY 4.0), licencia MIT de `8bitcn/ui` y retorno con sonido de victoria.
 
 #### B. Componentes Táctiles 8bitcn/ui y Hardening
-- **Modal Sellado de Inspección Táctica Detallada:** Componente `Dialog` de 8bitcn/ui sellado herméticamente contra desbordamiento horizontal y vertical (`w-[calc(100vw-2rem)] sm:max-w-md max-h-[90vh] overflow-y-auto overflow-x-hidden rounded-none border-2 border-primary bg-bastion`), que expone vitrina superior ampliada de criatura, lore biológico descriptivo, barras comparativas de atributos base sobre 100 (`Progress` retro) y lista de movimientos conocidos con tipo de acción y potencia.
-- **Buscadores y Filtros Ergonómicos Instantáneos:** Barra de control con alineación de alturas estricta (`h-10`), buscador interactivo con tipografía `font="normal"` y botón de borrado rápido (`X`), selector estilizado en español para los 6 tipos biológicos (`Bestia`, `Monstruosidad`, `No-muerto`, `Elemental`, `Autómata`, `Planta`), botones de arquetipo acompañados de iconografía Lucide con estados activo/inactivo contrastados, y botón `Limpiar filtros` (`RotateCcw`).
-- **Erradicación del Anti-Patrón `<Link><Button>` y Hardening `aria-busy`:** Reemplazo de enlaces anidados por navegación imperativa con `useNavigate` e integración de estados `aria-busy` (`ACTUALIZANDO...`) en botones de recarga.
+- **Erradicación del Anti-Patrón `<Link><Button>` y Hardening `aria-busy`:** Reemplazo de enlaces anidados por navegación imperativa con `useNavigate` e integración de estados `aria-busy` en botones de recarga.
+- **Restricción R1 Estricta:** Cero emojis unicode; empleo exclusivo de iconos SVG vectoriales de Lucide (`BookOpen`, `ArrowLeft`, `RefreshCw`, `Search`, `Shield`, `Swords`, `Zap`, `Scale`, `Sparkles`, `Crown`, `MapPin`, `Eye`, `RotateCcw`, `X`, `Filter`, `ChevronDown`).
 
 #### C. Integración Multimedia y Audio Retro Centralizado (`assets.ts`)
-- **Síntesis Web Audio:** Integración del sintetizador 8-bit para feedback táctil en clics (`"click"`), inspección de fichas (`"seleccionar"`), retorno victorioso (`"victoria"`) y fanfarria triunfal ceremonial (`"fanfarria"`) en el Salón de la Fama.
+- **Síntesis Web Audio:** Integración del sintetizador 8-bit para feedback táctil en clics (`"click"`), inspección de fichas (`"seleccionar"`), retorno victorioso (`"victoria"`) y fanfarria triunfal ceremonial (`"fanfarria"`).
 - **Gestión de Assets con Fallback Seguro:** Uso universal de `obtenerImagenCriatura` y `manejarErrorImagen` con degradación a vectoriales SVG locales en caso de ausencia de sprites WebP.
 
 #### D. Reglas de Servidor, Optimización de Consultas y Erradicación de N+1
-- **`CriaturasService` y `CriaturasController` (`M-CRI`):** Implementación de endpoints públicos `GET /api/especies` y `GET /api/especies/:slug`. El endpoint de listado entrega en una única llamada `O(1)` las 25 especies enriquecidas con `keyExterna`, `descripcion`, `arquetipo` y `movimientos` embebidos, eliminando completamente las ráfagas $N+1$ en el cliente.
-- **Fallback Determinista de Contingencia:** En caso de consultar una base de datos sin siembra previa, `CriaturasService` recurre de forma transparente al snapshot local de `AdaptadorCriaturasExternas` garantizando alta disponibilidad.
-- **Normalización de Bitácora en `HistorialService` (`M-HIS`):** Función pura `normalizarCategoriaHistorial` que mapea cualquier tipo emitido hacia las 5 categorías canónicas, soporte de paginación (`pagina`, `limite`) y filtrado en servidor por `categoria`.
+- **`CriaturasService` y `CriaturasController` (`M-CRI`):** Implementación de endpoints públicos `GET /api/especies` y `GET /api/especies/:slug` en `O(1)` para las 30 especies canónicas con datos embebidos, erradicando por completo el patrón $N+1$.
+- **Normalización de Bitácora en `HistorialService` (`M-HIS`):** Función pura `normalizarCategoriaHistorial`, paginación y filtrado en servidor.
 
 ### 9.3 Verificación de Calidad y Cero Regresiones
-- **Pruebas Backend (`apps/api/test/catalogo-historial.spec.ts`):** 6 pruebas unitarias verificando la erradicación del $N+1$, filtros por tipo biológico, detalle por slug, error 404, clasificación de las 4 vertientes de arquetipos y normalización/filtrado de las 5 categorías de historial.
+- **Pruebas Backend (`apps/api/test/catalogo-historial.spec.ts`):** 6 pruebas unitarias verificando erradicación de $N+1$, filtros biológicos, detalle por slug, error 404, arquetipos y categorías.
 - **Suite Total Backend (`pnpm --filter api test`):** 60 de 60 pruebas aprobadas (100% de éxito).
-- **Pruebas Frontend (`apps/web/test/verificacion-historial-catalogo.spec.ts`):** 8 pruebas unitarias validando traducción de tipos, cálculo de arquetipos, filtros combinados, normalización de crónicas, formato temporal amigable, auditoría estática de código (ausencia de $N+1$, modales sellados, iconos Lucide SVG, homenaje a Claudio, licencias) y cumplimiento estricto de la Regla R1 (0 emojis unicode).
-- **Suite Total Frontend (`pnpm --filter web test`):** 55 de 55 pruebas aprobadas (100% de éxito).
+- **Pruebas Frontend (`apps/web/test/verificacion-historial-catalogo.spec.ts`):** 9 pruebas unitarias aprobadas, incluyendo auditoría estática de marcos brutalistas 8bitcn, sombras sólidas ortogonales, tipografía retro integral, separación táctil y confinamiento sin overflow horizontal.
+- **Suite Total Frontend (`pnpm --filter web test`):** 79 de 79 pruebas aprobadas (100% de éxito).
 - **Compilación de Producción (`pnpm --filter web build`):** 0 errores TypeScript en modo estricto en Vite (construcción limpia en 2.2s).
-- **Linter Web (`pnpm --filter web lint`):** 0 errores.
-- **Inspección Responsive:** Verificación de ergonomía táctil y ausencia total de overflow horizontal en anchos móviles de 320px.
+- **Linter Web (`pnpm --filter web lint`):** 0 errores en 80 archivos.
+- **Inspección Responsive:** Verificación de ergonomía táctil y ausencia total de overflow horizontal en anchos móviles de 320px a 420px.
 
 ---
 
