@@ -916,71 +916,78 @@ Previo a esta intervención, la experiencia de combate y compendio presentaba un
 
 ---
 
-## 15. Sub-Fase 10e: Rediseño Visual de Combate Móvil Impeccable (Zero-Scroll, Arena Diagonal JRPG y Consola Contextual)
+## 15. Sub-Fase 10e: Rediseño Visual de Combate Móvil Impeccable (Zero-Scroll, Arena Diagonal JRPG, Consola Contextual y Estética Retro-Brutalist 8-Bit)
 
-### 15.1 Diagnóstico Inicial y Auditoría Impeccable
-Tras la estabilización mecánica de la Fase 10l, se realizó una auditoría visual y ergonómica exhaustiva de `PantallaCombate.tsx` con la skill `impeccable` y la referencia canónica de combate retro pixel-art (`Pixel_art_creature_battle_UI_20261025170540`):
-1. **Falta de Viewport Fijo (Zero-Scroll):** La vista dependía del contenedor global con barras de navegación web superior e inferior redundantes (`LayoutPrincipal.tsx`), forzando scroll vertical en dispositivos móviles y diluyendo la inmersión del jugador.
-2. **Fondo de Escenario Acoplado:** La arena de batalla utilizaba gradientes y rejillas CSS codificadas directamente dentro del cuerpo de la pantalla, sin un sistema desacoplado (`BattlefieldBackground`) capaz de intercambiar escenarios por zona o soportar bucles de video livianos.
-3. **Disposición Visual y HUDs Saturados:** Los bloques de salud y estadísticas desplegaban textos explicativos extensos sobre la arena, restando protagonismo visual a los sprites de las criaturas e impidiendo la clásica composición diagonal JRPG (rival arriba a la derecha, criatura aliada abajo a la izquierda).
-4. **Bitácora Invasiva:** El registro de eventos consumía un panel completo de pergamino en medio de la pantalla, reduciendo el área disponible para la acción táctica.
-5. **Consola Táctica Fragmentada:** La botonera de combate abría modales flotantes superpuestos para cada acción secundaria (objetos, cambio de criatura, captura), generando saltos contextuales abruptos en lugar de sustituir los controles en la misma zona del pulgar (*in-place contextual deck*).
+### 15.1 Diagnóstico Inicial y Auditoría Heurística Impeccable
+Tras la estabilización mecánica de la Fase 10l, se realizó una auditoría visual y ergonómica exhaustiva de `PantallaCombate.tsx` con la skill `impeccable` y los estándares de `docs/DESIGN.md`, identificando los siguientes aspectos críticos:
+1. **Inconsistencia Tipográfica Híbrida (`font-mono` / `font-sans` vs `.retro`):** Existía disparidad en la presentación de datos de combate: los niveles (`Lv.X`), estadísticas numéricas de vitalidad (`HP XX/YY`), medidores de Resonancia y EXP, nombres de movimientos, etiquetas de efectividad, descripciones de estado y botones de modales utilizaban `font-mono` o `font-sans`, rompiendo la inmersión retro de consola RPG de 8-bit/16-bit.
+2. **Desplazamiento Horizontal y Truncamiento en Móvil (360px–420px):** En pantallas reducidas, las placas HUD de combate (aliado y rival) rozaban el límite del viewport, y el uso de `truncate` estricto en nombres y badges provocaba amputaciones textuales abruptas en resoluciones móviles. Asimismo, se requería garantizar `overflow-x-hidden` en el contenedor principal de combate para evitar scroll horizontal espurio.
+3. **Falta de Separación y Ergonomía en Botones de Acción:**
+   - En la consola principal (`ROOT`), los botones requerían una separación táctil más holgada (`gap-2.5 sm:gap-3`) y alturas confortables (48px–56px) para evitar pulsaciones erróneas con el pulgar.
+   - En el submenú de movimientos (`ATTACK`), las ranuras M1 a M4 necesitaban mayor espacio frente al botón de retorno («Volver»).
+   - En los modales y diálogos cinemáticos (Victoria, Captura, Derrota, Huida y Pausa), los botones de acción estaban demasiado juntos (`gap-2`), exigiendo una separación desahogada de al menos `gap-3 sm:gap-4`.
+4. **Falta de Viewport Fijo (Zero-Scroll):** La vista dependía originalmente del contenedor global con barras web redundantes, forzando scroll vertical en dispositivos móviles y diluyendo la inmersión del jugador.
+5. **Hardening y Cinemáticas:** Necesidad de blindar el combate contra doble clic mediante cerrojo síncrono `cerrojoAccion.current`, estado `procesandoAccion`, `aria-busy={procesandoAccion}` y desactivación física de controles, asegurando al mismo tiempo animaciones fluidas de sacudida y daño flotante sin generar barras de desplazamiento horizontales.
 
 ---
 
 ### 15.2 Mejoras Implementadas
 
-#### A. Viewport Fijo (Zero-Scroll) y Ergonomía Móvil (100dvh)
-- **Supresión de Navegación Redundante:** Actualización condicional en `LayoutPrincipal.tsx` para rutas de combate (`location.pathname.startsWith('/combate')`), renderizando un contenedor estricto de `h-[100dvh] w-full overflow-hidden` libre de cabeceras o pies de página web.
-- **Menú Discreto de Pausa Retro:** Integración de un botón cuadrado de pausa retro (`[ ⏸️ ]`) en la esquina superior derecha, que despliega un diálogo accesible con opciones secundarias: continuar combate, rendirse/huir, acceso al Kit de Interfaz (`/kit-ui`), Créditos (`/creditos`) y retorno seguro al Hub de localidad.
-- **Pastilla Superior Ornada de Turno:** Indicador centrado con marco dorado biselado retro (`◆ TURNO X: TU TURNO ◆` / `TURNO ENEMIGO`), con animaciones de cambio de estado.
+#### A. Tipografía Retro Integral (`Press Start 2P` / `.retro` en Toda la Pantalla)
+- **Consolidación Tipográfica Absoluta:** Se erradicó el uso de `font-mono` y `font-sans` en todos los controles y datos de combate, adoptando la tipografía pixelada `Press Start 2P` (`.retro`) en:
+  - **Indicador Superior de Turno:** Pastilla central ornada con marco dorado (`◆ TURNO X: TU TURNO ◆` / `TURNO ENEMIGO`) con clases `retro text-[9px] sm:text-[11px] font-bold text-[#ffd700]`.
+  - **Placas HUD de Combate:** Nombres de criaturas aliada y rival con `retro text-[9px] sm:text-[10px]`, niveles formateados en español retro (`NV.{rival.nivel}` y `NV.{aliado.nivel}` con `retro text-[8px] sm:text-[9px]`), etiquetas numéricas de salud (`HP` y `XX/YY HP` en `retro`), medidor de Resonancia (`RES.` y `XX%` en `retro`), y barra de EXP (`EXP` y `XX%` en `retro`).
+  - **Insignias de Efecto y Estados Alterados:** Badges temáticos de afinidad elemental (`[{FUEGO}]`, `[{AGUA}]`, etc.) y estados activos (`[{QUEMADURA}]`, `[{PARÁLISIS}]`, etc.) renderizados en tipografía pixelada `retro text-[7px] sm:text-[8px]`.
+  - **Cifras Flotantes de Daño y Curación:** Daño recibido (`-{dano}`) y curación (`+{curacion} HP`) flotantes con sombra dura de alto contraste (`drop-shadow-[2px_2px_0_#000] retro text-xs sm:text-sm`).
+  - **Ticker y Drawer de Bitácora:** Ticker colapsado de 1 sola línea con tipografía retro (`retro text-[9px] sm:text-[10px]`) y hoja expandible (*bottom sheet*) con cronología completa estilizada en `retro text-[9px] sm:text-[10px]`.
+  - **Botonera Contextual Arcade:** Comandos de consola (`ATACAR`, `USAR OBJETO`, `CAMBIAR`, `CAPTURAR`, `HUIR`) con tipografía retro `text-[10px] sm:text-xs`.
+  - **Submenú de Movimientos Tácticos:** Ranuras (`M1` a `M4`), nombres de movimientos, potencia (`Pot. {poder}`), chips de efectividad (`¡EFICAZ!`, `RESISTIDO`), badges de efectos mecánicos y leyenda de bloqueo de Furia (`Requiere Resonancia 100 %`).
+  - **Submenús de Objetos, Relevo y Captura:** Listados de consumibles, equipo y talismanes completamente renderizados en tipografía retro.
+  - **Modales y Diálogos Cinemáticos:** Textos de Pausa, Huida, Victoria (con desglose de XP ganada, monedas obtenidas y nivel), Captura y Derrota renderizados íntegramente en `.retro`.
 
-#### B. Sistema Desacoplado de Fondos de Batalla (`BattlefieldBackground`)
-- **Arquitectura de Escenarios:** Creación del componente reutilizable `apps/web/src/components/combate/BattlefieldBackground.tsx` con resolución flexible por `zoneId` o `backgroundUrl`, soporte para bucles de video livianos (`videoUrl` con `<video autoPlay loop muted playsInline />`), y degradación suave hacia el fondo SVG pixel-art de alta resolución `caverna-cristal.svg` en `public/assets/battlegrounds/`.
-- **Capa de Contraste y Viñeta:** Incorporación de viñeta radial oscura y degradados multiplicativos (`mix-blend-multiply bg-black/30`) que aseguran una legibilidad superior de los sprites retro y de las placas HUD.
+#### B. Confinamiento Móvil y Cero Desbordamiento Horizontal (360px–420px)
+- **Contenedor Principal Blindado:** Estructura fija `h-full h-[100dvh] w-full max-w-5xl mx-auto flex flex-col justify-between overflow-hidden overflow-x-hidden select-none bg-[#090d16] border-x-0 md:border-x-4 border-black shadow-[6px_6px_0_0_#000]`.
+- **Ancho Fluido en Placas HUD:** Calibración a `max-w-[210px] sm:max-w-[240px]` con tamaños de texto compactos (`text-[8px]` a `text-[10px]`), garantizando que en dispositivos estrechos (360px) el HUD del rival y del aliado coexistan holgadamente con los sprites sin producir solapamientos ni desbordamientos.
+- **Cuadrícula Elástica de Movimientos:** En modo móvil, los 4 movimientos tácticos se despliegan en 2 columnas con altura mínima controlada (`min-h-[56px] sm:min-h-[64px]`) y badges con ancho máximo contenido (`max-w-[85px] sm:max-w-[100px]`), impidiendo roturas de la tarjeta.
+- **Sellado Elástico de Modales:** Todos los cuadros de diálogo (`DialogContent` y `AlertDialogContent`) sellados con `w-[calc(100vw-2rem)] sm:max-w-md overflow-hidden`, eliminando cualquier riesgo de scrollbar horizontal.
 
-#### C. Arena Diagonal JRPG y Placas HUD Compactas
-- **Composición Diagonal Canónica:**
-  - **Rival (Arriba a la derecha):** Sprite del rival sobre pedestal sombreado con placa HUD compacta contigua (Nombre, Afinidad elemental, Nivel, barra de salud con porcentaje y botones microscópicos de estados alterados como Bastión o Quemadura con tooltips informativos al toque).
-  - **Jugador (Abajo a la izquierda):** Sprite de la criatura aliada de espaldas/perfil con placa HUD contigua integrada (Nombre, Nivel, afinidad, barra de salud numérica segmentada, medidor de Resonancia y barra de EXP con porcentaje).
-- **Animaciones de Daño y Curación Flotante:** Efectos retro `anim-dano-flotante` y `anim-curacion-flotante` acoplados directamente sobre la posición espacial de cada combatiente.
+#### C. Separación Táctil y Ergonomía en Botones de Acción
+- **Consola Principal (`ROOT`):** Cuadrícula con separación desahogada `gap-2.5 sm:gap-3`, áreas táctiles de 56px de alto en botones superiores (`h-14 sm:h-16`) y 48px en botón Huir (`h-12 sm:h-16`), optimizadas para la zona de alcance del pulgar.
+- **Submenú de Movimientos (`ATTACK`):** Espaciado `gap-2 sm:gap-3` entre ranuras tácticas y separación nítida del botón «Volver» con micro-borde negro y sombra sólida.
+- **Diálogos de Victoria, Captura y Derrota:** Separación generosa `gap-3 sm:gap-4` en la botonera vertical del pie (`Continuar Explorando` vs `Volver al Hub`, `Ver en Equipo` vs `Continuar`, `Ir a Centro de Curación` vs `Volver al Hub`).
+- **Diálogo de Huida (`AlertDialogFooter`):** Separación desahogada `flex flex-col sm:flex-row gap-3 sm:gap-4 pt-2` entre «Permanecer» y «Confirmar Huida».
+- **Menú de Pausa:** Espaciado `gap-3` entre opciones primarias de combate y enlaces secundarios (`/kit-ui`, `/creditos`).
 
-#### D. Bitácora de Encuentro Expandible (Ticker / Bottom Sheet Drawer)
-- **Modo Colapsado (Ticker):** Barra horizontal biselada de 1 sola línea entre la arena y la consola que exhibe el evento más reciente junto al recuento de eventos (`ej. 13 eventos`) y chevron indicador.
-- **Modo Expandido (Drawer):** Al pulsar el ticker, se despliega hacia arriba una hoja inferior animada (*bottom sheet*) que cubre el tercio inferior sin tapar a las criaturas, permitiendo revisar la cronología completa con desplazamiento interno independiente.
+#### D. Estética Retro-Brutalist 8-Bit (8bitcn/ui) y Consola Arcade
+- **Marcos y Sombras Ortogonales:** Marco perimetral y divisores con `border-2 border-black` / `border-4 border-black` y sombras duras de alto contraste `shadow-[2px_2px_0_0_#000]`, `shadow-[4px_4px_0_0_#000]` y `shadow-[6px_6px_0_0_#000]`.
+- **Efecto de Pulsación Mecánica:** Botones arcade con micro-interacción física (`active:translate-y-0.5 active:shadow-[2px_2px_0_0_#000]`).
+- **Arena Diagonal JRPG con Fondos Desacoplados:** Composición con `BattlefieldBackground`, pedestal de sombra difuminada y perspectiva isométrica tradicional.
+- **Barras Reactivas 8-Bit:** `HealthBar` y `XpBar` integradas con bordes negros sólidos, y medidor de Resonancia con animación de pulso áureo (`anim-pulso-resonancia`) al alcanzar el 100%.
 
-#### E. Consola de Acciones en la Zona del Pulgar (In-Place Contextual Deck)
-- **Máquina de Estados de la Consola (`menuState`):**
-  - **`ROOT`:** Cuadrícula táctil 2x2 de botones retro gruesos optimizados para el pulgar (`[ ATACAR ]` en oro/ámbar, `[ USAR OBJETO ]` en cian oscuro, `[ CAMBIAR ]` en cian oscuro, `[ CAPTURAR ]` en cian oscuro) y barra inferior completa para `[ HUIR ]` en carmesí.
-  - **`ATTACK`:** Sustitución inmediata en el mismo espacio por los 4 movimientos tácticos con potencia, chips de efectividad (`¡EFICAZ!`, `RESISTIDO`) y badges de efecto tematizados con colores distintivos por familia elemental/mecánica.
-  - **`ITEMS`:** Lista táctil de consumibles de curación con previsualización del inventario y botón directo de aplicación.
-  - **`SWAP`:** Relevo ágil del equipo activo con barras de HP individuales.
-  - **`CAPTURE`:** Selector interactivo de talismanes y botón de lanzamiento con cinemática de suspenso e incertidumbre.
-  - **Botón Universal «← Volver»:** Todos los submenús incorporan retorno instantáneo sin fricción al estado raíz.
-
-#### F. Calibración Cromática Temática de Badges de Efectos y Estados Tácticos
-- **Auditoría Integral de Efectos (52 entradas):** Se analizaron exhaustivamente los 51 efectos mecánicos del bestiario canónico más el estado base `ESCARCHA`, agrupándolos por familias cromáticas de alto contraste para interfaz oscura:
-  - *Fuego y Quemaduras:* `QUEMADURA`, `QUEMADURA_GRAVE`, `IGNICION`, `COMBUSTION`, `BOMBARDEO`, `TRAMPA_FUEGO`, `CALAMIDAD`, `DEVASTACION_LEGENDARIA` en tonos rojo escarlata, naranja ígneo y ámbar volcánico (`border-red-500/80 text-red-400 bg-red-500/15`, `border-orange-500/80 text-orange-400 bg-orange-500/15`).
-  - *Veneno y Toxicidad:* `VENENO` y `VENENO_GRAVE` en verde esmeralda tóxico (`border-emerald-500/80 text-emerald-400 bg-emerald-500/15`).
-  - *Frío, Escarcha y Mareas:* `ESCARCHA`, `ENFRIAMIENTO`, `CONGELACION`, `LENTITUD` y `MAREJADA` en cian glaciar y azul océano (`border-cyan-500/80 text-cyan-400 bg-cyan-500/15`, `border-blue-500/80 text-blue-300 bg-blue-500/20`).
-  - *Electricidad, Parálisis y Control:* `PARALISIS`, `STUN`, `ATURDIMIENTO` y `SOBRECARGA_LEGENDARIA` en ámbar eléctrico y amarillo chispa (`border-amber-400/80 text-amber-300 bg-amber-400/15`, `border-yellow-400/80 text-yellow-300 bg-yellow-400/15`).
-  - *Tierra, Piedra y Petrificación:* `PETRIFICACION`, `PETRIFICACION_LEVE` y `SISMICO` en gris piedra basáltica y ámbar geológico (`border-stone-400/80 text-stone-300 bg-stone-500/25`, `border-amber-800/80 text-amber-200 bg-amber-900/30`).
-  - *Defensa y Bastión:* `BASTION`, `BARRERA`, `FORTALEZA` y `BLOQUEO` en zafiro e índigo protector (`border-blue-400/80 text-blue-300 bg-blue-500/15`).
-  - *Mejoras y Modificadores (Buffs/Debuffs):* Diferenciación cromática nítida para `ATQ_UP` (rojo), `DEF_UP` (celeste), `VEL_UP` (turquesa), `EVASION_UP` (índigo), `REGENERACION` (verde sanación), `ATQ_DOWN` (naranja), `DEF_DOWN` (piedra debilitada), `ENREDO` (lima bosque oscuro), `CONFUSION` (fucsia mental), `CEGUERA` (zinc humo), `MIEDO`/`TERROR` (púrpura sombrío) y `CONDENA` (violeta maldito).
-  - *Sacro y Luz:* `LUZ` y `PURIFICACION` en amarillo dorado resplandeciente (`border-yellow-300/80 text-yellow-200 bg-yellow-400/20`).
-  - *Ataques Físicos y Sangrado:* `CRITICO` (rosa carmesí), `HERIDA`/`DESGARRO` (rojo hemorragia), `EJECUCION` (rojo oscuro de remate), `EMPUJE` (ámbar cinético), `ESPINAS` (lima reactivo) y `DRENAJE` (púrpura vampírico).
-- **Centralización en `combate-tactico.ts`:** Se incorporó el campo `claseEstilo: string` a la interfaz `DescripcionEstado`, exportando el mapa canónico `ESTILOS_ESTADO`. La función `describirEstado(estado)` ahora retorna la clase estilística optimizada para consumo directo de cualquier componente visual (`PantallaCombate`, `PanelTactico`).
-- **Erradicación de Estilos Hardcodeados en `PantallaCombate.tsx`:** Se sustituyeron las clases estáticas genéricas (`bg-blue-500/20 text-blue-300` en insignias de rival y aliado, y `border-black bg-black/30 text-cyan-300` en la consola de ataque) por `${desc.claseEstilo}` y `${badgeEfecto.claseEstilo}` con sombras pixeladas retro `shadow-[1px_1px_0_0_#000]`.
+#### E. Preservación Funcional, Hardening y Audio Retro Centralizado (`assets.ts`)
+- **Preservación Integral de la Lógica de Servidor:** Sincronización estricta de turnos (`encuentro.turno`), motor de 4 ranuras tácticas (`construirSlotsTacticos`), bloqueo autoritativo de Movimiento Insignia / Furia (Slot 4) si Resonancia < 100%, inventario curativo (`api.usarItem`), relevo en vivo (`api.actualizarOrdenEquipo`), captura probabilística con talismán (`api.capturar`) y escape por velocidad (`api.huir`).
+- **Hardening Estricto contra Doble Clic:** Cerrojo síncrono `cerrojoAccion.current = true`, estado reactivo `procesandoAccion`, atributos de accesibilidad `aria-busy={procesandoAccion}`, `aria-disabled={estaBloqueado}` y bloqueo visual con `<Spinner />`.
+- **Audio Web Audio Retro Centralizado:** Consumo de `reproducirSonido(...)` para eventos de golpe elemental, victoria, captura exitosa, escape, uso de consumibles y clics táctiles.
+- **Cumplimiento Estricto de la Regla R1:** Cero emojis unicode en toda la interfaz; uso exclusivo de iconos SVG vectoriales de Lucide (`Swords`, `Sparkles`, `HeartPulse`, `ArrowLeftRight`, `LogOut`, `Crown`, `Scroll`, `Pause`, `RotateCcw`, `Trophy`, `Lock`, `BookOpen`, `Award`, `ChevronsUp`, `ChevronsDown`).
 
 ---
 
 ### 15.3 Verificación de Calidad y Cero Regresiones
 - **Pruebas Automatizadas Unitarias (`pnpm --filter web test`):**
-  - **71 de 71 pruebas aprobadas** (100% de éxito, 0 fallos).
-  - Verificación en `test/verificacion-combate-tactico.spec.ts` de la presencia y correspondencia cromática de `claseEstilo` en `describirEstado()` y `resolverBadgeEfectoMovimiento()`.
-- **Regla R1 Estricta:** Verificación de 0 emojis unicode en `PantallaCombate.tsx`, `BattlefieldBackground.tsx` y `LayoutPrincipal.tsx` (uso exclusivo de iconos SVG vectoriales de Lucide).
-- **Compilación de Producción (`pnpm --filter web build`):**
-  - 0 errores TypeScript en modo estricto, bundle generado en Vite limpiamente.
+  - **84 de 84 pruebas aprobadas** (100% de éxito, 0 fallos).
+  - Verificación en `test/verificacion-combate.spec.ts` de:
+    * Tipografía retro integral `Press Start 2P` (`.retro`) en turnos, HUDs (`NV.`), HP, Resonancia, EXP y modales.
+    * Confinamiento móvil estricto con `overflow-x-hidden`.
+    * Separación táctil en consola principal (`gap-2.5 sm:gap-3`) y modales (`gap-3 sm:gap-4`).
+    * Hardening contra doble clic con `cerrojoAccion.current`, `disabled` y `aria-busy`.
+    * Sellado elástico de modales contra desbordamiento (`w-[calc(100vw-2rem)] sm:max-w-md`).
+    * Ausencia absoluta de emojis unicode (Regla R1).
+  - Verificación en `test/verificacion-combate-tactico.spec.ts` de las 4 ranuras tácticas, regla del slot 4 de Furia bloqueada y badges de estados.
+- **Auditoría Mecánica Impeccable:** Ejecución de `detect.mjs` sobre `PantallaCombate.tsx` arrojando `[]` (0 defectos).
+- **Linter Web (`pnpm --filter web lint`):** 0 errores en 80 archivos con 116 reglas.
+- **Compilación de Producción (`pnpm --filter web build`):** 0 errores TypeScript en modo estricto, bundle generado con Vite en 1.34s.
+
+---
 
 
 

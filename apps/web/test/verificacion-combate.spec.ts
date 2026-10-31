@@ -218,3 +218,50 @@ test("Hardening y Ergonomía: PantallaCombate cuenta con estética retro 8bitcn,
     "La bitácora de encuentro debe incorporar el icono Scroll de Lucide",
   );
 });
+
+test("Auditoría Impeccable: Tipografía retro integral Press Start 2P, separación táctil en botones y confinamiento móvil sin overflow", async () => {
+  const { readFileSync } = await import("node:fs");
+  const { join, dirname } = await import("node:path");
+  const { fileURLToPath } = await import("node:url");
+
+  const __dirname = dirname(fileURLToPath(import.meta.url));
+  const combateCodigo = readFileSync(join(__dirname, "../src/paginas/PantallaCombate.tsx"), "utf-8");
+
+  // 1. Tipografía retro integral Press Start 2P (.retro)
+  assert.ok(
+    combateCodigo.includes("NV.{rival.nivel}"),
+    "El nivel del rival debe representarse en español y fuente retro NV.",
+  );
+  assert.ok(
+    combateCodigo.includes("NV.{aliado.nivel}"),
+    "El nivel del aliado debe representarse en español y fuente retro NV.",
+  );
+  assert.ok(
+    combateCodigo.includes("font-bold text-red-400 retro"),
+    "La etiqueta de HP debe poseer clase retro",
+  );
+  assert.ok(
+    combateCodigo.includes("text-cyan-400 retro uppercase"),
+    "El medidor de Resonancia debe poseer etiqueta retro",
+  );
+  assert.ok(
+    combateCodigo.includes("text-amber-400 retro uppercase"),
+    "El medidor de Experiencia debe poseer etiqueta retro",
+  );
+
+  // 2. Confinamiento móvil y erradicación de desbordamiento horizontal
+  assert.ok(
+    combateCodigo.includes("overflow-x-hidden"),
+    "El contenedor principal de combate debe asegurar confinamiento horizontal estricto con overflow-x-hidden",
+  );
+
+  // 3. Ergonomía táctil y separación generosa de botones de acción
+  assert.ok(
+    combateCodigo.includes("gap-2.5 sm:gap-3"),
+    "La consola principal ROOT debe mantener separación táctil óptima gap-2.5 sm:gap-3",
+  );
+  assert.ok(
+    combateCodigo.includes("gap-3 sm:gap-4"),
+    "Los diálogos cinemáticos deben incluir separación desahogada gap-3 sm:gap-4 entre botones",
+  );
+});
