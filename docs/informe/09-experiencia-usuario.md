@@ -1123,11 +1123,12 @@ La auditoría heurística y de ergonomía visual sobre `PantallaHistorial.tsx` m
   - En pantallas móviles (<640px): la cabecera interna agrupa el sello temporal y la insignia de categoría en una micro-fila compacta superior, liberando el 100% del ancho inferior para el texto descriptivo y el registro técnico.
   - En pantallas de escritorio (>=640px): se preserva la alineación horizontal natural (`sm:flex-row items-center gap-4`), brindando lectura cómoda sin compresión.
 
-#### D. Ergonomía Táctil y Separación de Botones
-- **Botones de Cabecera:** Separación generosa (`gap-3 sm:gap-4`) en contenedor elástico `flex flex-wrap items-center w-full sm:w-auto`, con botones de altura táctil mínima de 36px–40px (`min-h-[36px] sm:h-10 px-3 sm:px-4`) y relieve táctil retro (`border-2 border-black shadow-[2px_2px_0_0_#000] active:translate-y-0.5 active:shadow-none hover:shadow-[3px_3px_0_0_#000]`).
-- **Filtros Rápidos por Categoría:** Separación holgada (`gap-2 sm:gap-3 flex-wrap`), botones con área de pulsación garantizada de 36px–38px de altura y feedback físico al presionar.
-- **Buscador y Restablecimiento:** Espaciado explícito (`gap-3 sm:gap-4`) entre el input de búsqueda y el botón «Limpiar filtros».
-- **Botones de Estado Vacío:** Separación táctil (`gap-3 flex-wrap`) entre las acciones disponibles.
+#### D. Ergonomía Táctil, Separación de Botones y Calibración de Búsqueda
+- **Botones de Cabecera:** Separación vertical y horizontal desahogada (`gap-3.5 sm:gap-4`) en contenedor elástico (`flex flex-col sm:flex-row items-stretch sm:items-center w-full sm:w-auto`), con botones táctiles de al menos 38px–40px de altura (`min-h-[38px] sm:h-10 px-3.5 sm:px-4`), eliminando la compresión vertical observada en dispositivos móviles y dotados de relieve táctil retro (`border-2 border-black shadow-[2px_2px_0_0_#000] active:translate-y-0.5 active:shadow-none hover:shadow-[3px_3px_0_0_#000]`).
+- **Filtros Rápidos por Categoría (Separación Inter-Fila):** Separación generosa multidireccional (`gap-x-2.5 gap-y-3 sm:gap-3.5 flex-wrap`), garantizando que al saltar de línea en resoluciones estrechas (360px–420px) exista un colchón vertical de 12px entre filas de botones, erradicando el apiñamiento visual.
+- **Barra de Búsqueda con Placeholder Inmune a Truncamiento:** Calibración del texto de sugerencia a `Buscar crónica...` (17 caracteres) con tipografía pixelada proporcional (`text-[8px] sm:text-[9px] placeholder:text-[7.5px] sm:placeholder:text-[9px]`) y sangría calibrada (`pl-8 sm:pl-9`), resolviendo de forma definitiva el corte de texto (`Buscar crónica por palabra c...`) advertido en auditoría visual móvil.
+- **Buscador y Restablecimiento:** Separación explícita (`gap-3 sm:gap-4 pt-3`) entre el input de búsqueda y el botón «Limpiar filtros».
+- **Botones de Estado Vacío:** Separación táctil holgada (`gap-3 sm:gap-4 flex-wrap`) entre las acciones de exploración y reseteo.
 
 #### E. Reglas de Servidor, Audio y Cero Emojis Unicode (Regla R1)
 - **Preservación Funcional Estricta:** Conservación íntegra de `api.obtenerHistorial()`, sincronización en tiempo real de estados de carga (`cargando`, `actualizando`), conteos reactivos por categoría y filtrado combinado (categoría canónica + búsqueda insensible a acentos mediante `filtrarEventosHistorial`).
