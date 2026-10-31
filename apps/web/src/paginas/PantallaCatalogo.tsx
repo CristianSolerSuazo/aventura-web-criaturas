@@ -54,6 +54,7 @@ export {
   calcularArquetipoCriatura,
   type CriteriosFiltroCatalogo,
   filtrarEspeciesCatalogo,
+  agruparEspeciesPorZona,
 } from "@/lib/catalogo-historial";
 import {
   TRADUCCION_TIPOS_ESPECIE,
@@ -108,7 +109,7 @@ export function PantallaCatalogo() {
     cargarCatalogo();
   }, []);
 
-  // Filtrado instantáneo en cliente
+  // Filtrado reactivo en cliente con complejidad lineal sobre la memoria local
   const especiesFiltradas = useMemo(() => {
     return filtrarEspeciesCatalogo(especies, {
       tipo: tipoFiltro,
@@ -153,29 +154,33 @@ export function PantallaCatalogo() {
   };
 
   return (
-    <div className="space-y-6 max-w-5xl mx-auto py-2 sm:py-4">
-      {/* Cabecera y Navegación Retro */}
-      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
-        <div>
+    <div className="w-full max-w-5xl mx-auto px-2 sm:px-4 py-2 sm:py-4 space-y-6 overflow-x-hidden">
+      {/* Cabecera y Navegación Retro con bordes brutalistas y tipografía integral */}
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 pb-3 border-b-2 border-black">
+        <div className="space-y-1">
           <div className="flex items-center gap-2 flex-wrap">
-            <h1 className="text-xl sm:text-2xl font-bold text-primary tracking-wide retro">
+            <h1 className="retro text-lg sm:text-xl font-bold text-primary tracking-wide drop-shadow-[2px_2px_0_#000]">
               COMPENDIO DE CRIATURAS
             </h1>
-            <Badge variant="secondary" className="font-mono text-xs flex items-center gap-1">
-              <BookOpen className="w-3 h-3" aria-hidden="true" />
-              30 ESPECIES SRD 5.2
+            <Badge
+              variant="secondary"
+              className="retro text-[8px] sm:text-[9px] border-2 border-black shadow-[2px_2px_0_0_#000] rounded-none flex items-center gap-1.5 px-2 py-0.5"
+            >
+              <BookOpen className="w-3 h-3 text-primary" aria-hidden="true" />
+              <span>30 ESPECIES SRD 5.2</span>
             </Badge>
           </div>
-          <p className="text-xs sm:text-sm text-muted-foreground mt-1">
+          <p className="retro text-[8px] sm:text-[9px] text-muted-foreground leading-relaxed break-words">
             Registro biológico y táctico de las criaturas del mundo de Aethelgard.
           </p>
         </div>
 
-        <div className="flex items-center gap-2">
+        {/* Botones de acción con separación desahogada y retro-brutalismo */}
+        <div className="flex items-center gap-2.5 sm:gap-3 flex-wrap">
           <Button
             variant="outline"
             size="sm"
-            className="text-xs rounded-none flex items-center gap-1.5"
+            className="retro text-[8px] sm:text-[9px] rounded-none border-2 border-black shadow-[2px_2px_0_0_#000] active:translate-y-0.5 active:shadow-none hover:shadow-[4px_4px_0_0_#000] transition-all flex items-center gap-1.5 h-8 px-2.5 sm:px-3 cursor-pointer"
             onClick={() => {
               reproducirSonido("click");
               cargarCatalogo();
@@ -190,7 +195,7 @@ export function PantallaCatalogo() {
           <Button
             variant="secondary"
             size="sm"
-            className="text-xs rounded-none flex items-center gap-1.5"
+            className="retro text-[8px] sm:text-[9px] rounded-none border-2 border-black shadow-[2px_2px_0_0_#000] active:translate-y-0.5 active:shadow-none hover:shadow-[4px_4px_0_0_#000] transition-all flex items-center gap-1.5 h-8 px-2.5 sm:px-3 cursor-pointer"
             onClick={() => {
               reproducirSonido("click");
               navigate("/hub");
@@ -202,41 +207,41 @@ export function PantallaCatalogo() {
         </div>
       </div>
 
-      {/* Barra de Resumen de Avistamiento Biológico */}
-      <div className="grid grid-cols-2 sm:grid-cols-5 gap-2 p-3 bg-bastion border-2 border-border/80 text-center font-mono text-xs">
-        <div>
-          <span className="text-[10px] text-muted-foreground block uppercase">Registradas</span>
-          <span className="font-bold text-primary">{totalEspecies || especies.length}</span>
+      {/* Barra de Resumen de Avistamiento Biológico con Rejilla Responsiva */}
+      <div className="grid grid-cols-2 sm:grid-cols-5 gap-2 p-3 bg-bastion border-2 border-black shadow-[4px_4px_0_0_#000] text-center retro text-[8px] sm:text-[9px]">
+        <div className="p-1.5 bg-background border border-black/60 shadow-[1px_1px_0_0_#000]">
+          <span className="text-[7px] sm:text-[8px] text-muted-foreground block uppercase mb-0.5">Registradas</span>
+          <span className="font-bold text-primary text-[10px] sm:text-xs">{totalEspecies || especies.length}</span>
         </div>
-        <div>
-          <span className="text-[10px] text-muted-foreground block uppercase">En Vista</span>
-          <span className="font-bold text-foreground">{especiesFiltradas.length}</span>
+        <div className="p-1.5 bg-background border border-black/60 shadow-[1px_1px_0_0_#000]">
+          <span className="text-[7px] sm:text-[8px] text-muted-foreground block uppercase mb-0.5">En Vista</span>
+          <span className="font-bold text-foreground text-[10px] sm:text-xs">{especiesFiltradas.length}</span>
         </div>
-        <div>
-          <span className="text-[10px] text-muted-foreground block uppercase">Legendarias</span>
-          <span className="font-bold text-amber-300 flex items-center justify-center gap-1">
-            <Crown className="w-3 h-3 inline" aria-hidden="true" />
-            {metricas.legendarias}
+        <div className="p-1.5 bg-background border border-black/60 shadow-[1px_1px_0_0_#000]">
+          <span className="text-[7px] sm:text-[8px] text-muted-foreground block uppercase mb-0.5">Legendarias</span>
+          <span className="font-bold text-amber-300 text-[10px] sm:text-xs flex items-center justify-center gap-1">
+            <Crown className="w-3 h-3 text-amber-400 inline" aria-hidden="true" />
+            <span>{metricas.legendarias}</span>
           </span>
         </div>
-        <div>
-          <span className="text-[10px] text-muted-foreground block uppercase">Especiales</span>
-          <span className="font-bold text-amber-400">{metricas.especiales}</span>
+        <div className="p-1.5 bg-background border border-black/60 shadow-[1px_1px_0_0_#000]">
+          <span className="text-[7px] sm:text-[8px] text-muted-foreground block uppercase mb-0.5">Especiales</span>
+          <span className="font-bold text-amber-400 text-[10px] sm:text-xs">{metricas.especiales}</span>
         </div>
-        <div>
-          <span className="text-[10px] text-muted-foreground block uppercase">Tipos Biológicos</span>
-          <span className="font-bold text-foreground">{metricas.tipos}</span>
+        <div className="col-span-2 sm:col-span-1 p-1.5 bg-background border border-black/60 shadow-[1px_1px_0_0_#000]">
+          <span className="text-[7px] sm:text-[8px] text-muted-foreground block uppercase mb-0.5">Tipos Biológicos</span>
+          <span className="font-bold text-foreground text-[10px] sm:text-xs">{metricas.tipos}</span>
         </div>
       </div>
 
       {/* Panel de Control: Buscador y Filtros Interactivos */}
-      <div className="p-3 sm:p-4 bg-bastion border-2 border-border/80 space-y-3">
-        {/* Fila 1: Buscador y Selector de Tipo */}
+      <div className="p-3 sm:p-4 bg-bastion border-2 border-black shadow-[4px_4px_0_0_#000] space-y-3.5">
+        {/* Fila 1: Buscador y Selector de Tipo con Apilado Vertical en Móvil */}
         <div className="flex flex-col sm:flex-row items-stretch gap-2.5">
           {/* Buscador Interactivo */}
           <div className="relative flex-1">
             <Search
-              className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground pointer-events-none"
+              className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-muted-foreground pointer-events-none"
               aria-hidden="true"
             />
             <input
@@ -245,13 +250,13 @@ export function PantallaCatalogo() {
               onChange={(e) => setBusqueda(e.target.value)}
               placeholder="Buscar especie por nombre o rasgo..."
               aria-label="Buscar especie"
-              className="w-full h-10 pl-9 pr-8 bg-background border-2 border-border text-xs text-foreground placeholder:text-muted-foreground font-sans focus:outline-none focus:border-primary rounded-none transition-colors"
+              className="w-full h-10 pl-9 pr-8 bg-background border-2 border-black shadow-[2px_2px_0_0_#000] retro text-[8px] sm:text-[9px] text-foreground placeholder:text-muted-foreground rounded-none focus:outline-none focus:border-primary transition-colors"
             />
             {busqueda.trim() !== "" && (
               <button
                 type="button"
                 aria-label="Borrar búsqueda"
-                className="absolute right-2.5 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground p-1 transition-colors"
+                className="absolute right-2.5 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground p-1 transition-colors cursor-pointer"
                 onClick={() => {
                   reproducirSonido("click");
                   setBusqueda("");
@@ -271,26 +276,26 @@ export function PantallaCatalogo() {
                 setTipoFiltro(e.target.value);
               }}
               aria-label="Filtrar por tipo biológico"
-              className="w-full h-10 px-3 pr-8 bg-background border-2 border-border text-xs text-foreground font-sans rounded-none focus:outline-none focus:border-primary cursor-pointer appearance-none"
+              className="w-full h-10 px-3 pr-8 bg-background border-2 border-black shadow-[2px_2px_0_0_#000] retro text-[8px] sm:text-[9px] text-foreground rounded-none focus:outline-none focus:border-primary cursor-pointer appearance-none"
             >
-              <option value="todos">Todos los tipos</option>
-              <option value="beast">Bestia</option>
-              <option value="monstrosity">Monstruosidad</option>
-              <option value="undead">No-muerto</option>
-              <option value="elemental">Elemental</option>
-              <option value="construct">Autómata</option>
-              <option value="plant">Planta</option>
+              <option value="todos">TODOS LOS TIPOS</option>
+              <option value="beast">BESTIA</option>
+              <option value="monstrosity">MONSTRUOSIDAD</option>
+              <option value="undead">NO-MUERTO</option>
+              <option value="elemental">ELEMENTAL</option>
+              <option value="construct">AUTÓMATA</option>
+              <option value="plant">PLANTA</option>
             </select>
             <ChevronDown className="absolute right-2.5 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground pointer-events-none" aria-hidden="true" />
           </div>
         </div>
 
         {/* Fila 2: Botones rápidos de filtro por Arquetipo y Acción de Limpiar */}
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pt-2 border-t border-border/40">
-          <div className="flex items-center gap-1.5 flex-wrap">
-            <span className="text-[10px] font-mono font-semibold text-muted-foreground uppercase mr-1 flex items-center gap-1">
-              <Filter className="w-3 h-3" aria-hidden="true" />
-              Arquetipo:
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pt-3 border-t-2 border-black/40">
+          <div className="flex items-center gap-2 sm:gap-2.5 flex-wrap">
+            <span className="retro text-[8px] sm:text-[9px] font-semibold text-muted-foreground uppercase flex items-center gap-1 mr-1">
+              <Filter className="w-3 h-3 text-primary" aria-hidden="true" />
+              <span>Arquetipo:</span>
             </span>
             {ARQUETIPOS_FILTRO.map((item) => {
               const Icono = item.icono;
@@ -299,10 +304,10 @@ export function PantallaCatalogo() {
                 <button
                   type="button"
                   key={item.id}
-                  className={`text-[11px] h-7 sm:h-8 px-2 sm:px-2.5 rounded-none font-mono flex items-center gap-1.5 border-2 transition-colors ${
+                  className={`retro text-[8px] sm:text-[9px] h-7 sm:h-8 px-2 sm:px-2.5 rounded-none flex items-center gap-1.5 border-2 border-black cursor-pointer transition-all ${
                     activo
-                      ? "bg-primary text-primary-foreground border-primary font-bold shadow-[2px_2px_0_0_#000]"
-                      : "bg-background text-muted-foreground border-border hover:text-foreground hover:bg-muted/40"
+                      ? "bg-primary text-primary-foreground font-bold shadow-[2px_2px_0_0_#000] translate-y-0.5"
+                      : "bg-background text-muted-foreground hover:text-foreground hover:bg-muted/50 shadow-[2px_2px_0_0_#000] active:translate-y-0.5 active:shadow-none"
                   }`}
                   onClick={() => {
                     reproducirSonido("click");
@@ -319,7 +324,7 @@ export function PantallaCatalogo() {
           {hayFiltrosActivos && (
             <button
               type="button"
-              className="h-7 sm:h-8 px-2.5 text-[11px] font-mono text-amber-300 hover:text-amber-200 border border-amber-500/60 bg-amber-500/10 hover:bg-amber-500/20 rounded-none flex items-center gap-1.5 transition-colors self-end sm:self-auto shrink-0"
+              className="h-7 sm:h-8 px-2.5 sm:px-3 retro text-[8px] sm:text-[9px] text-amber-300 hover:text-amber-200 border-2 border-black shadow-[2px_2px_0_0_#000] active:translate-y-0.5 active:shadow-none bg-amber-500/15 hover:bg-amber-500/25 rounded-none flex items-center gap-1.5 transition-all self-end sm:self-auto shrink-0 cursor-pointer"
               onClick={() => {
                 reproducirSonido("click");
                 setTipoFiltro("todos");
@@ -327,7 +332,7 @@ export function PantallaCatalogo() {
                 setBusqueda("");
               }}
             >
-              <RotateCcw className="w-3 h-3" aria-hidden="true" />
+              <RotateCcw className="w-3 h-3 text-amber-400" aria-hidden="true" />
               <span>Limpiar filtros</span>
             </button>
           )}
@@ -338,20 +343,20 @@ export function PantallaCatalogo() {
       {cargando ? (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           {Array.from({ length: 6 }).map((_, i) => (
-            <Skeleton key={i} className="h-72 w-full rounded-none" />
+            <Skeleton key={i} className="h-80 w-full rounded-none border-2 border-black shadow-[4px_4px_0_0_#000]" />
           ))}
         </div>
       ) : especiesFiltradas.length === 0 ? (
-        <Card className="text-center p-8 bg-bastion border-2 rounded-none space-y-3">
-          <CardTitle className="text-base text-muted-foreground retro">
+        <Card className="text-center p-8 bg-bastion border-2 border-black shadow-[4px_4px_0_0_#000] rounded-none space-y-3">
+          <CardTitle className="retro text-xs sm:text-sm text-muted-foreground">
             No se encontraron criaturas
           </CardTitle>
-          <p className="text-xs text-muted-foreground max-w-md mx-auto leading-relaxed font-sans">
+          <p className="retro text-[8px] sm:text-[9px] text-muted-foreground max-w-md mx-auto leading-relaxed break-words">
             No hay ninguna especie en el compendio que coincida con los criterios de búsqueda, tipo biológico o arquetipo seleccionados.
           </p>
           <Button
             size="sm"
-            className="rounded-none font-mono text-xs"
+            className="retro text-[8px] sm:text-[9px] rounded-none border-2 border-black shadow-[2px_2px_0_0_#000] active:translate-y-0.5 active:shadow-none"
             onClick={() => {
               reproducirSonido("click");
               setTipoFiltro("todos");
@@ -371,27 +376,27 @@ export function PantallaCatalogo() {
               aria-labelledby={`zona-encabezado-${grupo.zonaId}`}
               className="space-y-3"
             >
-              {/* Encabezado Retro de la Zona de Hábitat */}
-              <div className="flex flex-wrap items-center justify-between gap-2 border-b-2 border-border/70 pb-2">
+              {/* Encabezado Retro de la Zona de Hábitat con alto contraste */}
+              <div className="flex flex-wrap items-center justify-between gap-2 border-b-2 border-black pb-2">
                 <div className="flex items-center gap-2 flex-wrap">
                   <Badge
                     variant="outline"
-                    className="font-mono text-[10px] uppercase rounded-none border-primary/60 bg-primary/10 text-primary"
+                    className="retro text-[8px] sm:text-[9px] uppercase rounded-none border-2 border-black shadow-[2px_2px_0_0_#000] bg-primary/20 text-primary px-2 py-0.5"
                   >
                     {grupo.zonaId}
                   </Badge>
                   <h2
                     id={`zona-encabezado-${grupo.zonaId}`}
-                    className="text-sm sm:text-base font-bold retro text-foreground"
+                    className="retro text-xs sm:text-sm font-bold text-foreground drop-shadow-[1px_1px_0_#000]"
                   >
                     {grupo.zonaNombre}
                   </h2>
-                  <span className="text-[11px] font-mono text-muted-foreground">
+                  <span className="retro text-[8px] sm:text-[9px] text-muted-foreground">
                     ({grupo.especies.length} {grupo.especies.length === 1 ? "criatura" : "criaturas"})
                   </span>
                 </div>
                 {grupo.legendarias > 0 && (
-                  <span className="inline-flex items-center gap-1 px-1.5 py-0.5 text-[10px] font-mono font-bold border border-amber-400 bg-amber-400/20 text-amber-300 rounded-none shadow-[2px_2px_0_0_#000]">
+                  <span className="inline-flex items-center gap-1 px-2 py-0.5 retro text-[8px] sm:text-[9px] font-bold border-2 border-black bg-amber-400/25 text-amber-300 rounded-none shadow-[2px_2px_0_0_#000]">
                     <Crown className="w-3 h-3 text-amber-400" aria-hidden="true" />
                     <span>Hábitat Legendario</span>
                   </span>
@@ -407,18 +412,18 @@ export function PantallaCatalogo() {
                   return (
                     <Card
                       key={especie.slug}
-                      className={`border-2 rounded-none bg-bastion flex flex-col justify-between transition-all duration-200 hover:border-primary/80 ${
+                      className={`rounded-none bg-card flex flex-col justify-between transition-all duration-200 ${
                         especie.esLegendaria
-                          ? "anim-halo-legendario border-amber-400 bg-amber-950/20 shadow-[0_0_16px_rgba(251,191,36,0.35)]"
+                          ? "anim-halo-legendario border-4 border-amber-400 bg-amber-950/25 shadow-[6px_6px_0_0_#000] hover:shadow-[8px_8px_0_0_#000]"
                           : especie.esEspecial
-                          ? "border-amber-500/80 shadow-[0_0_10px_rgba(245,158,11,0.25)]"
-                          : "border-border"
+                          ? "border-2 border-amber-500/90 shadow-[4px_4px_0_0_#000] hover:shadow-[6px_6px_0_0_#000]"
+                          : "border-2 border-black shadow-[4px_4px_0_0_#000] hover:shadow-[6px_6px_0_0_#000]"
                       }`}
                     >
                       {/* Cabecera de la Tarjeta */}
-                      <CardHeader className="p-3 pb-2 space-y-1">
+                      <CardHeader className="p-3 pb-2 space-y-1.5">
                         {/* Título de la Criatura con corona en especies legendarias */}
-                        <CardTitle className="text-xs sm:text-[13px] font-bold text-foreground leading-snug retro tracking-tight break-words line-clamp-2 min-h-[2rem]">
+                        <CardTitle className="retro text-[10px] sm:text-xs font-bold text-foreground leading-relaxed tracking-tight break-words min-h-[2rem]">
                           {especie.nombre}
                           {especie.esLegendaria && (
                             <Crown
@@ -427,25 +432,25 @@ export function PantallaCatalogo() {
                             />
                           )}
                         </CardTitle>
-                        <p className="text-[10px] text-muted-foreground font-mono truncate">
+                        <p className="retro text-[8px] sm:text-[9px] text-muted-foreground break-all">
                           {especie.keyExterna || `srd-2024_${especie.slug}`}
                         </p>
 
                         {/* Badges de Tipo, Afinidad Elemental y Arquetipo */}
-                        <div className="flex items-center gap-1.5 flex-wrap pt-0.5">
-                          <span className="inline-flex items-center px-1.5 py-0.5 text-[9px] font-mono font-semibold uppercase bg-secondary text-secondary-foreground border border-border rounded-none">
+                        <div className="flex items-center gap-1.5 flex-wrap pt-1">
+                          <span className="inline-flex items-center px-1.5 py-0.5 retro text-[8px] font-semibold uppercase bg-secondary text-secondary-foreground border border-black shadow-[1px_1px_0_0_#000] rounded-none">
                             {tipoEspanol}
                           </span>
                           {especie.elemento && TRADUCCION_ELEMENTOS[especie.elemento] && (
                             <span
-                              className={`inline-flex items-center px-1.5 py-0.5 text-[9px] font-mono font-semibold uppercase border rounded-none ${
+                              className={`inline-flex items-center px-1.5 py-0.5 retro text-[8px] font-semibold uppercase border border-black shadow-[1px_1px_0_0_#000] rounded-none ${
                                 TRADUCCION_ELEMENTOS[especie.elemento].clase
                               }`}
                             >
                               {TRADUCCION_ELEMENTOS[especie.elemento].nombre}
                             </span>
                           )}
-                          <span className="inline-flex items-center gap-1 px-1.5 py-0.5 text-[9px] font-mono border border-border bg-background text-muted-foreground rounded-none">
+                          <span className="inline-flex items-center gap-1 px-1.5 py-0.5 retro text-[8px] border border-black shadow-[1px_1px_0_0_#000] bg-background text-muted-foreground rounded-none">
                             {renderIconoArquetipo(arquetipo)}
                             <span>{arquetipo}</span>
                           </span>
@@ -453,7 +458,7 @@ export function PantallaCatalogo() {
                       </CardHeader>
 
                       {/* Vitrina Central de la Criatura con Sprite Pixel-Art */}
-                      <div className="relative w-full h-36 sm:h-40 bg-abismo/90 border-y-2 border-border/70 flex items-center justify-center p-3 overflow-hidden group">
+                      <div className="relative w-full h-36 sm:h-40 bg-black/60 border-y-2 border-black shadow-[inset_2px_2px_0_0_rgba(0,0,0,0.7)] flex items-center justify-center p-3 overflow-hidden group">
                         <div
                           className="absolute inset-0 opacity-10 bg-[radial-gradient(#ffffff_1px,transparent_1px)] [background-size:12px_12px] pointer-events-none"
                           aria-hidden="true"
@@ -461,13 +466,13 @@ export function PantallaCatalogo() {
 
                         {/* Badge flotante de LEGENDARIO o ESPECIAL */}
                         {especie.esLegendaria ? (
-                          <span className="absolute top-2 right-2 z-10 bg-amber-400/25 text-amber-200 border-2 border-amber-400 text-[9px] px-1.5 py-0.5 rounded-none font-mono font-bold flex items-center gap-1 shadow-[2px_2px_0_0_#000]">
-                            <Crown className="w-2.5 h-2.5" aria-hidden="true" />
+                          <span className="absolute top-2 right-2 z-10 bg-amber-400/30 text-amber-200 border-2 border-black text-[8px] px-2 py-0.5 rounded-none retro font-bold flex items-center gap-1 shadow-[2px_2px_0_0_#000]">
+                            <Crown className="w-2.5 h-2.5 text-amber-400" aria-hidden="true" />
                             <span>LEGENDARIO</span>
                           </span>
                         ) : especie.esEspecial ? (
-                          <span className="absolute top-2 right-2 z-10 bg-amber-500/20 text-amber-300 border border-amber-500/80 text-[9px] px-1.5 py-0.5 rounded-none font-mono font-bold flex items-center gap-1 shadow-[2px_2px_0_0_#000]">
-                            <Sparkles className="w-2.5 h-2.5" aria-hidden="true" />
+                          <span className="absolute top-2 right-2 z-10 bg-amber-500/25 text-amber-300 border-2 border-black text-[8px] px-2 py-0.5 rounded-none retro font-bold flex items-center gap-1 shadow-[2px_2px_0_0_#000]">
+                            <Sparkles className="w-2.5 h-2.5 text-amber-300" aria-hidden="true" />
                             <span>ESPECIAL</span>
                           </span>
                         ) : null}
@@ -476,48 +481,50 @@ export function PantallaCatalogo() {
                           src={obtenerImagenCriatura(especie.slug)}
                           alt={`Sprite de ${especie.nombre}`}
                           onError={(e) => manejarErrorImagen(e, "criatura")}
-                          className="pixelated h-28 w-28 sm:h-32 sm:w-32 object-contain transition-transform duration-200 group-hover:scale-110 drop-shadow-[0_4px_8px_rgba(0,0,0,0.6)]"
+                          className="pixelated h-28 w-28 sm:h-32 sm:w-32 object-contain transition-transform duration-200 group-hover:scale-110 drop-shadow-[0_4px_8px_rgba(0,0,0,0.8)]"
                           loading="lazy"
                         />
                       </div>
 
-                      {/* Contenido: Atributos y Acciones */}
-                      <CardContent className="p-3 pt-2.5 space-y-2.5">
-                        {/* Resumen de Atributos Base */}
-                        <div className="grid grid-cols-4 gap-1 p-1.5 bg-background border border-border/60 text-center font-mono text-[11px]">
+                      {/* Contenido: Atributos y Acciones con holgura táctica */}
+                      <CardContent className="p-3 pt-3 space-y-3">
+                        {/* Resumen de Atributos Base en contenedor retro-brutalista */}
+                        <div className="grid grid-cols-4 gap-1.5 p-2 bg-black/50 border-2 border-black shadow-[2px_2px_0_0_#000] text-center retro text-[9px]">
                           <div>
-                            <span className="text-[8px] text-muted-foreground block uppercase">HP</span>
-                            <span className="font-semibold text-foreground">{especie.hpBase}</span>
+                            <span className="text-[7px] text-muted-foreground block uppercase">HP</span>
+                            <span className="font-bold text-foreground">{especie.hpBase}</span>
                           </div>
                           <div>
-                            <span className="text-[8px] text-muted-foreground block uppercase">ATQ</span>
-                            <span className="font-semibold text-red-400">{especie.ataqueBase}</span>
+                            <span className="text-[7px] text-muted-foreground block uppercase">ATQ</span>
+                            <span className="font-bold text-red-400">{especie.ataqueBase}</span>
                           </div>
                           <div>
-                            <span className="text-[8px] text-muted-foreground block uppercase">DEF</span>
-                            <span className="font-semibold text-blue-400">{especie.defensaBase}</span>
+                            <span className="text-[7px] text-muted-foreground block uppercase">DEF</span>
+                            <span className="font-bold text-blue-400">{especie.defensaBase}</span>
                           </div>
                           <div>
-                            <span className="text-[8px] text-muted-foreground block uppercase">VEL</span>
-                            <span className="font-semibold text-emerald-400">{especie.velocidadBase}</span>
+                            <span className="text-[7px] text-muted-foreground block uppercase">VEL</span>
+                            <span className="font-bold text-emerald-400">{especie.velocidadBase}</span>
                           </div>
                         </div>
 
-                        <div className="flex items-center justify-between text-[10px] font-mono px-0.5 text-muted-foreground">
+                        <div className="flex items-center justify-between retro text-[8px] sm:text-[9px] px-0.5 text-muted-foreground">
                           <span>CR: <strong className="text-primary">{especie.challengeRating}</strong></span>
                           <span>Captura: <strong className="text-amber-400">{Math.round(especie.tasaCaptura * 100)}%</strong></span>
                         </div>
 
-                        {/* Botón de Inspección */}
-                        <Button
-                          size="sm"
-                          variant="outline"
-                          className="w-full text-xs rounded-none flex items-center justify-center gap-1.5 h-8 font-mono hover:bg-primary hover:text-primary-foreground transition-colors"
-                          onClick={() => abrirInspeccion(especie)}
-                        >
-                          <Eye className="w-3.5 h-3.5" aria-hidden="true" />
-                          <span>INSPECCIONAR FICHA</span>
-                        </Button>
+                        {/* Botón de Inspección con separación y estética retro-brutalista */}
+                        <div className="pt-1 sm:pt-2">
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            className="w-full h-8 retro text-[8px] sm:text-[9px] rounded-none border-2 border-black shadow-[2px_2px_0_0_#000] active:translate-y-0.5 active:shadow-none hover:shadow-[4px_4px_0_0_#000] hover:bg-primary hover:text-primary-foreground transition-all flex items-center justify-center gap-1.5 cursor-pointer"
+                            onClick={() => abrirInspeccion(especie)}
+                          >
+                            <Eye className="w-3.5 h-3.5" aria-hidden="true" />
+                            <span>INSPECCIONAR FICHA</span>
+                          </Button>
+                        </div>
                       </CardContent>
                     </Card>
                   );
@@ -528,39 +535,39 @@ export function PantallaCatalogo() {
         </div>
       )}
 
-      {/* Modal Sellado de Inspección Táctica Detallada */}
+      {/* Modal Sellado de Inspección Táctica Detallada (Dialog 8-bit Brutalist) */}
       <Dialog open={modalAbierto} onOpenChange={setModalAbierto}>
         <DialogContent
           font="normal"
           showCloseButton={false}
-          className="w-[calc(100vw-2rem)] sm:max-w-md max-h-[85vh] overflow-hidden rounded-none border-2 border-primary bg-bastion p-0 flex flex-col"
+          className="w-[calc(100vw-2rem)] sm:max-w-md max-h-[85vh] overflow-hidden rounded-none border-4 border-black shadow-[8px_8px_0_0_#000] bg-card p-0 flex flex-col"
         >
           {especieSeleccionada && (
             <div className="flex flex-col max-h-[85vh] overflow-hidden">
               {/* Cabecera del Modal con Título y Botón Cerrar */}
-              <div className="p-3 bg-bastion border-b-2 border-border/80 flex items-center justify-between gap-2 shrink-0">
+              <div className="p-3 bg-bastion border-b-2 border-black flex items-center justify-between gap-2 shrink-0">
                 <div className="min-w-0 flex-1">
-                  <DialogTitle className="text-xs sm:text-sm font-bold text-primary tracking-wide retro truncate">
+                  <DialogTitle className="retro text-[10px] sm:text-xs font-bold text-primary tracking-wide break-words">
                     {especieSeleccionada.nombre}
                   </DialogTitle>
-                  <DialogDescription className="text-[10px] text-muted-foreground font-mono truncate">
+                  <DialogDescription className="retro text-[7px] sm:text-[8px] text-muted-foreground break-all mt-0.5">
                     {especieSeleccionada.keyExterna || `srd-2024_${especieSeleccionada.slug}`}
                   </DialogDescription>
                 </div>
                 <button
                   type="button"
                   aria-label="Cerrar ficha táctica"
-                  className="text-muted-foreground hover:text-foreground p-1 transition-colors border border-border/60 hover:bg-muted/40 rounded-none shrink-0"
+                  className="text-muted-foreground hover:text-foreground p-1 transition-all border-2 border-black shadow-[2px_2px_0_0_#000] active:translate-y-0.5 active:shadow-none hover:bg-muted/50 rounded-none shrink-0 cursor-pointer"
                   onClick={() => setModalAbierto(false)}
                 >
                   <X className="w-4 h-4" aria-hidden="true" />
                 </button>
               </div>
 
-              {/* Cuerpo del Modal con Scroll Interno Limpio */}
-              <div className="overflow-y-auto p-4 space-y-4 font-sans text-xs flex-1">
+              {/* Cuerpo del Modal con Scroll Interno Limpio y Tipografía Retro Integral */}
+              <div className="overflow-y-auto p-3 sm:p-4 space-y-4 retro text-[8px] sm:text-[9px] flex-1">
                 {/* Vitrina Ampliada en Modal */}
-                <div className="relative w-full h-36 bg-abismo border-2 border-border/80 flex items-center justify-center p-3 overflow-hidden shrink-0">
+                <div className="relative w-full h-36 bg-black/60 border-2 border-black shadow-[inset_2px_2px_0_0_rgba(0,0,0,0.7)] flex items-center justify-center p-3 overflow-hidden shrink-0">
                   <div
                     className="absolute inset-0 opacity-15 bg-[radial-gradient(#ffffff_1px,transparent_1px)] [background-size:12px_12px] pointer-events-none"
                     aria-hidden="true"
@@ -569,16 +576,16 @@ export function PantallaCatalogo() {
                     src={obtenerImagenCriatura(especieSeleccionada.slug)}
                     alt={especieSeleccionada.nombre}
                     onError={(e) => manejarErrorImagen(e, "criatura")}
-                    className="pixelated h-28 w-28 object-contain drop-shadow-[0_4px_10px_rgba(0,0,0,0.7)]"
+                    className="pixelated h-28 w-28 object-contain drop-shadow-[0_4px_10px_rgba(0,0,0,0.8)]"
                   />
                   {especieSeleccionada.esLegendaria ? (
-                    <span className="absolute top-2 right-2 bg-amber-400/25 text-amber-200 border-2 border-amber-400 text-[9px] px-1.5 py-0.5 rounded-none font-mono font-bold flex items-center gap-1 shadow-[2px_2px_0_0_#000]">
-                      <Crown className="w-2.5 h-2.5" aria-hidden="true" />
+                    <span className="absolute top-2 right-2 bg-amber-400/30 text-amber-200 border-2 border-black text-[8px] px-2 py-0.5 rounded-none retro font-bold flex items-center gap-1 shadow-[2px_2px_0_0_#000]">
+                      <Crown className="w-2.5 h-2.5 text-amber-400" aria-hidden="true" />
                       <span>LEGENDARIO</span>
                     </span>
                   ) : especieSeleccionada.esEspecial ? (
-                    <span className="absolute top-2 right-2 bg-amber-500/20 text-amber-300 border border-amber-500/80 text-[9px] px-1.5 py-0.5 rounded-none font-mono font-bold flex items-center gap-1 shadow-[2px_2px_0_0_#000]">
-                      <Sparkles className="w-2.5 h-2.5" aria-hidden="true" />
+                    <span className="absolute top-2 right-2 bg-amber-500/25 text-amber-300 border-2 border-black text-[8px] px-2 py-0.5 rounded-none retro font-bold flex items-center gap-1 shadow-[2px_2px_0_0_#000]">
+                      <Sparkles className="w-2.5 h-2.5 text-amber-300" aria-hidden="true" />
                       <span>ESPECIAL</span>
                     </span>
                   ) : null}
@@ -586,33 +593,33 @@ export function PantallaCatalogo() {
 
                 {/* Fila de Badges */}
                 <div className="flex items-center gap-1.5 flex-wrap">
-                  <span className="inline-flex items-center px-1.5 py-0.5 text-[9px] uppercase font-mono font-semibold bg-secondary text-secondary-foreground border border-border rounded-none">
+                  <span className="inline-flex items-center px-1.5 py-0.5 retro text-[8px] uppercase font-semibold bg-secondary text-secondary-foreground border border-black shadow-[1px_1px_0_0_#000] rounded-none">
                     {TRADUCCION_TIPOS_ESPECIE[especieSeleccionada.tipo.toLowerCase()] || especieSeleccionada.tipo}
                   </span>
                   {especieSeleccionada.elemento && TRADUCCION_ELEMENTOS[especieSeleccionada.elemento] && (
                     <span
-                      className={`inline-flex items-center px-1.5 py-0.5 text-[9px] uppercase font-mono font-semibold border rounded-none ${
+                      className={`inline-flex items-center px-1.5 py-0.5 retro text-[8px] uppercase font-semibold border border-black shadow-[1px_1px_0_0_#000] rounded-none ${
                         TRADUCCION_ELEMENTOS[especieSeleccionada.elemento].clase
                       }`}
                     >
                       {TRADUCCION_ELEMENTOS[especieSeleccionada.elemento].nombre}
                     </span>
                   )}
-                  <span className="inline-flex items-center gap-1 px-1.5 py-0.5 text-[9px] font-mono border border-border bg-background text-muted-foreground rounded-none">
+                  <span className="inline-flex items-center gap-1 px-1.5 py-0.5 retro text-[8px] border border-black shadow-[1px_1px_0_0_#000] bg-background text-muted-foreground rounded-none">
                     {renderIconoArquetipo(calcularArquetipoCriatura(especieSeleccionada))}
                     <span>{calcularArquetipoCriatura(especieSeleccionada)}</span>
                   </span>
-                  <span className="inline-flex items-center px-1.5 py-0.5 text-[9px] font-mono border border-border text-muted-foreground rounded-none">
+                  <span className="inline-flex items-center px-1.5 py-0.5 retro text-[8px] border border-black shadow-[1px_1px_0_0_#000] text-muted-foreground rounded-none">
                     CR {especieSeleccionada.challengeRating}
                   </span>
                   {especieSeleccionada.zona && (
-                    <span className="inline-flex items-center gap-1 px-1.5 py-0.5 text-[9px] font-mono border border-border text-muted-foreground rounded-none bg-background">
-                      <MapPin className="w-2.5 h-2.5" aria-hidden="true" />
+                    <span className="inline-flex items-center gap-1 px-1.5 py-0.5 retro text-[8px] border border-black shadow-[1px_1px_0_0_#000] text-muted-foreground rounded-none bg-background">
+                      <MapPin className="w-2.5 h-2.5 text-primary" aria-hidden="true" />
                       <span>{especieSeleccionada.zona.nombre}</span>
                     </span>
                   )}
                   {especieSeleccionada.esLegendaria && (
-                    <span className="inline-flex items-center gap-1 px-1.5 py-0.5 text-[9px] font-mono font-bold border border-amber-400 bg-amber-400/20 text-amber-300 rounded-none shadow-[2px_2px_0_0_#000]">
+                    <span className="inline-flex items-center gap-1 px-1.5 py-0.5 retro text-[8px] font-bold border-2 border-black bg-amber-400/25 text-amber-300 rounded-none shadow-[2px_2px_0_0_#000]">
                       <Crown className="w-2.5 h-2.5 text-amber-400" aria-hidden="true" />
                       <span>Criatura Legendaria</span>
                     </span>
@@ -621,97 +628,99 @@ export function PantallaCatalogo() {
 
                 {/* Lore Biológico */}
                 {especieSeleccionada.descripcion && (
-                  <div className="p-2.5 bg-background border border-border/70 text-xs leading-relaxed text-muted-foreground font-sans">
+                  <div className="p-2.5 bg-background border-2 border-black shadow-[2px_2px_0_0_#000] retro text-[8px] sm:text-[9px] leading-relaxed text-muted-foreground break-words">
                     {especieSeleccionada.descripcion}
                   </div>
                 )}
 
                 {/* Atributos Base con Barras Comparativas sobre 100 */}
-                <div className="p-3 bg-background border border-border/70 space-y-2">
-                  <span className="text-[10px] font-bold text-primary uppercase tracking-wider block font-mono">
+                <div className="p-3 bg-background border-2 border-black shadow-[2px_2px_0_0_#000] space-y-2.5">
+                  <span className="retro text-[8px] sm:text-[9px] font-bold text-primary uppercase tracking-wider block">
                     Atributos Base (Escala 100)
                   </span>
-                  <div className="space-y-1.5 text-xs">
-                    <div className="space-y-0.5">
-                      <div className="flex justify-between text-[11px] font-mono">
+                  <div className="space-y-2">
+                    <div className="space-y-1">
+                      <div className="flex justify-between retro text-[8px] sm:text-[9px]">
                         <span>Puntos de Salud (HP)</span>
-                        <span className="font-semibold">{especieSeleccionada.hpBase}</span>
+                        <span className="font-bold text-foreground">{especieSeleccionada.hpBase}</span>
                       </div>
-                      <Progress value={especieSeleccionada.hpBase} className="h-2 rounded-none" />
+                      <Progress value={especieSeleccionada.hpBase} className="h-2 rounded-none border border-black" />
                     </div>
-                    <div className="space-y-0.5">
-                      <div className="flex justify-between text-[11px] font-mono">
+                    <div className="space-y-1">
+                      <div className="flex justify-between retro text-[8px] sm:text-[9px]">
                         <span>Ataque</span>
-                        <span className="font-semibold text-red-400">{especieSeleccionada.ataqueBase}</span>
+                        <span className="font-bold text-red-400">{especieSeleccionada.ataqueBase}</span>
                       </div>
-                      <Progress value={especieSeleccionada.ataqueBase} className="h-2 rounded-none" />
+                      <Progress value={especieSeleccionada.ataqueBase} className="h-2 rounded-none border border-black" />
                     </div>
-                    <div className="space-y-0.5">
-                      <div className="flex justify-between text-[11px] font-mono">
+                    <div className="space-y-1">
+                      <div className="flex justify-between retro text-[8px] sm:text-[9px]">
                         <span>Defensa</span>
-                        <span className="font-semibold text-blue-400">{especieSeleccionada.defensaBase}</span>
+                        <span className="font-bold text-blue-400">{especieSeleccionada.defensaBase}</span>
                       </div>
-                      <Progress value={especieSeleccionada.defensaBase} className="h-2 rounded-none" />
+                      <Progress value={especieSeleccionada.defensaBase} className="h-2 rounded-none border border-black" />
                     </div>
-                    <div className="space-y-0.5">
-                      <div className="flex justify-between text-[11px] font-mono">
+                    <div className="space-y-1">
+                      <div className="flex justify-between retro text-[8px] sm:text-[9px]">
                         <span>Velocidad</span>
-                        <span className="font-semibold text-emerald-400">{especieSeleccionada.velocidadBase}</span>
+                        <span className="font-bold text-emerald-400">{especieSeleccionada.velocidadBase}</span>
                       </div>
-                      <Progress value={especieSeleccionada.velocidadBase} className="h-2 rounded-none" />
+                      <Progress value={especieSeleccionada.velocidadBase} className="h-2 rounded-none border border-black" />
                     </div>
                   </div>
 
-                  <div className="grid grid-cols-2 gap-2 pt-1 border-t border-border/40 text-[10px] font-mono">
+                  <div className="grid grid-cols-2 gap-2 pt-2 border-t-2 border-black/40 retro text-[8px] sm:text-[9px]">
                     <div>CR: <strong className="text-primary">{especieSeleccionada.challengeRating}</strong></div>
                     <div>Tasa Captura: <strong className="text-amber-400">{Math.round(especieSeleccionada.tasaCaptura * 100)}%</strong></div>
                   </div>
                 </div>
 
                 {/* Lista de Movimientos Conocidos (4 Slots Canónicos) */}
-                <div className="space-y-1.5">
-                  <div className="flex items-center justify-between">
-                    <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider block font-mono">
+                <div className="space-y-2">
+                  <div className="flex items-center justify-between flex-wrap gap-1">
+                    <span className="retro text-[8px] sm:text-[9px] font-bold text-muted-foreground uppercase tracking-wider block">
                       Movimientos Tácticos (4 Slots)
                     </span>
-                    <span className="text-[9px] font-mono text-muted-foreground">
+                    <span className="retro text-[7px] sm:text-[8px] text-muted-foreground">
                       M1..M3 Combate · M4 Furia
                     </span>
                   </div>
-                  <div className="space-y-1">
+                  <div className="space-y-1.5">
                     {(especieSeleccionada.movimientos || []).map((mov, i) => {
                       const numSlot = mov.slot ?? (i + 1);
                       const esSlot4 = numSlot === 4;
                       return (
                         <div
                           key={i}
-                          className={`p-2 bg-background border text-xs flex items-center justify-between gap-2 ${
-                            esSlot4 ? "border-amber-500/50 bg-amber-500/5" : "border-border/60"
+                          className={`p-2 bg-background border-2 border-black shadow-[2px_2px_0_0_#000] flex items-center justify-between gap-2 ${
+                            esSlot4 ? "border-amber-500/80 bg-amber-500/10" : ""
                           }`}
                         >
-                          <div className="min-w-0 flex-1">
+                          <div className="min-w-0 flex-1 space-y-1">
                             <div className="flex items-center gap-1.5 flex-wrap">
                               <span
-                                className={`font-mono text-[9px] px-1 py-0.2 border rounded-none font-bold ${
+                                className={`retro text-[7px] sm:text-[8px] px-1 py-0.5 border border-black font-bold ${
                                   esSlot4
-                                    ? "border-amber-400 text-amber-300 bg-amber-400/20"
-                                    : "border-border text-foreground bg-muted/30"
+                                    ? "border-amber-400 text-amber-300 bg-amber-400/25"
+                                    : "border-black text-foreground bg-muted/40"
                                 }`}
                               >
                                 M{numSlot}
                               </span>
-                              <span className="font-semibold text-foreground font-sans truncate">{mov.nombre}</span>
+                              <span className="retro text-[8px] sm:text-[9px] font-bold text-foreground break-words">
+                                {mov.nombre}
+                              </span>
                               {mov.efecto && (
-                                <span className="text-[8px] font-mono uppercase px-1 py-0.2 border border-primary/40 bg-primary/10 text-primary">
+                                <span className="retro text-[7px] sm:text-[8px] uppercase px-1 py-0.5 border border-primary/60 bg-primary/20 text-primary">
                                   {mov.efecto}
                                 </span>
                               )}
                             </div>
-                            <span className="text-[10px] text-muted-foreground font-mono block truncate">
+                            <span className="retro text-[7px] sm:text-[8px] text-muted-foreground block break-words">
                               {mov.tipoAccion || "Ataque melé"} {mov.nombreOriginal ? `· ${mov.nombreOriginal}` : ""}
                             </span>
                           </div>
-                          <span className="font-mono text-[10px] px-1.5 py-0.5 border border-border rounded-none shrink-0">
+                          <span className="retro text-[7px] sm:text-[8px] px-1.5 py-0.5 border border-black shadow-[1px_1px_0_0_#000] bg-background text-foreground shrink-0">
                             Pot. {mov.poder}
                           </span>
                         </div>
@@ -720,23 +729,25 @@ export function PantallaCatalogo() {
                   </div>
                 </div>
 
-                {/* Botón de Cierre */}
-                <Button
-                  variant="outline"
-                  size="sm"
-                  className="w-full text-xs rounded-none font-mono"
-                  onClick={() => setModalAbierto(false)}
-                >
-                  Cerrar Ficha Táctica
-                </Button>
+                {/* Botón de Cierre de Ficha Táctica con separación táctil */}
+                <div className="pt-2">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="w-full h-8 retro text-[8px] sm:text-[9px] rounded-none border-2 border-black shadow-[2px_2px_0_0_#000] active:translate-y-0.5 active:shadow-none hover:shadow-[4px_4px_0_0_#000] cursor-pointer"
+                    onClick={() => setModalAbierto(false)}
+                  >
+                    Cerrar Ficha Táctica
+                  </Button>
+                </div>
               </div>
             </div>
           )}
         </DialogContent>
       </Dialog>
 
-      {/* Nota legal / Atribución exigida por CC BY 4.0 */}
-      <footer className="p-3 bg-bastion border border-border/60 text-[11px] text-muted-foreground leading-relaxed">
+      {/* Nota legal / Atribución exigida por CC BY 4.0 con tipografía retro y marco brutalista */}
+      <footer className="p-3 bg-bastion border-2 border-black shadow-[4px_4px_0_0_#000] retro text-[8px] sm:text-[9px] text-muted-foreground leading-relaxed break-words">
         <p>
           <strong className="text-foreground">Atribución SRD 5.2 / Open5e:</strong> Esta obra incluye material tomado del System Reference Document 5.2 («SRD 5.2») de Wizards of the Coast LLC, disponible bajo la licencia Creative Commons Attribution 4.0 International (CC BY 4.0).
         </p>

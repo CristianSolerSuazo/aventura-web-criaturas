@@ -316,3 +316,59 @@ test('Regla R1: Cero emojis unicode en PantallaCatalogo, PantallaHistorial y Pag
     }
   }
 });
+
+
+test('Hardening, Ergonomía y Estética Retro-Brutalist: PantallaCatalogo cuenta con marcos 8bitcn, sombras sólidas, tipografía retro integral y confinamiento sin overflow', () => {
+  const rutaCatalogo = join(__dirname, '../src/paginas/PantallaCatalogo.tsx');
+  const codigo = readFileSync(rutaCatalogo, 'utf-8');
+
+  // 1. Confinamiento de pantalla contra overflow horizontal
+  assert.ok(
+    codigo.includes('overflow-x-hidden'),
+    'PantallaCatalogo debe confinar el contenedor raíz con overflow-x-hidden',
+  );
+  assert.ok(
+    codigo.includes('w-full max-w-5xl mx-auto px-2 sm:px-4'),
+    'PantallaCatalogo debe utilizar márgenes y relleno responsivo contenido',
+  );
+
+  // 2. Marcos 8bitcn brutalistas y sombras ortogonales sólidas
+  assert.ok(
+    codigo.includes('border-2 border-black') && codigo.includes('shadow-[4px_4px_0_0_#000]'),
+    'PantallaCatalogo debe implementar marcos gruesos negros border-2 border-black y sombras sólidas shadow-[4px_4px_0_0_#000]',
+  );
+  assert.ok(
+    codigo.includes('shadow-[2px_2px_0_0_#000]'),
+    'PantallaCatalogo debe incorporar sombras ortogonales táctiles shadow-[2px_2px_0_0_#000] en botones y badges',
+  );
+
+  // 3. Separación de botones de acción
+  assert.ok(
+    codigo.includes('gap-2.5 sm:gap-3 flex-wrap'),
+    'Los botones de cabecera deben contar con separación desahogada gap-2.5 sm:gap-3',
+  );
+  assert.ok(
+    codigo.includes('gap-2 sm:gap-2.5 flex-wrap'),
+    'Los filtros de arquetipo deben disponer de separación holgada gap-2 sm:gap-2.5 flex-wrap',
+  );
+
+  // 4. Modal con borde brutalista sellado
+  assert.ok(
+    codigo.includes('border-4 border-black') && codigo.includes('shadow-[8px_8px_0_0_#000]'),
+    'El modal táctico de inspección debe estar sellado con border-4 border-black y sombra shadow-[8px_8px_0_0_#000]',
+  );
+
+  // 5. Tipografía retro 100% integral
+  assert.ok(
+    codigo.includes('retro text-lg sm:text-xl font-bold text-primary'),
+    'El título principal debe utilizar tipografía retro Press Start 2P',
+  );
+  assert.ok(
+    codigo.includes('Atributos Base (Escala 100)'),
+    'El modal debe incluir la escala comparativa de atributos base',
+  );
+  assert.ok(
+    codigo.includes('INSPECCIONAR FICHA'),
+    'La tarjeta debe presentar el botón de acción INSPECCIONAR FICHA',
+  );
+});
