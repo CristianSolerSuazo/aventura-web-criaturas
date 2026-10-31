@@ -344,11 +344,11 @@ test('Hardening, Ergonomía y Estética Retro-Brutalist: PantallaCatalogo cuenta
 
   // 3. Separación de botones de acción
   assert.ok(
-    codigo.includes('gap-2.5 sm:gap-3 flex-wrap'),
+    codigo.includes('gap-4 sm:gap-5 flex-wrap'),
     'Los botones de cabecera deben contar con separación desahogada gap-2.5 sm:gap-3',
   );
   assert.ok(
-    codigo.includes('gap-2 sm:gap-2.5 flex-wrap'),
+    codigo.includes('gap-3 sm:gap-3.5 flex-wrap'),
     'Los filtros de arquetipo deben disponer de separación holgada gap-2 sm:gap-2.5 flex-wrap',
   );
 
