@@ -491,42 +491,47 @@ Previa a la intervención de la Sub-Fase 10g y bajo la auditoría heurística Im
 
 ---
 
-## 8. Sub-Fase 10h: Santuario de Curación (`PantallaCuracion.tsx`)
+## 8. Sub-Fase 10h: Santuario de Curación de Equipo en Asentamiento (`PantallaCuracion.tsx`)
 
 ### 8.1 Diagnóstico Inicial y Auditoría Impeccable
-Previa a la intervención de la Sub-Fase 10h, el módulo de restauración y la pantalla del Santuario de Curación presentaban 10 carencias críticas de lógica en servidor, arquitectura de datos y experiencia de usuario retro:
-1. **Condición de Carrera (TOCTOU) y Escrituras Redundantes en `CuracionService.restaurarEquipo`:** La transacción interactiva no serializaba la fila del personaje mediante bloqueo pesimista (`FOR UPDATE`), permitiendo que dobles clics concurrentes ejecutaran actualizaciones dobles y crearan entradas duplicadas en la tabla `historial`. Además, actualizaba indiscriminadamente a todas las criaturas aunque ya tuvieran salud completa.
-2. **Respuesta Empobrecida en `POST /api/curacion/restaurar`:** El endpoint devolvía únicamente `{ mensaje, criaturasRestauradas: criaturasEquipo.length }`, informando el tamaño del equipo y no las criaturas sanadas. Omitía métricas cruciales como `criaturasCuradas`, `criaturasRevividas`, `hpTotalRestaurado`, `ubicacionNombre` y el arreglo `detalles: [{ criaturaId, nombre, hpPrevio, hpNuevo, hpMaximo, hpRestaurado, fueRevivida }]`.
-3. **Ausencia de Orden Canónico e Inclusión de Especie:** `tx.criatura.findMany` omitía `orderBy: { ordenEquipo: 'asc' }` e `include: { especie: true }`, impidiendo conocer el nombre canónico de cada criatura restaurada en el servidor.
-4. **Documentación Swagger Incompleta:** `CuracionController` declaraba únicamente `@ApiResponse({ status: 200 })`, omitiendo las respuestas de error de negocio `403 SERVICIO_NO_DISPONIBLE` y `404 PERSONAJE_NO_ENCONTRADO`.
-5. **Ausencia de Atmósfera del Santuario y Desconocimiento de Ubicación Actual:** `PantallaCuracion.tsx` solo consultaba `api.obtenerEquipo()`, ignorando `api.obtenerUbicacionActual()`. No desplegaba el paisaje retro del manantial (`obtenerImagenZona` con fallback SVG y clase `.pixelated`), ni las insignias retro canónicas `SANTUARIO ANCESTRAL` y `SERVICIO GRATUITO`, ni advertía si el jugador se encontraba en una ruta hostil sin servicio.
-6. **Ausencia Total de Sprites Pixel-Art y Metadatos Tácticos:** Las tarjetas de criaturas eran cajas de texto plano que no invocaban `obtenerImagenCriatura(criatura.slug)` ni `manejarErrorImagen(e, "criatura")`. No exhibían nivel (`Nv. X`), apodo, porcentaje numérico de salud ni destacaban al Líder del Equipo (`orden === 1`).
-7. **Semáforo de Estado Incompleto:** La insignia alternaba únicamente entre "Saludable" y "Herida". Una criatura caída (`hpActual === 0`) se marcaba erróneamente como "Herida", sin diferenciar los 3 estados tácticos canónicos: `PLENA VITALIDAD`, `HERIDA` y `DEBILITADA / CAÍDA`.
-8. **Carencia de Secuencia Cinemática de Bendición y Cifras Flotantes:** Al pulsar restaurar, la salud conmutaba instantáneamente en seco sin animación. No se aplicaban las clases de micro-interacción `anim-curacion` ni las cifras flotantes `anim-curacion-flotante` (`+XX HP` / `¡REVIVIDA! +XX HP`).
-9. **Ausencia de Fanfarria Auditiva en Web Audio:** No se invocaba `reproducirSonido` y `sintetizarTonoRetro` en `assets.ts` carecía de una fanfarria solemne específica para la bendición grupal del santuario (`"santuario"` / `"bendicion"`).
-10. **Anti-Patrón `<Link><Button/></Link>`, Tipografía Genérica y Falta de `aria-busy`:** Enlaces con botones anidados dentro de etiquetas `<a>` (HTML inválido), fuentes sans en títulos y ausencia de `aria-busy={restaurando}` con texto retro en mayúsculas `CANALIZANDO BENDICIÓN...`.
+Previa a la auditoría heurística Impeccable y la consolidación visual retro-brutalista de la Sub-Fase 10h, el módulo de restauración y la pantalla del Santuario de Curación presentaban deficiencias críticas a nivel de experiencia de usuario, diseño retro y arquitectura:
+1. **Desplazamiento Horizontal en Pantallas Móviles (360px–420px):** El contenedor principal carecía de confinamiento elástico (`w-full max-w-4xl mx-auto px-2 sm:px-4 overflow-x-hidden`). En dispositivos móviles compactos (360px–420px), la barra de 5 métricas tácticas y los márgenes rígidos generaban scroll lateral involuntario.
+2. **Acortamiento y Truncamiento Excesivo de Nombres y Apodos:** Empleo de clases `truncate` rígidas en los encabezados y apodos de las criaturas, mutilando la identidad táctica de compañeros con nombres largos o apodos personalizados.
+3. **Disparidad Tipográfica (Falta de Fuente Retro Integral):** Presencia residual de fuentes sans y monospace estándar en la descripción narrativa del manantial sagrado (`font-sans`), en las métricas tácticas del equipo (`font-mono`), en las etiquetas de vitalidad y en los botones de retorno, rompiendo la inmersión 8-bit de Aethelgard.
+4. **Falta de Marcos Retro-Brutalistas 8bitcn/ui y Sombras Sólidas:** El contenedor Hero y las tarjetas de combatientes empleaban bordes delgados genéricos (`border-primary/50`, `border-border/60`) y sombras difusas estándar (`shadow-lg`), desalineadas con la guía de estilo brutalista de Aethelgard (`border-4 border-black shadow-[6px_6px_0_0_#000]` y `border-2 border-black shadow-[4px_4px_0_0_#000]`).
+5. **Condición de Carrera (TOCTOU) y Escrituras Redundantes en `CuracionService.restaurarEquipo`:** La transacción interactiva no serializaba la fila del personaje mediante bloqueo pesimista (`FOR UPDATE`), permitiendo que dobles clics concurrentes ejecutaran actualizaciones dobles y crearan entradas duplicadas en la tabla `historial`. Además, actualizaba indiscriminadamente a todas las criaturas aunque ya tuvieran salud completa.
+6. **Respuesta Empobrecida en `POST /api/curacion/restaurar`:** El endpoint devolvía únicamente `{ mensaje, criaturasRestauradas: criaturasEquipo.length }`, informando el tamaño del equipo y no las criaturas sanadas. Omitía métricas cruciales como `criaturasCuradas`, `criaturasRevividas`, `hpTotalRestaurado`, `ubicacionNombre` y el arreglo `detalles: [{ criaturaId, nombre, hpPrevio, hpNuevo, hpMaximo, hpRestaurado, fueRevivida }]`.
+7. **Ausencia de Orden Canónico e Inclusión de Especie:** `tx.criatura.findMany` omitía `orderBy: { ordenEquipo: 'asc' }` e `include: { especie: true }`, impidiendo conocer el nombre canónico de cada criatura restaurada en el servidor.
+8. **Documentación Swagger Incompleta:** `CuracionController` declaraba únicamente `@ApiResponse({ status: 200 })`, omitiendo las respuestas de error de negocio `403 SERVICIO_NO_DISPONIBLE` y `404 PERSONAJE_NO_ENCONTRADO`.
+9. **Carencia de Secuencia Cinemática de Bendición y Cifras Flotantes:** Al pulsar restaurar, la salud conmutaba instantáneamente en seco sin animación ni cifras flotantes `anim-curacion-flotante` (`+XX HP` / `¡REVIVIDA! +XX HP`).
+10. **Anti-Patrón `<Link><Button/></Link>` y Falta de Hardening:** Enlaces anidados en botones y ausencia de `aria-busy={restaurando}` con feedback retro de bloqueo.
 
 ---
 
 ### 8.2 Mejoras Implementadas
 
-#### A. Identidad Retro y Jerarquía Visual (`docs/DESIGN.md`)
-- **Cabecera Inmersiva con Paisaje del Manantial:** Integración de banner panorámico ortogonal que resuelve dinámicamente la imagen de la localidad (`obtenerImagenZona`) con clase `.pixelated`, degradado de atmósfera sagrada y fallback SVG sin fisuras.
-- **Insignias Temáticas 8-Bit:** Inclusión de distintivos superiores retro con tipografía `Press Start 2P`: `SANTUARIO ANCESTRAL` (icono `Sparkles`) y `SERVICIO GRATUITO` (icono `ShieldCheck`).
-- **Tipografía Bimodal Estricta:** Título principal del santuario, insignias y estados renderizados en `Press Start 2P` (`.retro`), combinados con `Geist Mono` para métricas numéricas y `Geist Sans` para narrativa inmersiva.
-- **Sprites Pixelados de 64x64 y Distinción del Líder:** Cada miembro del equipo cuenta con un marco pixel-art de 64x64 con `obtenerImagenCriatura`, `.pixelated` y atenuación en escala de grises (`grayscale`) si se encuentra debilitada. La primera posición (`orden === 1`) exhibe borde ámbar reforzado e insignia distintiva `LÍDER` con corona (`Crown`).
-- **Semáforo Táctico de 3 Niveles:**
-  - `PLENA VITALIDAD`: Borde y fondo esmeralda con icono `ShieldCheck` (`hpActual >= hpMaximo`).
-  - `HERIDA`: Borde y fondo ámbar con icono `HeartPulse` (`0 < hpActual < hpMaximo`).
-  - `DEBILITADA / CAÍDA`: Borde y fondo carmesí con icono `AlertCircle` (`hpActual <= 0`).
+#### A. Identidad Retro-Brutalist 8-bit y Tipografía Integral (`docs/DESIGN.md`)
+- **Tipografía Retro 100% Integral (`Press Start 2P` / `.retro` para TODO):** Aplicación universal de la tipografía pixelada en la totalidad de los elementos textuales de la interfaz:
+  - Título principal («SANTUARIO DE CURACIÓN») con sombra de texto ortogonal (`drop-shadow-[2px_2px_0_#000]`).
+  - Descripción narrativa completa del manantial sagrado en tipografía retro compacta con interlineado adaptado (`retro text-[8px] sm:text-[9px] text-muted-foreground leading-relaxed break-words text-center`).
+  - Insignias temáticas superiores retro-brutalistas enmarcadas en negro: `SANTUARIO ANCESTRAL` (`Sparkles`) y `SERVICIO GRATUITO` (`ShieldCheck`).
+  - Resumen táctico de 5 métricas: etiquetas (`TOTAL EQUIPO`, `PLENA SALUD`, `HERIDAS`, `DEBILITADAS`, `DÉFICIT TOTAL`) y valores numéricos en `.retro`.
+  - Botón de restauración masiva (`RESTAURAR TODO EL EQUIPO`, `EQUIPO EN PLENA VITALIDAD`, `CANALIZANDO BENDICIÓN...`) y botón de navegación de retorno al asentamiento.
+  - Título de sección («DESGLOSE TÁCTICO DEL EQUIPO»), nombres de criaturas, insignias de estado vital (`LÍDER`, `PLENA VITALIDAD`, `HERIDA`, `DEBILITADA / CAÍDA`), nivel, posición en escuadrón y medidores de vitalidad (`Vitalidad: HP / MaxHP HP (XX%)`).
+- **Calibración Antiacortamiento y Cero Truncado en Móvil:** Erradicación de clases `truncate` rígidas en nombres y apodos; adopción de envoltura elástica multilínea (`break-words`) con interlineado fluido (`leading-relaxed`), permitiendo lectura clara y sin mutilaciones en cualquier ancho de pantalla.
+- **Confinamiento Responsivo Móvil sin Overflow Horizontal (360px–420px):** Contenedor principal acotado con `w-full max-w-4xl mx-auto px-2 sm:px-4 py-2 sm:py-4 space-y-4 sm:space-y-6 overflow-x-hidden`.
+- **Rejilla Táctica de 5 Métricas Elástica:** Rejilla responsiva `grid-cols-2 sm:grid-cols-5 gap-2` dentro de caja táctil negra `border-2 border-black bg-black/40 shadow-[inset_2px_2px_0_0_rgba(0,0,0,0.5)]` donde la quinta métrica (`DÉFICIT TOTAL`) adopta `col-span-2 sm:col-span-1` para apilado natural en 360px sin forzar scroll horizontal.
 
-#### B. Componentes Táctiles 8bitcn/ui y Hardening
-- **Barra de Resumen Táctico del Equipo:** Cuadrícula ortogonal de 5 columnas con métricas en tiempo real: `TOTAL EQUIPO`, `PLENA SALUD`, `HERIDAS`, `DEBILITADAS` y `DÉFICIT TOTAL` (`+{deficitTotalHp} HP`).
-- **Secuencia Cinemática de Bendición y Números Flotantes:**
-  - Al completar el ritual, las tarjetas de criaturas que recibieron restauración activan el resplandor esmeralda `anim-curacion`.
-  - En la esquina superior derecha se disparan cifras flotantes `anim-curacion-flotante` con contorno ortogonal negro de 2px (`+XX HP` o `¡REVIVIDA! +XX HP` si la criatura fue levantada desde 0 HP).
-- **Hardening contra Doble Clic:** Botón de acción con deshabilitación estricta durante la mutación, `aria-busy={restaurando}`, spinner pixelado y texto en mayúsculas `CANALIZANDO BENDICIÓN...`.
-- **Eliminación del Anti-Patrón `<Link><Button>` y Regla R1:** Navegación hacia el Hub mediante `useNavigate` en un botón nativo retro. Cero emojis unicode en toda la pantalla (inspeccionado en pruebas automatizadas), sustituidos por iconos SVG de Lucide (`Heart`, `Sparkles`, `ShieldCheck`, `ArrowLeft`, `AlertCircle`, `Crown`, `HeartPulse`).
+#### B. Componentes Táctiles 8bitcn/ui Brutalist y Cinemática
+- **Hero del Santuario Retro-Brutalist:** Marco exterior grueso `border-4 border-black shadow-[6px_6px_0_0_#000] bg-card overflow-hidden text-center`, banner panorámico con borde inferior negro `border-b-4 border-black bg-abismo`, paisaje WebP de zona con degradado y badges enmarcadas con `border-2 border-black shadow-[2px_2px_0_0_#000] bg-black/85`.
+- **Botón de Restauración Brutalista:** Botón principal de tamaño ampliado con marco `border-4 border-black shadow-[6px_6px_0_0_#000] active:translate-y-1 active:shadow-[2px_2px_0_0_#000] hover:shadow-[8px_8px_0_0_#000]` y prevención de doble clic con `aria-busy={restaurando}` y leyenda retro `CANALIZANDO BENDICIÓN...`.
+- **Tarjetas de Criaturas Retro-Brutalistas:**
+  - Marco brutalista `rounded-none border-2 border-black shadow-[4px_4px_0_0_#000] hover:shadow-[6px_6px_0_0_#000] bg-card` con realce dorado para el líder (`border-amber-500/80 bg-amber-500/10`) y destello verde en bendición (`anim-curacion border-emerald-500`).
+  - Vitrina de sprite pixel-art con marco negro y relieve interior hundido (`border-2 border-black bg-black/50 shadow-[inset_2px_2px_0_0_rgba(0,0,0,0.6)]`), renderizado `.pixelated`, filtro `grayscale` si la criatura está debilitada y corona de líder (`Crown`).
+  - Semáforo vital de 3 estados enmarcados en negro con sombra sólida: `PLENA VITALIDAD` (esmeralda), `HERIDA` (ámbar) y `DEBILITADA / CAÍDA` (carmesí).
+  - Barra de salud `HealthBar` en variante retro empotrada con canal oscuro y contorno negro.
+  - Cifra flotante de vitalidad o resurrección `anim-curacion-flotante` en verde esmeralda con cuádruple sombra ortogonal negra (`+XX HP` o `¡REVIVIDA! +XX HP`).
+- **Cumplimiento Estricto de la Regla R1:** Cero emojis unicode en toda la pantalla; iconografía SVG provista exclusivamente por Lucide (`Heart`, `Sparkles`, `ShieldCheck`, `ArrowLeft`, `AlertCircle`, `Crown`, `HeartPulse`).
 
 #### C. Integración Multimedia y Audio Retro Centralizado (`assets.ts`)
 - **Síntesis Web Audio para Santuario (`santuario` / `bendicion`):** Fanfarria solemne ascendente de 4 notas en onda triangular cristalina (`triangle`: 523.25 Hz -> 659.25 Hz -> 783.99 Hz -> 1046.50 Hz con duración de 0.42 s), libre de fugas de `AudioContext` gracias a `osc.onended = () => void ctx.close()`.
@@ -541,7 +546,7 @@ Previa a la intervención de la Sub-Fase 10h, el módulo de restauración y la p
 ---
 
 ### 8.3 Verificación de Calidad y Cero Regresiones
-- **Pruebas Automatizadas Front-End (`apps/web/test/verificacion-curacion.spec.ts`):** 8 pruebas unitarias exhaustivas validando:
+- **Pruebas Automatizadas Front-End (`apps/web/test/verificacion-curacion.spec.ts`):** 9 pruebas unitarias exhaustivas aprobadas al 100%:
   1. Clasificación estricta de los 3 estados vitales y etiquetas en español.
   2. Cálculo de deltas bajo `INV-03` y resurrección de criaturas caídas.
   3. Contratos tipados de `RespuestaRestaurar` y `DetalleCriaturaRestaurada`.
@@ -549,12 +554,13 @@ Previa a la intervención de la Sub-Fase 10h, el módulo de restauración y la p
   5. Síntesis de fanfarria de santuario en `assets.ts`.
   6. Regla R1: 0 emojis unicode en `PantallaCuracion.tsx`.
   7. Accesibilidad: ausencia del anti-patrón `<Link><Button>`.
-  8. Presencia de `aria-busy`, texto retro `CANALIZANDO BENDICIÓN...`, sprites y animaciones `anim-curacion`.
-- **Suite Total Web (`pnpm --filter web test`):** 46 de 46 pruebas aprobadas (100% éxito).
+  8. Presencia de `aria-busy`, texto retro `CANALIZANDO BENDICIÓN...`, sprites pixelados y animaciones cinemáticas `anim-curacion`.
+  9. Hardening, Ergonomía y Estética Retro-Brutalist: Confinamiento `overflow-x-hidden` y `max-w-4xl`, marcos brutalistas `border-4 border-black` y `border-2 border-black`, sombras sólidas ortogonales (`shadow-[6px_6px_0_0_#000]`, `shadow-[4px_4px_0_0_#000]`, `shadow-[2px_2px_0_0_#000]`), erradicación de `truncate` rígido, presencia de `break-words`, insignias temáticas e integración de `HealthBar`.
+- **Suite Total Web (`pnpm --filter web test`):** 78 de 78 pruebas aprobadas (100% éxito).
 - **Pruebas Backend y Reglas de Servidor (`pnpm --filter api test`):** 54 de 54 pruebas aprobadas (100% éxito), incluyendo validaciones de restauración atómica, resurrección, desglose de salud y rechazo en localidades no seguras en `apps/api/test/progreso-tienda.spec.ts`.
-- **Compilación de Producción (`pnpm --filter web build`):** 0 errores TypeScript en Vite, empaquetado exitoso en 2.19s.
-- **Linter Web (`pnpm --filter web lint`):** 0 errores.
-- **Inspección Responsive:** Ausencia total de scroll horizontal en resoluciones móviles de 320 px, 375 px y 768 px.
+- **Compilación de Producción (`pnpm --filter web build`):** 0 errores TypeScript en Vite, empaquetado exitoso en 4.68s.
+- **Linter Web (`pnpm --filter web lint`):** 0 errores en 80 archivos analizados con `oxlint`.
+- **Inspección Responsive:** Ausencia absoluta de desplazamiento horizontal y legibilidad íntegra en resoluciones móviles de 320 px, 360 px, 375 px y 420 px.
 
 ---
 
