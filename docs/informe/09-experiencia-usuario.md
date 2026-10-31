@@ -989,6 +989,47 @@ Tras la estabilización mecánica de la Fase 10l, se realizó una auditoría vis
 
 ---
 
+### 15.4 Pulido Visual de Botones Arcade Biselados, Simetría de Placas HUD y Corrección de Placeholder Invertido (Auditoría Fotográfica)
+
+#### A. Diagnóstico de Defectos Visuales Identificados en Producción
+A partir de una captura de pantalla real del combate en dispositivo móvil, se identificaron cuatro defectos visuales puntuales que degradaban la experiencia estética del juego:
+1. **Truncamiento Asimétrico de Nombres en Placas HUD:** La placa aliada exhibía `Mantarr... NV.5 [Sombra]` debido a que el nombre, el nivel y la afinidad elemental estaban apiñados horizontalmente en un solo contenedor `flex` de ~210px. De igual forma, la placa rival truncaba nombres largos como `Mantarraya Espe... NV.3` por el uso de `truncate` rígido.
+2. **Inversión Espejada del Placeholder Aliado (`AЯUTAЯIƆ`):** El sprite del aliado aplicaba incondicionalmente la clase CSS `scale-x-[-1]` para simular la vista de espaldas/perfil hacia el rival. Cuando la criatura utilizaba el SVG de reserva `placeholder-criatura.svg`, el texto interno `CRIATURA` se invertía en espejo como `AЯUTAЯIƆ`.
+3. **Halo Cian Gigante Desalineado en Botón de Pausa:** En la esquina superior derecha, el botón de pausa utilizaba el componente `<Button variant="outline">` de `8bitcn/ui`, el cual inyectaba automáticamente la capa decorativa `ButtonDecorations` con `dark:bg-ring` absoluto, proyectando un enorme anillo circular cian descalibrado sobre la cabecera.
+4. **Ticker de Bitácora Apretado y Botones Inferiores Genéricos:** El ticker de eventos mostraba un borde dorado desarticulado y un badge invasivo (`2 eventos`) que cortaba prematuramente el texto del encuentro. Asimismo, los botones de la consola inferior (`ROOT`) lucían planos y genéricos debido a que tres de los comandos (`USAR OBJETO`, `CAMBIAR`, `CAPTURAR`) compartían el mismo tono cian opaco plano (`#0e4b5c`), sin relieve táctil de botón de arcade.
+
+#### B. Mejoras Implementadas
+1. **Consola Arcade con Relieve Físico Tridimensional y Paleta Cromática JRPG:**
+   - **Bisel Extruido 3D:** Se dotó a cada botón de la consola de un marco biselado tridimensional con luz cenital y sombra inferior ortogonal:
+     `shadow-[inset_2px_2px_0_rgba(255,255,255,0.35),inset_-2px_-2px_0_rgba(0,0,0,0.5),4px_4px_0_0_#000]`.
+   - **Micro-Animación Mecánica de Pulsación:** Al presionar, el botón se hunde físicamente invirtiendo la iluminación interna:
+     `active:translate-y-0.5 active:shadow-[inset_2px_2px_0_rgba(0,0,0,0.6),2px_2px_0_0_#000]`.
+   - **Jerarquía Cromática Táctica Canónica:**
+     * **ATACAR:** Degradado rojo llama arcade (`from-[#dc2626] to-[#b91c1c]`) con icono `Swords` en amarillo solar (`#fde047`) con drop-shadow negro.
+     * **USAR OBJETO:** Degradado verde esmeralda vital (`from-[#059669] to-[#047857]`) con icono `HeartPulse` en menta brillante (`#a7f3d0`).
+     * **CAMBIAR:** Degradado azul zafiro táctico (`from-[#2563eb] to-[#1d4ed8]`) con icono `ArrowLeftRight` en cian brillante (`#7dd3fc`).
+     * **CAPTURAR:** Degradado púrpura arcano amatista (`from-[#7c3aed] to-[#6d28d9]`) con icono `Sparkles` en oro (`#fde047`).
+     * **HUIR:** Degradado carmesí oscuro de alerta (`from-[#991b1b] to-[#7f1d1d]`) con icono `LogOut` en tono carmesí claro.
+2. **Simetría y Fluidez en Placas HUD:**
+   - Se trasladó la afinidad elemental `{aliado.afinidad}` a la segunda fila de la placa aliada, alineándola simétricamente con la placa rival.
+   - Se ampliaron los anchos máximos a `max-w-[225px] sm:max-w-[260px]`.
+   - Se reemplazó el `truncate` rígido por `break-words line-clamp-2 leading-tight text-[8px] sm:text-[9px]`, permitiendo nombres completos de criaturas en dos líneas limpias sin cortar el nivel.
+3. **Erradicación de `AЯUTAЯIƆ`:**
+   - Incorporación del estado reactivo `esPlaceholderAliado`. Se activa en `onError` de la imagen o si el slug es nulo.
+   - La inversión `scale-x-[-1]` se aplica ahora de manera condicional exclusivamente a sprites reales:
+     `${esPlaceholderAliado || !aliado.slug ? "" : "scale-x-[-1]"}`.
+4. **Botón de Pausa Retro Nativo:**
+   - Reemplazo de `<Button>` por un botón nativo `<button type="button">` con marco negro limpio `border-2 border-black bg-[#121927] shadow-[2px_2px_0_0_#000]`, eliminando por completo el anillo cian descalibrado.
+5. **Ticker de Bitácora Estilo Cartucho:**
+   - Sustitución del marco dorado por marco negro de cartucho `bg-[#0c1424] border-2 border-black shadow-[2px_2px_0_0_#000]`, badge compacto `{bitacoraCombate.length} ev.` y texto en `text-[8px] sm:text-[9px] retro text-amber-100`.
+
+#### C. Verificación de Cero Regresiones
+- **Pruebas Unitarias Web (`pnpm --filter web test`):** **84 de 84 pruebas aprobadas** (100% de éxito).
+- **Linter Web (`pnpm --filter web lint`):** 0 errores.
+- **Compilación de Producción (`pnpm --filter web build`):** 0 errores TypeScript, bundle completado exitosamente en Vite en 2.40s.
+
+---
+
 
 
 
