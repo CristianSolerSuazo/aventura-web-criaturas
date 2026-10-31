@@ -202,9 +202,9 @@ export function PantallaHistorial() {
       </div>
 
       {/* Panel de Control: Filtros Rápidos en Cuadrícula Táctica y Buscador de Crónicas */}
-      <div className="p-3.5 sm:p-5 bg-bastion border-2 border-black shadow-[4px_4px_0_0_#000] rounded-none space-y-4 sm:space-y-5">
+      <div className="p-3 sm:p-5 bg-bastion border-2 border-black shadow-[4px_4px_0_0_#000] rounded-none space-y-4 sm:space-y-5">
         {/* Filtros Rápidos por Categoría Canónica en Rejilla Simétrica (2 cols en móvil, 3 en tablet, 6 en desktop) */}
-        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2.5 sm:gap-3 w-full">
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2 sm:gap-3 w-full">
           {(
             [
               { id: "TODOS", etiqueta: "TODOS", icono: BookOpen },
@@ -224,7 +224,7 @@ export function PantallaHistorial() {
                 key={cat.id}
                 size="sm"
                 variant={activo ? "default" : "outline"}
-                className={`retro text-[8px] sm:text-[9px] min-h-[40px] sm:h-10 px-2 sm:px-2.5 py-1.5 rounded-none flex items-center justify-between w-full border-2 border-black ${
+                className={`retro text-[7px] sm:text-[8px] lg:text-[8.5px] min-h-[40px] sm:h-10 px-1.5 sm:px-2.5 py-1.5 rounded-none flex items-center justify-between w-full border-2 border-black ${
                   activo
                     ? "shadow-[3px_3px_0_0_#000] bg-primary text-primary-foreground font-bold"
                     : "shadow-[2px_2px_0_0_#000] bg-background hover:bg-muted text-foreground"
@@ -234,12 +234,12 @@ export function PantallaHistorial() {
                   setCategoriaActiva(cat.id);
                 }}
               >
-                <div className="flex items-center gap-1.5 min-w-0 overflow-hidden">
-                  <Icono className="w-3.5 h-3.5 shrink-0" aria-hidden="true" />
-                  <span className="tracking-tight">{cat.etiqueta}</span>
+                <div className="flex items-center gap-1 sm:gap-1.5 min-w-0">
+                  <Icono className="w-3 h-3 sm:w-3.5 sm:h-3.5 shrink-0" aria-hidden="true" />
+                  <span className="whitespace-nowrap tracking-tight">{cat.etiqueta}</span>
                 </div>
                 <span
-                  className={`retro text-[7px] sm:text-[8px] px-1.5 py-0.5 border border-black shrink-0 ml-1 ${
+                  className={`retro text-[6.5px] sm:text-[7.5px] px-1 sm:px-1.5 py-0.5 border border-black shrink-0 ml-0.5 sm:ml-1 ${
                     activo
                       ? "bg-black text-white"
                       : "bg-muted text-muted-foreground"
