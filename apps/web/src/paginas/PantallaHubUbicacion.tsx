@@ -473,10 +473,10 @@ export function PantallaHubUbicacion() {
                         </Button>
                       </AlertDialogTrigger>
                       <AlertDialogContent
-                        className="w-[calc(100vw-2rem)] sm:max-w-md border-4 border-black shadow-[8px_8px_0_0_#000] bg-bastion p-4 sm:p-5 overflow-hidden text-slate-100"
+                        className="w-[calc(100vw-2rem)] sm:max-w-md !max-w-md border-4 border-black shadow-[8px_8px_0_0_#000] bg-bastion p-4 sm:p-5 overflow-hidden text-slate-100"
                       >
-                        <AlertDialogHeader className="w-full text-left space-y-3">
-                          <div className="flex items-center gap-2 border-b-2 border-black pb-2 text-red-400">
+                        <AlertDialogHeader className="!flex !flex-col !w-full !text-left !items-stretch space-y-3">
+                          <div className="w-full flex items-center gap-2 border-b-2 border-black pb-2 text-red-400">
                             <Lock className="size-4 shrink-0 text-red-400" />
                             <AlertDialogTitle className="retro text-xs sm:text-sm text-red-400 tracking-wider">
                               RUTA RESTRINGIDA
@@ -484,7 +484,7 @@ export function PantallaHubUbicacion() {
                           </div>
 
                           {/* Ficha Interior de Destino */}
-                          <div className="border-2 border-black bg-black/60 p-3 space-y-1.5 shadow-[inset_2px_2px_0_0_rgba(0,0,0,0.6)]">
+                          <div className="border-2 border-black bg-black/60 p-3 space-y-1.5 shadow-[inset_2px_2px_0_0_rgba(0,0,0,0.6)] w-full">
                             <div className="flex items-center gap-2">
                               <Lock className="size-3.5 text-red-400 shrink-0" />
                               <span className="retro text-[9px] sm:text-[10px] text-red-400 font-bold leading-tight break-words">
@@ -497,15 +497,15 @@ export function PantallaHubUbicacion() {
                             </div>
                           </div>
 
-                          <AlertDialogDescription className="retro text-[9px] sm:text-[10px] leading-relaxed text-slate-200 text-left">
+                          <AlertDialogDescription className="w-full retro text-[9px] sm:text-[10px] leading-relaxed text-slate-200 text-left">
                             {conexion.requisito ??
                               "Esta senda requiere mayor experiencia o cumplir misiones previas con el gremio."}
                           </AlertDialogDescription>
                         </AlertDialogHeader>
-                        <AlertDialogFooter className="flex flex-col-reverse sm:flex-row sm:justify-end gap-3 sm:gap-4 w-full mt-4">
+                        <AlertDialogFooter className="flex flex-col-reverse sm:flex-row sm:justify-end gap-3 sm:gap-4 w-full mt-4 !m-0 !p-0 !bg-transparent !border-0 pt-4 border-t-2 border-black/60">
                           <AlertDialogAction
                             onClick={() => reproducirSonido("click", 0.3)}
-                            className="retro bg-[#1a2332] hover:bg-[#232d3f] text-slate-200 border-2 border-black shadow-[2px_2px_0_0_#000] active:translate-y-0.5 active:shadow-none text-[10px] py-2.5 px-5 cursor-pointer w-full sm:w-auto text-center"
+                            className="retro !bg-[#1a2332] hover:!bg-[#232d3f] !text-slate-200 border-2 border-black shadow-[2px_2px_0_0_#000] active:translate-y-0.5 active:shadow-none text-[10px] py-2.5 px-5 cursor-pointer w-full sm:w-auto text-center"
                           >
                             COMPRENDIDO
                           </AlertDialogAction>
@@ -537,10 +537,10 @@ export function PantallaHubUbicacion() {
                         </Button>
                       </AlertDialogTrigger>
                       <AlertDialogContent
-                        className="w-[calc(100vw-2rem)] sm:max-w-md border-4 border-black shadow-[8px_8px_0_0_#000] bg-bastion p-4 sm:p-5 overflow-hidden text-slate-100"
+                        className="w-[calc(100vw-2rem)] sm:max-w-md !max-w-md border-4 border-black shadow-[8px_8px_0_0_#000] bg-bastion p-4 sm:p-5 overflow-hidden text-slate-100"
                       >
-                        <AlertDialogHeader className="w-full text-left space-y-3">
-                          <div className="flex items-center gap-2 border-b-2 border-black pb-2 text-[#14d1e8]">
+                        <AlertDialogHeader className="!flex !flex-col !w-full !text-left !items-stretch space-y-3">
+                          <div className="w-full flex items-center gap-2 border-b-2 border-black pb-2 text-[#14d1e8]">
                             <Compass className="size-4 text-[#14d1e8] shrink-0" />
                             <AlertDialogTitle className="retro text-xs sm:text-sm text-[#14d1e8] tracking-wider">
                               CONFIRMAR VIAJE
@@ -548,7 +548,7 @@ export function PantallaHubUbicacion() {
                           </div>
 
                           {/* Ficha Interior de Destino */}
-                          <div className="border-2 border-black bg-black/60 p-3 space-y-1.5 shadow-[inset_2px_2px_0_0_rgba(0,0,0,0.6)]">
+                          <div className="border-2 border-black bg-black/60 p-3 space-y-1.5 shadow-[inset_2px_2px_0_0_rgba(0,0,0,0.6)] w-full">
                             <div className="flex items-center gap-2">
                               <Compass className="size-3.5 text-[#14d1e8] shrink-0" />
                               <span className="retro text-[9px] sm:text-[10px] text-[#14d1e8] font-bold leading-tight break-words">
@@ -561,21 +561,21 @@ export function PantallaHubUbicacion() {
                             </div>
                           </div>
 
-                          <AlertDialogDescription className="retro text-[9px] sm:text-[10px] leading-relaxed text-slate-200 text-left">
+                          <AlertDialogDescription className="w-full retro text-[9px] sm:text-[10px] leading-relaxed text-slate-200 text-left">
                             ¿Deseas emprender camino hacia las tierras de este sendero? Prepárate para los peligros del viaje.
                           </AlertDialogDescription>
                         </AlertDialogHeader>
-                        <AlertDialogFooter className="flex flex-col-reverse sm:flex-row sm:justify-end gap-3 sm:gap-4 w-full mt-4">
+                        <AlertDialogFooter className="flex flex-col-reverse sm:flex-row sm:justify-end gap-3 sm:gap-4 w-full mt-4 !m-0 !p-0 !bg-transparent !border-0 pt-4 border-t-2 border-black/60">
                           <AlertDialogCancel
                             onClick={() => reproducirSonido("click", 0.3)}
-                            className="retro bg-muted/80 hover:bg-muted text-slate-200 border-2 border-black shadow-[2px_2px_0_0_#000] active:translate-y-0.5 active:shadow-none py-2.5 px-4 text-[10px] w-full sm:w-auto shrink-0 cursor-pointer text-center"
+                            className="retro !bg-[#1a2332] hover:!bg-[#232d3f] !text-slate-200 border-2 border-black shadow-[2px_2px_0_0_#000] active:translate-y-0.5 active:shadow-none py-2.5 px-4 text-[10px] w-full sm:w-auto shrink-0 cursor-pointer text-center"
                           >
                             PERMANECER
                           </AlertDialogCancel>
                           <AlertDialogAction
                             disabled={viajando}
                             onClick={() => handleViajar(conexion)}
-                            className="retro bg-[#14d1e8] hover:bg-[#14d1e8]/90 text-black font-bold border-2 border-black shadow-[2px_2px_0_0_#000] active:translate-y-0.5 active:shadow-none py-2.5 px-4 text-[10px] w-full sm:w-auto shrink-0 cursor-pointer text-center"
+                            className="retro !bg-[#14d1e8] hover:!bg-[#14d1e8]/90 !text-black font-bold border-2 border-black shadow-[2px_2px_0_0_#000] active:translate-y-0.5 active:shadow-none py-2.5 px-4 text-[10px] w-full sm:w-auto shrink-0 cursor-pointer text-center"
                           >
                             {viajando ? "VIAJANDO..." : "EMPRENDER CAMINO"}
                           </AlertDialogAction>
