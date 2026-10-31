@@ -282,10 +282,10 @@ export function PantallaCuracion() {
         </div>
 
         {/* Botones de acción del Santuario */}
-        <CardFooter className="p-3 sm:p-5 pt-2 flex flex-col sm:flex-row gap-2.5 sm:gap-3 justify-center items-center border-t-2 border-black/40 bg-black/20">
+        <CardFooter className="p-4 sm:p-6 flex flex-col sm:flex-row gap-4 sm:gap-6 justify-center items-center border-t-2 border-black/40 bg-black/20">
           <Button
             size="lg"
-            className="w-full sm:w-auto px-6 sm:px-8 py-2.5 sm:py-3 rounded-none border-4 border-black shadow-[6px_6px_0_0_#000] active:translate-y-1 active:shadow-[2px_2px_0_0_#000] hover:shadow-[8px_8px_0_0_#000] transition-all cursor-pointer font-bold flex items-center justify-center gap-2"
+            className="w-full sm:w-auto px-6 sm:px-8 py-3 rounded-none border-4 border-black shadow-[6px_6px_0_0_#000] active:translate-y-1 active:shadow-[2px_2px_0_0_#000] hover:shadow-[8px_8px_0_0_#000] transition-all cursor-pointer font-bold flex items-center justify-center gap-2"
             disabled={
               cargando || restaurando || todoSaludable || !servicioDisponible
             }
@@ -319,7 +319,7 @@ export function PantallaCuracion() {
           <Button
             variant="outline"
             size="default"
-            className="w-full sm:w-auto px-4 py-2 rounded-none border-2 border-black shadow-[2px_2px_0_0_#000] active:translate-y-0.5 active:shadow-none hover:bg-muted cursor-pointer retro text-[8px] sm:text-[9px] flex items-center justify-center gap-1.5"
+            className="w-full sm:w-auto px-5 sm:px-6 py-2.5 sm:py-3 rounded-none border-2 border-black shadow-[4px_4px_0_0_#000] active:translate-y-0.5 active:shadow-[1px_1px_0_0_#000] hover:shadow-[6px_6px_0_0_#000] hover:bg-muted transition-all cursor-pointer retro text-[8px] sm:text-[9px] flex items-center justify-center gap-2"
             onClick={() => {
               reproducirSonido("click");
               navigate("/hub");
