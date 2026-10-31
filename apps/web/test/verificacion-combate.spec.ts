@@ -241,6 +241,10 @@ test("Auditoría Impeccable: Tipografía retro integral Press Start 2P, separaci
     "La etiqueta de HP debe poseer clase retro",
   );
   assert.ok(
+    combateCodigo.includes("{rival.hpActual}/{rival.hpMaximo}"),
+    "El HUD del rival debe visualizar los valores numéricos de vida actual y máxima además del porcentaje",
+  );
+  assert.ok(
     combateCodigo.includes("text-cyan-400 retro uppercase"),
     "El medidor de Resonancia debe poseer etiqueta retro",
   );

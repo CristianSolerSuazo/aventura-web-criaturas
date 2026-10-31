@@ -1014,6 +1014,7 @@ A partir de una captura de pantalla real del combate en dispositivo móvil, se i
    - Se trasladó la afinidad elemental `{aliado.afinidad}` a la segunda fila de la placa aliada, alineándola simétricamente con la placa rival.
    - Se ampliaron los anchos máximos a `max-w-[225px] sm:max-w-[260px]`.
    - Se reemplazó el `truncate` rígido por `break-words line-clamp-2 leading-tight text-[8px] sm:text-[9px]`, permitiendo nombres completos de criaturas en dos líneas limpias sin cortar el nivel.
+   - **Salud Numérica y Porcentual del Rival:** Se integró la visualización de los valores cuantitativos de vitalidad en el HUD rival (`{rival.hpActual}/{rival.hpMaximo} ({porcentajeHpRival}%)`), complementando la barra de salud y el porcentaje con datos exactos de combate.
 3. **Erradicación de `AЯUTAЯIƆ`:**
    - Incorporación del estado reactivo `esPlaceholderAliado`. Se activa en `onError` de la imagen o si el slug es nulo.
    - La inversión `scale-x-[-1]` se aplica ahora de manera condicional exclusivamente a sprites reales:
