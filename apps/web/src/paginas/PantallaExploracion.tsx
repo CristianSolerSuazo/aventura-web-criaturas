@@ -476,7 +476,7 @@ export function PantallaExploracion() {
             la arena) antes de continuar explorando la ruta.
           </p>
 
-          <div className="flex flex-col sm:flex-row gap-2.5 sm:gap-3 pt-1">
+          <div className="flex flex-col sm:flex-row gap-4 sm:gap-5 pt-2 sm:pt-3 mt-1">
             <Button
               font="retro"
               onClick={handleIniciarCombate}
@@ -561,7 +561,7 @@ export function PantallaExploracion() {
         )}
 
         {/* Botón Principal de Inmersión Brutalist 8-Bit con holgura y marco de 4px */}
-        <div className="pt-3 mt-1">
+        <div className="pt-4 sm:pt-5 mt-2 sm:mt-3">
           {ubicacion?.esSegura ? (
             <Link
               to="/hub"
@@ -840,10 +840,10 @@ export function PantallaExploracion() {
           )}
 
           {/* Footer fijo anclado abajo con separación táctil generosa */}
-          <div className="shrink-0 px-3.5 sm:px-5 py-3 sm:py-4 border-t-2 border-black bg-[#090d16] flex flex-col sm:flex-row gap-3 sm:gap-4 w-full mt-2.5">
+          <div className="shrink-0 px-4 sm:px-6 py-4 sm:py-5 border-t-2 border-black bg-[#090d16] flex flex-col sm:flex-row gap-4 sm:gap-6 w-full mt-3 sm:mt-4">
             <Button
               font="retro"
-              className="w-full sm:flex-1 bg-red-600 hover:bg-red-500 text-white border-2 border-black shadow-[2px_2px_0_0_#000] active:translate-y-0.5 active:shadow-none py-2.5 sm:py-3 text-[10px] sm:text-xs gap-2 cursor-pointer text-center whitespace-normal leading-snug"
+              className="w-full sm:flex-1 bg-red-600 hover:bg-red-500 text-white border-2 border-black shadow-[2px_2px_0_0_#000] active:translate-y-0.5 active:shadow-none py-3 sm:py-3.5 text-[10px] sm:text-xs gap-2 cursor-pointer text-center whitespace-normal leading-snug"
               onClick={handleIniciarCombate}
             >
               <Swords className="size-3.5 shrink-0" />
@@ -852,7 +852,7 @@ export function PantallaExploracion() {
             <Button
               variant="outline"
               font="retro"
-              className="w-full sm:flex-1 bg-[#1a2332] hover:bg-[#232d3f] text-slate-300 hover:text-white border-2 border-black shadow-[2px_2px_0_0_#000] active:translate-y-0.5 active:shadow-none py-2.5 sm:py-3 text-[10px] sm:text-xs gap-2 cursor-pointer text-center whitespace-normal leading-snug"
+              className="w-full sm:flex-1 bg-[#1a2332] hover:bg-[#232d3f] text-slate-300 hover:text-white border-2 border-black shadow-[2px_2px_0_0_#000] active:translate-y-0.5 active:shadow-none py-3 sm:py-3.5 text-[10px] sm:text-xs gap-2 cursor-pointer text-center whitespace-normal leading-snug"
               onClick={() => {
                 reproducirSonido("click", 0.3);
                 setModalEncuentroAbierto(false);
@@ -925,14 +925,14 @@ export function PantallaExploracion() {
             </div>
           )}
 
-          <div className="shrink-0 px-3.5 sm:px-5 py-3 sm:py-4 border-t-2 border-black bg-[#090d16] w-full mt-2.5">
+          <div className="shrink-0 px-4 sm:px-6 py-4 sm:py-5 border-t-2 border-black bg-[#090d16] w-full mt-3 sm:mt-4">
             <Button
               font="retro"
               onClick={() => {
                 reproducirSonido("confirmar", 0.4);
                 setModalBotinAbierto(false);
               }}
-              className="w-full bg-[#f5b724] hover:bg-[#f5b724]/90 text-[#090d16] border-2 border-black shadow-[2px_2px_0_0_#000] active:translate-y-0.5 active:shadow-none text-[10px] sm:text-xs py-3 gap-2 cursor-pointer text-center whitespace-normal leading-snug"
+              className="w-full bg-[#f5b724] hover:bg-[#f5b724]/90 text-[#090d16] border-2 border-black shadow-[2px_2px_0_0_#000] active:translate-y-0.5 active:shadow-none text-[10px] sm:text-xs py-3.5 gap-2 cursor-pointer text-center whitespace-normal leading-snug"
             >
               <Backpack className="size-4 shrink-0" />
               <span>GUARDAR EN BOLSA</span>

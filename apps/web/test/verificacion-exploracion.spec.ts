@@ -329,8 +329,12 @@ test("Auditoría Impeccable (Segunda Pasada): Erradicación de truncamientos, mo
 
   // 3. Separación táctil y holgura en botones del Modal de Encuentro
   assert.ok(
-    exploracionCodigo.includes("flex flex-col sm:flex-row gap-3 sm:gap-4 w-full mt-2.5"),
-    "La botonera del modal de encuentro debe contar con separación táctil holgada (gap-3 sm:gap-4)",
+    exploracionCodigo.includes("flex flex-col sm:flex-row gap-4 sm:gap-6 w-full mt-3 sm:mt-4"),
+    "La botonera del modal de encuentro debe contar con separación táctil holgada (gap-4 sm:gap-6)",
+  );
+  assert.ok(
+    exploracionCodigo.includes("flex flex-col sm:flex-row gap-4 sm:gap-5"),
+    "La botonera de la vista general debe contar con separación táctil holgada (gap-4 sm:gap-5)",
   );
   assert.ok(
     exploracionCodigo.includes("bg-[#1a2332] hover:bg-[#232d3f] text-slate-300"),
@@ -339,8 +343,8 @@ test("Auditoría Impeccable (Segunda Pasada): Erradicación de truncamientos, mo
 
   // 4. Margen claro en botón de expedición
   assert.ok(
-    exploracionCodigo.includes("pt-3 mt-1"),
-    "El botón de expedición debe estar claramente separado del medidor con margen pt-3 mt-1",
+    exploracionCodigo.includes("pt-4 sm:pt-5 mt-2 sm:mt-3"),
+    "El botón de expedición debe estar claramente separado del medidor con margen pt-4 sm:pt-5 mt-2 sm:mt-3",
   );
 
   // 5. Vitrina del Rival y barra de vitalidad empotrada
@@ -359,7 +363,7 @@ test("Auditoría Impeccable (Segunda Pasada): Erradicación de truncamientos, mo
     "El modal de botín debe incluir el botón táctil GUARDAR EN BOLSA",
   );
   assert.ok(
-    exploracionCodigo.includes("py-3"),
+    exploracionCodigo.includes("py-3.5"),
     "El botón de guardado en bolsa debe tener padding táctil amplio py-3",
   );
 });

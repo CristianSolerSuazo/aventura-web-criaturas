@@ -225,10 +225,10 @@ La auditoría de diseño e interacción con la skill `impeccable` sobre la panta
 - **Chips de Estadísticas Tácticas (ATQ, DEF, VEL):** Cajas negras individuales con marco retro `bg-[#090d16] border-2 border-black shadow-[2px_2px_0_0_#000] p-1.5 sm:p-2 text-center flex flex-col items-center gap-1 min-w-0`, con iconos vectoriales SVG de Lucide codificados por color (`Swords` en rojo carmesí, `Shield` en azul cobalto, `Zap` en ámbar solar) y valores numéricos en `Press Start 2P`.
 
 #### D. Separación Táctil y Desahogada en Botones de Acción
-- **Botonera del Modal de Encuentro:** Espaciado generoso con `flex flex-col sm:flex-row gap-3 sm:gap-4 w-full mt-2.5` en un pie fijo `px-3.5 sm:px-5 py-3 sm:py-4 border-t-2 border-black bg-[#090d16]`:
+- **Botonera del Modal de Encuentro:** Espaciado generoso con `flex flex-col sm:flex-row gap-4 sm:gap-6 w-full mt-3 sm:mt-4` en un pie fijo `px-3.5 sm:px-5 py-3 sm:py-4 border-t-2 border-black bg-[#090d16]`:
   - Botón primario `INICIAR COMBATE` en carmesí retro-brutalista (`bg-red-600 hover:bg-red-500 text-white border-2 border-black shadow-[2px_2px_0_0_#000] active:translate-y-0.5 active:shadow-none py-2.5 sm:py-3 text-[10px] sm:text-xs`).
   - Botón secundario `RETIRARSE` con estilo pizarra contrastada claramente diferenciado (`bg-[#1a2332] hover:bg-[#232d3f] text-slate-300 hover:text-white border-2 border-black shadow-[2px_2px_0_0_#000] active:translate-y-0.5 active:shadow-none py-2.5 sm:py-3 text-[10px] sm:text-xs`).
-- **Botón de Expedición:** Separado del medidor cartográfico con margen claro (`pt-3 mt-1`), dotado de marco masivo de 4px (`border-4 border-black shadow-[6px_6px_0_0_#000] active:translate-y-1 active:shadow-[2px_2px_0_0_#000]`).
+- **Botón de Expedición:** Separado del medidor cartográfico con margen claro (`pt-4 sm:pt-5 mt-2 sm:mt-3`), dotado de marco masivo de 4px (`border-4 border-black shadow-[6px_6px_0_0_#000] active:translate-y-1 active:shadow-[2px_2px_0_0_#000]`).
 - **Botón de Retorno (`CAMPAMENTO`):** Ubicado en la cabecera del hero silvestre, separado con padding táctil contenido (`px-2.5 sm:px-3 py-1 sm:py-1.5 text-[8px] sm:text-[9px]`) y protegido con `pointer-events-none opacity-50` durante la exploración activa.
 - **Modal de Botín:** Botón `GUARDAR EN BOLSA` en oro solar con padding táctil amplio (`py-3 text-[10px] sm:text-xs`).
 
