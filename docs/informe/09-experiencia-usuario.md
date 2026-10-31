@@ -1064,7 +1064,7 @@ La auditoría heurística y de ergonomía visual sobre `PaginaCreditos.tsx` medi
   - Nueva prueba especializada `Hardening, Ergonomía y Estética Retro-Brutalist: PaginaCreditos cuenta con marcos 8bitcn, sombras sólidas, tipografía retro integral y botones táctiles separados` que valida:
     1. Confinamiento de pantalla sin overflow horizontal (`overflow-x-hidden`, `max-w-5xl`).
     2. Marco retro-brutalist ceremonial en la cabecera (`border-4 border-black`, `shadow-[6px_6px_0_0_#000]`).
-    3. Separación holgada y táctil en los botones de acción (`gap-3 sm:gap-4 flex-wrap`, `border-2 border-black shadow-[2px_2px_0_0_#000]`).
+    3. Separación holgada y táctil en los botones de acción (`gap-5 sm:gap-4 flex-wrap`, `border-2 border-black shadow-[2px_2px_0_0_#000]`).
     4. Cero clases `truncate` rígidas en los nombres de criaturas.
     5. Cajas de licencias con scroll vertical contenido y relieve hundido retro.
     6. Guarda antirrebote con `if (celebrando) return;` y accesibilidad con `aria-busy={celebrando}`.
