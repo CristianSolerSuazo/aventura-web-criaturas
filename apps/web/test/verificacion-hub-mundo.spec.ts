@@ -182,3 +182,61 @@ test("Hardening y Ergonomía: PantallaHubUbicacion cuenta con estética retro 8b
   );
 });
 
+
+test("Auditoría Impeccable: Erradicación de truncamientos, modales retro-brutalistas 8-bit y espaciado de botones en PantallaHubUbicacion", async () => {
+  const { readFileSync } = await import("node:fs");
+  const { join, dirname } = await import("node:path");
+  const { fileURLToPath } = await import("node:url");
+
+  const __dirname = dirname(fileURLToPath(import.meta.url));
+  const hubCodigo = readFileSync(join(__dirname, "../src/paginas/PantallaHubUbicacion.tsx"), "utf-8");
+
+  // 1. Erradicación de truncamiento rígido en servicios
+  assert.strictEqual(
+    hubCodigo.includes("block truncate mb-1"),
+    false,
+    "Los títulos de servicios no deben contener la clase 'truncate'",
+  );
+  assert.ok(
+    hubCodigo.includes("leading-tight break-words mb-1.5"),
+    "Los títulos de servicios deben permitir dos líneas fluidas con break-words",
+  );
+
+  // 2. Modales de viaje con marco retro de consola RPG (8-bit box) y superficie de Bastión
+  assert.ok(
+    hubCodigo.includes("bg-bastion p-4 sm:p-5 overflow-hidden text-slate-100"),
+    "AlertDialogContent debe renderizarse como caja de diálogo 8-bit con superficie bg-bastion",
+  );
+
+  // 3. Ficha interior retro de destino
+  assert.ok(
+    hubCodigo.includes("border-2 border-black bg-black/60 p-3 space-y-1.5 shadow-[inset_2px_2px_0_0_rgba(0,0,0,0.6)]"),
+    "Los modales deben enmarcar el destino en una ficha interior de alto contraste",
+  );
+
+  // 4. Separación táctil y holgada en la botonera de los modales
+  assert.ok(
+    hubCodigo.includes("gap-3 sm:gap-4 w-full mt-4"),
+    "AlertDialogFooter debe proporcionar un espaciado generoso entre botones",
+  );
+  assert.ok(
+    hubCodigo.includes("EMPRENDER CAMINO"),
+    "El botón de confirmación debe desplegar 'EMPRENDER CAMINO'",
+  );
+  assert.ok(
+    hubCodigo.includes("PERMANECER"),
+    "El botón secundario de cancelación debe desplegar 'PERMANECER'",
+  );
+
+  // 5. Separación clara en tarjetas de senderos
+  assert.ok(
+    hubCodigo.includes("border-t-2 border-black pt-3 mt-3"),
+    "La tarjeta de ruta debe separar las acciones del sendero con borde superior visible",
+  );
+
+  // 6. Confinamiento móvil sin overflow horizontal
+  assert.ok(
+    hubCodigo.includes("overflow-x-hidden"),
+    "El contenedor principal debe incluir overflow-x-hidden para móviles estrechos",
+  );
+});
