@@ -392,7 +392,7 @@ test('Hardening, Ergonomía y Estética Retro-Brutalist: PaginaCreditos cuenta c
 
   // 3. Separación holgada y táctil en los botones de acción
   assert.ok(
-    codigo.includes('gap-3 sm:gap-4 flex-wrap'),
+    codigo.includes('gap-5 sm:gap-4 flex-wrap'),
     'Los botones de cabecera deben contar con separación holgada gap-3 sm:gap-4 flex-wrap',
   );
   assert.ok(

@@ -97,7 +97,7 @@ export function PaginaCreditos() {
           </div>
 
           {/* Botones de Cabecera con Separación Holgada y Relieve Táctil */}
-          <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 sm:gap-4 flex-wrap w-full sm:w-auto shrink-0 pt-2 sm:pt-0">
+          <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-5 sm:gap-4 flex-wrap w-full sm:w-auto shrink-0 pt-2 sm:pt-0">
             <Button
               variant="default"
               size="sm"
