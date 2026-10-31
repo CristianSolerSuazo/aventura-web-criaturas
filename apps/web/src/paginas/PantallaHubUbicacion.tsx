@@ -419,38 +419,39 @@ export function PantallaHubUbicacion() {
                 key={conexion.ubicacionDestinoId}
                 className="bg-card border-2 border-black shadow-[4px_4px_0_0_#000] hover:shadow-[6px_6px_0_0_#000] p-4 flex flex-col justify-between gap-3 transition-all hover:border-[#14d1e8]/80"
               >
-                <div className="flex items-start justify-between gap-2">
-                  <div className="min-w-0 flex-1">
-                    <span className="retro text-[10px] sm:text-xs font-bold text-slate-100 block leading-tight break-words">
+                <div className="space-y-2.5">
+                  <div className="flex items-start justify-between gap-2">
+                    <span className="retro text-[10px] sm:text-xs font-bold text-slate-100 block leading-tight break-words flex-1 min-w-0">
                       {conexion.nombre}
                     </span>
-                    <div className="flex items-center gap-1.5 text-[8px] sm:text-[9px] text-slate-300 retro mt-2 flex-wrap">
-                      <Compass className="size-3.5 text-[#14d1e8] shrink-0" />
-                      <span>
-                        Nivel sugerido: {conexion.nivelSugerido ?? "Rango libre"}
-                      </span>
-                    </div>
+
+                    {conexion.estaBloqueada ? (
+                      <Badge
+                        variant="outline"
+                        font="retro"
+                        className="bg-red-950/90 text-red-400 border-2 border-black shadow-[2px_2px_0_0_#000] gap-1 text-[8px] sm:text-[9px] py-1 px-2 shrink-0"
+                      >
+                        <Lock className="size-3 text-red-400" />
+                        <span>BLOQUEADA</span>
+                      </Badge>
+                    ) : (
+                      <Badge
+                        variant="outline"
+                        font="retro"
+                        className="bg-emerald-950/90 text-emerald-400 border-2 border-black shadow-[2px_2px_0_0_#000] gap-1 text-[8px] sm:text-[9px] py-1 px-2 shrink-0"
+                      >
+                        <ArrowRight className="size-3 text-emerald-400" />
+                        <span>ACCESIBLE</span>
+                      </Badge>
+                    )}
                   </div>
 
-                  {conexion.estaBloqueada ? (
-                    <Badge
-                      variant="outline"
-                      font="retro"
-                      className="bg-red-950/90 text-red-400 border-2 border-black shadow-[2px_2px_0_0_#000] gap-1 text-[8px] sm:text-[9px] py-1 px-2 shrink-0"
-                    >
-                      <Lock className="size-3 text-red-400" />
-                      <span>BLOQUEADA</span>
-                    </Badge>
-                  ) : (
-                    <Badge
-                      variant="outline"
-                      font="retro"
-                      className="bg-emerald-950/90 text-emerald-400 border-2 border-black shadow-[2px_2px_0_0_#000] gap-1 text-[8px] sm:text-[9px] py-1 px-2 shrink-0"
-                    >
-                      <ArrowRight className="size-3 text-emerald-400" />
-                      <span>ACCESIBLE</span>
-                    </Badge>
-                  )}
+                  <div className="flex items-center gap-1.5 text-[8px] sm:text-[9px] text-slate-300 retro whitespace-nowrap">
+                    <Compass className="size-3.5 text-[#14d1e8] shrink-0" />
+                    <span className="whitespace-nowrap">
+                      Nivel sugerido: {conexion.nivelSugerido ?? "Rango libre"}
+                    </span>
+                  </div>
                 </div>
 
                 <div className="border-t-2 border-black pt-3 mt-3">
@@ -491,7 +492,7 @@ export function PantallaHubUbicacion() {
                                 {conexion.nombre}
                               </span>
                             </div>
-                            <div className="flex items-center gap-1.5 text-slate-400 retro text-[8px] sm:text-[9px]">
+                            <div className="flex items-center gap-1.5 text-slate-400 retro text-[8px] sm:text-[9px] whitespace-nowrap">
                               <Compass className="size-3 text-[#14d1e8] shrink-0" />
                               <span>Nivel sugerido: {conexion.nivelSugerido ?? "Rango libre"}</span>
                             </div>
@@ -555,7 +556,7 @@ export function PantallaHubUbicacion() {
                                 {conexion.nombre}
                               </span>
                             </div>
-                            <div className="flex items-center gap-1.5 text-slate-400 retro text-[8px] sm:text-[9px]">
+                            <div className="flex items-center gap-1.5 text-slate-400 retro text-[8px] sm:text-[9px] whitespace-nowrap">
                               <ArrowRight className="size-3 text-emerald-400 shrink-0" />
                               <span>Nivel recomendado: {conexion.nivelSugerido ?? "Rango libre"}</span>
                             </div>
