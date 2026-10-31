@@ -296,3 +296,70 @@ test("Hardening, Ergonomía y Estética Retro-Brutalist: PantallaExploracion cue
     "Los enlaces y botones secundarios deben bloquear interacción durante la exploración activa",
   );
 });
+
+
+test("Auditoría Impeccable (Segunda Pasada): Erradicación de truncamientos, modales cinemáticos 8-bit brutalistas con tipografía retro integral y espaciado de botones", async () => {
+  const { readFileSync } = await import("node:fs");
+  const { join, dirname } = await import("node:path");
+  const { fileURLToPath } = await import("node:url");
+
+  const __dirname = dirname(fileURLToPath(import.meta.url));
+  const exploracionCodigo = readFileSync(
+    join(__dirname, "../src/paginas/PantallaExploracion.tsx"),
+    "utf-8",
+  );
+
+  // 1. Erradicación de truncamientos rígidos
+  assert.strictEqual(
+    exploracionCodigo.includes("truncate"),
+    false,
+    "PantallaExploracion no debe contener clases 'truncate' que corten nombres de rival o títulos",
+  );
+  assert.strictEqual(
+    exploracionCodigo.includes("line-clamp-2 sm:truncate"),
+    false,
+    "El título de la zona no debe usar truncamiento rígido",
+  );
+
+  // 2. Confinamiento móvil estricto contra desbordamiento horizontal
+  assert.ok(
+    exploracionCodigo.includes("overflow-x-hidden"),
+    "El contenedor principal debe incluir overflow-x-hidden para sellar pantallas móviles de 360px-420px",
+  );
+
+  // 3. Separación táctil y holgura en botones del Modal de Encuentro
+  assert.ok(
+    exploracionCodigo.includes("flex flex-col sm:flex-row gap-3 sm:gap-4 w-full mt-2.5"),
+    "La botonera del modal de encuentro debe contar con separación táctil holgada (gap-3 sm:gap-4)",
+  );
+  assert.ok(
+    exploracionCodigo.includes("bg-[#1a2332] hover:bg-[#232d3f] text-slate-300"),
+    "El botón RETIRARSE debe contar con estilo secundario claramente diferenciado",
+  );
+
+  // 4. Margen claro en botón de expedición
+  assert.ok(
+    exploracionCodigo.includes("pt-3 mt-1"),
+    "El botón de expedición debe estar claramente separado del medidor con margen pt-3 mt-1",
+  );
+
+  // 5. Vitrina del Rival y barra de vitalidad empotrada
+  assert.ok(
+    exploracionCodigo.includes("bg-black/70 border-2 border-black shadow-[inset_2px_2px_0_0_rgba(0,0,0,0.7)]"),
+    "La vitrina del rival debe contar con caja interior en relieve y fondo oscuro",
+  );
+  assert.ok(
+    exploracionCodigo.includes("bg-[#090d16] border-2 border-black shadow-[2px_2px_0_0_#000] h-3 sm:h-3.5"),
+    "La barra de vitalidad del rival debe ser un canal empotrado retro",
+  );
+
+  // 6. Modal de Botín con botón táctil amplio
+  assert.ok(
+    exploracionCodigo.includes("GUARDAR EN BOLSA"),
+    "El modal de botín debe incluir el botón táctil GUARDAR EN BOLSA",
+  );
+  assert.ok(
+    exploracionCodigo.includes("py-3"),
+    "El botón de guardado en bolsa debe tener padding táctil amplio py-3",
+  );
+});

@@ -192,76 +192,68 @@ La auditoría heurística y técnica con la skill `impeccable` y los estándares
 
 ## 4. Sub-Fase 10d: Enriquecimiento de Exploración y Encuentros en Rutas (`PantallaExploracion.tsx`)
 
-### 4.1 Diagnóstico Inicial y Auditoría Heurística Impeccable
-La auditoría de diseño e interacción con la skill `impeccable` sobre la versión preliminar de la pantalla de expedición silvestre reveló los siguientes puntos de fricción y oportunidades de consolidación estética:
-1. **Falta de Ambientación Visual Retro-Brutalista:** Se utilizaban tarjetas con bordes delgados de color tenue (`border-2 border-[#43526d]`), careciendo del impacto visual y peso físico característico de la estética *retro-brutalist 8-bit* de cartucho de consola y `8bitcn/ui` (`border-4 border-black shadow-[6px_6px_0_0_#000]`).
-2. **Jerarquía Visual y Retícula de Espaciado (4px/8px):** Existía disparidad de márgenes y paddings no alineados a la escala de diseño geométrico de Aethelgard (`docs/DESIGN.md` §2), requiriendo un contenedor principal centrado y confinado (`max-w-5xl mx-auto px-2 sm:px-4 py-2 sm:py-4 space-y-4 sm:space-y-6`).
-3. **Legibilidad de la Barra Cartográfica:** La barra de progreso de zona requería mayor profundidad visual mediante canal empotrado oscuro con marco negro retro (`border-2 border-black shadow-[2px_2px_0_0_#000]`) y contraste WCAG AAA sobre fondo Abismo.
-4. **Diferenciación Táctica de Encuentros (Comunes vs. Legendarias):** Ante un encuentro hostil, el modal carecía de una diferenciación visual jerárquica clara entre bestias salvajes regulares y avistamientos de criaturas Legendarias, que ameritan fanfarria especial, corona dorada (`Crown` en oro solar `#f5b724`) y halo astral retro.
-5. **Riesgo de Desbordamiento Horizontal en Modales Móviles (360px–420px):** Los modales `Dialog` requerían un sellado riguroso con `w-[calc(100vw-2rem)] sm:max-w-md max-h-[85vh] overflow-hidden` y desplazamiento interno confinado en el panel táctico, evitando cualquier barra de scroll horizontal en dispositivos móviles estrechos.
-6. **Bitácora de Incursión Rudimentaria:** El registro cronológico se desplegaba con tarjetas estándar sin marco retro-brutalista de 2px ni badges de evento con tipografía monoespaciada para marcas temporales.
+### 4.1 Diagnóstico Inicial y Auditoría Heurística Impeccable (Primera y Segunda Pasada)
+La auditoría de diseño e interacción con la skill `impeccable` sobre la pantalla de expedición silvestre y sus diálogos de encuentro reveló los siguientes puntos de fricción, fallas de ergonomía y oportunidades de consolidación estética:
+1. **Falta de Ambientación Visual Retro-Brutalista y Estilo de Cuadro RPG:** La versión preliminar utilizaba tarjetas con bordes delgados de color tenue (`border-2 border-[#43526d]`), careciendo del impacto visual y peso físico característico de la estética *retro-brutalist 8-bit* de cartucho de consola y `8bitcn/ui` (`border-4 border-black shadow-[6px_6px_0_0_#000]`).
+2. **Truncamientos Rígidos y Amputación de Textos en Móviles (360px–420px):** Uso de clases `truncate` y `line-clamp-2` rígidas que cortaban nombres compuestos de criaturas de varias palabras (ej. *"QUIMERA TRICÉFALA"*, *"REMORHAZ DEL GLACIAR ETERNO"*, *"CANGREJO ABISMAL"*), nombres de ítems de botín (`itemCodigo`) y títulos de zona en viewports reducidos, arruinando la lectura con puntos suspensivos innecesarios.
+3. **Disparidad Tipográfica (Ausencia de Fuente Retro Integral):** Presencia de tipografías estándar `font-sans` y `font-mono` en descripciones de zona, cuerpo de la bitácora de incursión, mensajes de modales, medidor de vitalidad y fichas de atributos del rival, diluyendo la autenticidad 8-bit de Aethelgard.
+4. **Apiñamiento y Rigidez en Botones de Acción de Modales:** Los botones `INICIAR COMBATE` y `RETIRARSE` en el diálogo de encuentro se encontraban estrechamente empaquetados en columna con un `gap-2` insuficiente para interacción táctil, sin diferenciación cromática nítida ni holgura responsive (`gap-3 sm:gap-4 flex flex-col sm:flex-row`).
+5. **Vitrina del Rival Plana y Carente de Relieve Cinemático:** El modal de encuentro hostil carecía de un cuadro escénico de combate clásico de consola; el sprite del rival y la barra de vitalidad flotaban sobre fondos estándar sin el relieve interior empotrado (`shadow-[inset_2px_2px_0_0_rgba(0,0,0,0.7)]`) ni chips de estadísticas tácticas con código de color.
+6. **Legibilidad y Saturación en la Bitácora de Incursión:** El registro cronológico se desplegaba con tarjetas estándar sin tipografía pixelada compacta legible y requería un contenedor con desplazamiento vertical suave (`max-h-56 sm:max-h-64 overflow-y-auto pr-1`) para no interferir con la navegación de la página.
 
 ---
 
-### 4.2 Mejoras Implementadas
+### 4.2 Mejoras Implementadas (Segunda Pasada de Excelencia Retro Impeccable)
 
-#### A. Hero Panorámico Brutalist 8-Bit y Señalización de Rutas (`docs/DESIGN.md` §2)
-- **Marco de Alto Relieve Retro:** Enmarcado perimetral del paisaje silvestre mediante borde grueso negro y sombra ortogonal de alto relieve (`border-4 border-black shadow-[6px_6px_0_0_#000]`), con división interna pixelada (`border-b-4 border-black`).
-- **Badges Flotantes de Estado con Borde Retro Brutalista:**
-  - `ZONA HOSTIL` (`AlertTriangle`) con fondo carmesí oscuro `#ef4444` y marco `border-2 border-black shadow-[2px_2px_0_0_#000]`.
-  - `LOCALIDAD SEGURA` (`ShieldCheck`) en esmeralda profundo para asentamientos protegidos.
-  - `NV. SUGERIDO: X` (`MapPin`) con acento cian astral `#14d1e8`.
-  - `100% CARTOGRAFÍA` (`Sparkles`) en oro solar `#f5b724` al completar el recorrido.
-  - Botón retro de escape `CAMPAMENTO` (`ArrowLeft`) con retorno directo hacia el Hub/Campamento, protegido con `pointer-events-none opacity-50` durante operaciones activas.
-- **Tipografía Bimodal de Alto Contraste:** Título de la senda en `Press Start 2P` con sombra de texto dura (`drop-shadow-[0_2px_4px_rgba(0,0,0,0.95)]`) y descripción de la ruta en `font-sans` legible (Geist Sans).
+#### A. Tipografía Retro 100% Integral (`Press Start 2P` / `.retro` en Toda la Pantalla)
+- **Extensión Universal de `.retro`:** Se implementó la fuente pixelada `Press Start 2P` (`.retro`) en la totalidad de los elementos textuales de la pantalla:
+  - Nombre de la senda en el hero panorámico, descripción ambiental y badges flotantes (`ZONA HOSTIL`, `NV. SUGERIDO: X`, `100% CARTOGRAFIA`, `LOCALIDAD SEGURA`).
+  - Medidor de progreso cartográfico, conteo porcentual numérico y botón de acción (`EXPLORAR SENDA` / `RESOLVER COMBATE CON [RIVAL]`).
+  - Bitácora de incursión: encabezado, contador de eventos, categorías de registro (`ENCUENTRO SALVAJE`, `BOTÍN ENCONTRADO`, `PUNTO DE PARTIDA`, `AVANCE DE EXPLORACIÓN`), marcas horarias y cuerpo de los mensajes.
+  - Modal de Encuentro Cinemático: título (`¡CRIATURA SALVAJE!`, `¡AVISTAMIENTO LEGENDARIO!`), descripción del suceso, nombre completo del rival, insignia de nivel, indicador numérico de vitalidad (`HP actual / HP máximo`) y etiquetas de atributos tácticos (ATQ, DEF, VEL).
+  - Modal de Botín: título (`¡BOTIN DESCUBIERTO!`), cantidad de oro o nombre completo del ítem y texto del botón de guardado.
+- **Calibración Antiacortamiento y Legibilidad Óptima:** Escalas tipográficas adaptadas con interlineado holgado: `text-[8px] sm:text-[9px]` para descripciones, bitácora y mensajes; `text-[8.5px] sm:text-[9px]` para insignias de nivel y timestamps; `text-[9px] sm:text-[10px]` para chips de atributos y progreso; y `text-[10px] sm:text-xs` para nombres de bestias, títulos y botones de acción (`leading-relaxed` / `leading-snug`).
 
-#### B. Medidor de Cartografía y Botonera Táctil de Cartucho
-- **Barra de Progreso Segmentada Empotrada:** Barra reactiva `Progress` con variante retro, fondo de canal abismo `#090d16` y marco `border-2 border-black shadow-[2px_2px_0_0_#000]`, cambiando de cian `#14d1e8` a esmeralda `#22c55e` al alcanzar el 100%.
-- **Botonera Táctil de Alto Impacto ("EXPLORAR SENDA" / "RESOLVER COMBATE"):**
-  - Botón principal de exploración con marco masivo `border-4 border-black shadow-[6px_6px_0_0_#000]`, tipografía `Press Start 2P` y efecto táctil físico al pulsar (`active:translate-y-1 active:shadow-[2px_2px_0_0_#000]`).
-  - Hardening estricto contra doble clic: variables reactivas de control (`explorando`), atributos `disabled={explorando}`, `aria-busy={explorando}` y spinner retro `<Loader2 className="animate-spin size-4" />` con etiqueta `EXPLORANDO SENDA...`.
-- **Manejo Preventivo de Localidades Pacíficas:** Banner con icono `ShieldCheck` y enlace brutalista para viajar a sendas silvestres desde el campamento, impidiendo excepciones y guiando la navegación.
+#### B. Erradicación de Títulos y Textos Truncados (`break-words` Fluido)
+- **Eliminación Total de `truncate`:** Se suprimieron todas las clases `truncate` y `line-clamp` rígidas en el nombre de la criatura (`rivalActivo.nombre`), títulos de senda silvestre (`h1`), descripciones contextuales y códigos de botín (`ultimaRecompensa.itemCodigo`).
+- **Envoltura Multilínea Contenida:** Se integró `break-words leading-tight max-w-full`, permitiendo que criaturas con nombres extensos (ej. «REMORHAZ DEL GLACIAR ETERNO», «QUIMERA TRICÉFALA») e ítems compuestos se lean de forma íntegra en dos líneas en pantallas móviles (360px–420px) sin cortes abruptos con puntos suspensivos.
 
-#### C. Modal de Encuentro Hostil Cinemático (Dialog 8-bit Brutalist)
-- **Sellado Hermético contra Overflow:** Contenedor `DialogContent` confinado con `w-[calc(100vw-2rem)] sm:max-w-md max-h-[85vh] bg-card border-4 border-black shadow-[8px_8px_0_0_#000] overflow-hidden !p-0 !gap-0`.
-- **Sprite Pixel-Art con Relieve Interior:** Caja de presentación del rival con relieve interior retro `border-2 border-black shadow-[inset_2px_2px_0_0_rgba(0,0,0,0.7)] bg-[#090d16]`, renderizado nítido `.pixelated` y halo místico especial para criaturas Legendarias (`anim-halo-legendario` y fanfarria auditiva).
-- **Ficha Táctica de 4 Atributos Base:** Despliegue de Vitalidad (HP actual / HP máximo) con barra de salud dinámica y chips numéricos monoespaciados para **ATQ** (`Swords`), **DEF** (`Shield`) y **VEL** (`Zap`), enmarcados con `border-2 border-black shadow-[2px_2px_0_0_#000]`.
-- **Acciones Tácticas del Diálogo:** Botón principal `INICIAR COMBATE` en carmesí retro con `border-2 border-black shadow-[2px_2px_0_0_#000] active:translate-y-0.5` y botón alternativo `RETIRARSE` con `border-2 border-black shadow-[2px_2px_0_0_#000] active:translate-y-0.5`.
+#### C. Rediseño Cinemático de Modales (Dialog 8-bit Brutalist)
+- **Marco de Consola Clásica RPG Box:** Contenedor `DialogContent` sellado con `w-[calc(100vw-2rem)] sm:max-w-md max-h-[85vh] bg-card border-4 border-black shadow-[8px_8px_0_0_#000] overflow-hidden !p-0 !gap-0 flex flex-col`.
+- **Vitrina del Rival con Relieve Interior:** Caja escénica interior en relieve retro `p-3 sm:p-4 bg-black/70 border-2 border-black shadow-[inset_2px_2px_0_0_rgba(0,0,0,0.7)] space-y-2.5 sm:space-y-3 text-center`. Para criaturas Legendarias, se aplica iluminación dorada `bg-amber-950/30 border-amber-500/60`, corona mística flotante (`Crown` en oro solar) y halo radiante (`anim-halo-legendario`).
+- **Barra de Vitalidad del Rival Empotrada:** Canal oscuro empotrado retro `bg-[#090d16] border-2 border-black shadow-[2px_2px_0_0_#000] h-3 sm:h-3.5` con barra esmeralda `#22c55e` e indicador numérico en tipografía retro `text-[8px] sm:text-[9px]`.
+- **Chips de Estadísticas Tácticas (ATQ, DEF, VEL):** Cajas negras individuales con marco retro `bg-[#090d16] border-2 border-black shadow-[2px_2px_0_0_#000] p-1.5 sm:p-2 text-center flex flex-col items-center gap-1 min-w-0`, con iconos vectoriales SVG de Lucide codificados por color (`Swords` en rojo carmesí, `Shield` en azul cobalto, `Zap` en ámbar solar) y valores numéricos en `Press Start 2P`.
 
-#### D. Modal de Botín y Banner Persistente de Criatura al Acecho
-- **Diálogo de Botín Sanitizado:** Presentación enriquecida ante eventos de tipo `OBJETO` con título sanitizado `¡BOTIN DESCUBIERTO!` (sin glifos rotos en la fuente retro 8-bit), icono de `Coins` o del ítem con relieve interior y botón táctil `GUARDAR EN BOLSA`.
-- **Banner Táctico Persistente:** En caso de que el usuario decida retirarse o exista un encuentro pendiente en el servidor, se mantiene activo un banner con marco `border-2 border-black shadow-[4px_4px_0_0_#000]` que alerta de la bestia hostil y conmuta el botón principal a `RESOLVER COMBATE CON [RIVAL]`.
+#### D. Separación Táctil y Desahogada en Botones de Acción
+- **Botonera del Modal de Encuentro:** Espaciado generoso con `flex flex-col sm:flex-row gap-3 sm:gap-4 w-full mt-2.5` en un pie fijo `px-3.5 sm:px-5 py-3 sm:py-4 border-t-2 border-black bg-[#090d16]`:
+  - Botón primario `INICIAR COMBATE` en carmesí retro-brutalista (`bg-red-600 hover:bg-red-500 text-white border-2 border-black shadow-[2px_2px_0_0_#000] active:translate-y-0.5 active:shadow-none py-2.5 sm:py-3 text-[10px] sm:text-xs`).
+  - Botón secundario `RETIRARSE` con estilo pizarra contrastada claramente diferenciado (`bg-[#1a2332] hover:bg-[#232d3f] text-slate-300 hover:text-white border-2 border-black shadow-[2px_2px_0_0_#000] active:translate-y-0.5 active:shadow-none py-2.5 sm:py-3 text-[10px] sm:text-xs`).
+- **Botón de Expedición:** Separado del medidor cartográfico con margen claro (`pt-3 mt-1`), dotado de marco masivo de 4px (`border-4 border-black shadow-[6px_6px_0_0_#000] active:translate-y-1 active:shadow-[2px_2px_0_0_#000]`).
+- **Botón de Retorno (`CAMPAMENTO`):** Ubicado en la cabecera del hero silvestre, separado con padding táctil contenido (`px-2.5 sm:px-3 py-1 sm:py-1.5 text-[8px] sm:text-[9px]`) y protegido con `pointer-events-none opacity-50` durante la exploración activa.
+- **Modal de Botín:** Botón `GUARDAR EN BOLSA` en oro solar con padding táctil amplio (`py-3 text-[10px] sm:text-xs`).
 
-#### E. Bitácora de Incursión Cronológica Estructurada
-- **Tarjetas de Eventos Retro Brutalistas:** Entradas clasificadas (`INICIO`, `PASO`, `ENCUENTRO`, `OBJETO`) enmarcadas con `border-2 border-black shadow-[2px_2px_0_0_#000]`, timestamps precisos en `font-mono` y cuerpo en `font-sans` de lectura descansada.
-- **Regla R1 Estricta:** Erradicación total de emojis unicode en toda la pantalla; despliegue exclusivo de iconos vectoriales SVG de Lucide (`Compass`, `MapPin`, `Footprints`, `Swords`, `Sparkles`, `Scroll`, `Coins`, `Backpack`, `AlertTriangle`, `ArrowLeft`, `ShieldCheck`, `Loader2`, `Shield`, `Zap`, `Eye`, `Crown`).
-
-#### F. Síntesis Auditiva Retro Centralizada (Web Audio API)
-- Acústica orquestada a través de `reproducirSonido`: `paso` al avanzar, `alerta` ante bestias hostiles comunes, `fanfarria` ante criaturas Legendarias, `botin` al encontrar tesoros, `confirmar` al iniciar combate y `error` ante bloqueos.
+#### E. Confinamiento Móvil sin Overflow Horizontal (360px–420px)
+- **Contenedor Principal Hermético:** Inclusión de `w-full max-w-5xl mx-auto px-2 sm:px-4 py-2 sm:py-4 space-y-4 sm:space-y-6 overflow-x-hidden`, replicado idénticamente en el estado de carga (`Skeleton`).
+- **Bitácora de Incursión Elástica:** Desplazamiento vertical interno fluido (`max-h-56 sm:max-h-64 overflow-y-auto pr-1`) sin provocar scroll horizontal ni empujar el pie de página.
+- **Regla R1 Estricta:** Cero emojis unicode en toda la pantalla; despliegue exclusivo de iconografía vectorial SVG de Lucide (`Compass`, `MapPin`, `Footprints`, `Swords`, `Sparkles`, `Scroll`, `Coins`, `Backpack`, `AlertTriangle`, `ArrowLeft`, `ShieldCheck`, `Loader2`, `Shield`, `Zap`, `Eye`, `Crown`).
+- **Síntesis Auditiva Retro Centralizada:** Acústica Web Audio orquestada a través de `reproducirSonido`: 'paso' al avanzar, 'alerta' ante bestias hostiles comunes, 'fanfarria' ante criaturas Legendarias, 'botin' al encontrar tesoros, 'confirmar' al iniciar combate y 'error' ante bloqueos o zonas pacíficas.
 
 ---
-
-#### G. Resiliencia Responsive en Pantallas Móviles Estrechas (360px–420px)
-- **Erradicación de Desbordamiento en Botonera Arcade:** Se resolvió el desbordamiento horizontal en el botón de resolución táctica (`RESOLVER COMBATE CON [RIVAL]`) y en el botón de localidades pacíficas mediante `whitespace-normal text-center break-words leading-snug text-[9.5px] sm:text-xs md:text-sm px-2 sm:px-4`. Esto permite que títulos de criaturas largos (ej. "CANGREJO ABISMAL") se dividan armoniosamente en dos renglones sin desbordar los límites de la pantalla móvil.
-- **Protección contra Recorte del Botón de Escape:** En el Hero Panorámico superior, se acotó el contenedor de badges con `max-w-[calc(100%-85px)] sm:max-w-none` y se optimizó la escala tipográfica a `text-[8px] sm:text-[10px]`, garantizando que el botón `CAMPAMENTO` (`ArrowLeft`) conserve siempre visibilidad completa e interactividad sin ser empujado fuera del marco por el flexbox.
-- **Altura Adaptativa del Hero Silvestre:** Se ajustó la altura panorámica móvil a `h-48 sm:h-56 md:h-64`, dotando de respiro vertical al área de badges superiores y al título inferior de la ruta.
-- **Título de la Senda Multilínea:** Se sustituyó el truncamiento rígido unidimensional por `text-[11px] sm:text-base md:text-xl line-clamp-2 sm:truncate break-words leading-tight`, evitando que nombres largos como "Riberas del Lago Espejo" se recorten abruptamente con puntos suspensivos.
-- **Sanitización Tipográfica 8-Bit contra Glifos Rotos:** Se erradicaron diacríticos mayúsculos en textos bajo `Press Start 2P` (`100% CARTOGRAFIA`, `CARTOGRAFIA Y AVANCE`, `BITACORA DE INCURSION`), eliminando el carácter de reemplazo `±` que arruinaba la lectura retro en pantalla.
 
 ### 4.3 Verificación de Calidad y Cero Regresiones
-- **Pruebas Automatizadas Unitarias (`apps/web/test/verificacion-exploracion.spec.ts`):** 8 pruebas especializadas aprobadas al 100%:
-  1. Estructura y contrato de `RespuestaExploracion` ante encuentros con criaturas.
+- **Pruebas Automatizadas Unitarias (`apps/web/test/verificacion-exploracion.spec.ts`):** 9 pruebas especializadas aprobadas al 100%:
+  1. Estructura y contrato de `RespuestaExploracion` ante encuentros con criaturas salvajes.
   2. Modelado de botines con monedas e ítems de inventario.
   3. Lógica de cálculo y límite persistente del 100% de cartografía.
   4. Diferenciación de expedición y niveles entre zonas seguras y hostiles.
   5. Formato de la bitácora de incursión y garantía de cero emojis unicode en mensajes.
-  6. Preservación del progreso ante encuentros hostiles en progreso.
+  6. Preservación del progreso ante encuentros hostiles en curso.
   7. Regla R1 Estricta: Ausencia total de emojis unicode en textos y botones de `PantallaExploracion.tsx`.
   8. Hardening, Ergonomía y Estética Retro-Brutalist: Verificación estática de `aria-busy`, `disabled={explorando}`, guarda `if (explorando) return;`, marco de hero 8-bit `border-4 border-black shadow-[6px_6px_0_0_#000]`, paneles táctiles `border-2 border-black shadow-[4px_4px_0_0_#000]`, modales `border-4 border-black shadow-[8px_8px_0_0_#000]` y sello contra overflow `w-[calc(100vw-2rem)]`.
-- **Suite Total Web (`pnpm --filter web test`):** 73 de 73 pruebas aprobadas (100% éxito).
+  9. Auditoría Impeccable (Segunda Pasada): Verificación estática de erradicación total de clases `truncate` en nombres y títulos, confinamiento `overflow-x-hidden`, holgura táctil en botones de diálogo de combate (`flex flex-col sm:flex-row gap-3 sm:gap-4 w-full mt-2.5`), botón `RETIRARSE` diferenciado en pizarra, margen de expedición `pt-3 mt-1`, vitrina con relieve interior `bg-black/70 border-2 border-black`, barra de vitalidad empotrada `bg-[#090d16] border-2 border-black` y botón de botín amplio `py-3`.
+- **Suite Total Web (`pnpm --filter web test`):** 82 de 82 pruebas aprobadas al 100% de éxito.
 - **Linter Web (`oxlint`):** 0 errores en 80 archivos evaluados.
-- **Auditoría Mecánica Impeccable (`detect.mjs`):** 0 defectos o advertencias de anti-patrón en `PantallaExploracion.tsx`.
-- **Compilación de Producción (`pnpm --filter web build`):** Compilación exitosa en TypeScript estricto y Vite en 3.38s con cero errores de tipos.
+- **Compilación de Producción (`pnpm --filter web build`):** Compilación exitosa en TypeScript estricto y Vite en 1.52s con cero errores de tipos.
 
 ---
 
