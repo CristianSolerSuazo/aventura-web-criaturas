@@ -376,22 +376,22 @@ export function PantallaCatalogo() {
               aria-labelledby={`zona-encabezado-${grupo.zonaId}`}
               className="space-y-3"
             >
-              {/* Encabezado Retro de la Zona de Hábitat con alto contraste */}
-              <div className="flex flex-wrap items-center justify-between gap-2 border-b-2 border-black pb-2">
-                <div className="flex items-center gap-2 flex-wrap">
+              {/* Encabezado Retro de la Zona de Hábitat con alto contraste y separación generosa del nombre */}
+              <div className="flex flex-wrap items-center justify-between gap-3 border-b-2 border-black pb-2.5">
+                <div className="flex items-center gap-2.5 sm:gap-3 flex-wrap">
                   <Badge
                     variant="outline"
-                    className="retro text-[8px] sm:text-[9px] uppercase rounded-none border-2 border-black shadow-[2px_2px_0_0_#000] bg-primary/20 text-primary px-2 py-0.5"
+                    className="retro text-[8px] sm:text-[9px] uppercase rounded-none border-2 border-black shadow-[2px_2px_0_0_#000] bg-primary/20 text-primary px-2 py-0.5 mr-2.5 sm:mr-3.5"
                   >
                     {grupo.zonaId}
                   </Badge>
                   <h2
                     id={`zona-encabezado-${grupo.zonaId}`}
-                    className="retro text-xs sm:text-sm font-bold text-foreground drop-shadow-[1px_1px_0_#000]"
+                    className="retro text-xs sm:text-sm font-bold text-foreground drop-shadow-[1px_1px_0_#000] tracking-wide"
                   >
                     {grupo.zonaNombre}
                   </h2>
-                  <span className="retro text-[8px] sm:text-[9px] text-muted-foreground">
+                  <span className="retro text-[8px] sm:text-[9px] text-muted-foreground ml-1 sm:ml-1.5">
                     ({grupo.especies.length} {grupo.especies.length === 1 ? "criatura" : "criaturas"})
                   </span>
                 </div>
