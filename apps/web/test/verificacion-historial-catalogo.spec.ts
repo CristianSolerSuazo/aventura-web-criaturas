@@ -433,3 +433,71 @@ test('Hardening, Ergonomía y Estética Retro-Brutalist: PaginaCreditos cuenta c
     'No debe incluir criaturas inexistentes en el catálogo canónico como grifo o hidra-de-las-marismas',
   );
 });
+
+
+test('Hardening, Ergonomía y Estética Retro-Brutalist: PantallaHistorial cuenta con marcos 8bitcn, sombras sólidas, tipografía retro integral y confinamiento sin overflow', () => {
+  const rutaHistorial = join(__dirname, '../src/paginas/PantallaHistorial.tsx');
+  const codigo = readFileSync(rutaHistorial, 'utf-8');
+
+  // 1. Confinamiento de pantalla contra overflow horizontal y diseño adaptativo
+  assert.ok(
+    codigo.includes('overflow-x-hidden'),
+    'PantallaHistorial debe confinar el contenedor raíz con overflow-x-hidden',
+  );
+  assert.ok(
+    codigo.includes('w-full max-w-5xl mx-auto px-2 sm:px-4'),
+    'PantallaHistorial debe utilizar márgenes y relleno responsivo contenido',
+  );
+
+  // 2. Erradicación de truncate destructivo
+  assert.ok(
+    !codigo.includes('truncate'),
+    'PantallaHistorial no debe contener clases truncate que corten texto en móviles',
+  );
+  assert.ok(
+    codigo.includes('break-words') && codigo.includes('break-all'),
+    'PantallaHistorial debe utilizar ajuste flexible de texto con break-words y break-all',
+  );
+
+  // 3. Marcos negros 8bitcn brutalistas y sombras sólidas ortogonales
+  assert.ok(
+    codigo.includes('border-2 border-black') && codigo.includes('shadow-[4px_4px_0_0_#000]'),
+    'PantallaHistorial debe implementar marcos negros border-2 border-black y sombras sólidas shadow-[4px_4px_0_0_#000]',
+  );
+  assert.ok(
+    codigo.includes('border-4 border-black') && codigo.includes('shadow-[6px_6px_0_0_#000]'),
+    'La cabecera o tarjeta de estado vacío debe usar marco grueso border-4 border-black y sombra shadow-[6px_6px_0_0_#000]',
+  );
+  assert.ok(
+    codigo.includes('shadow-[2px_2px_0_0_#000]'),
+    'PantallaHistorial debe incluir sombras ortogonales shadow-[2px_2px_0_0_#000] en botones, inputs y sellos de tiempo',
+  );
+
+  // 4. Separación ergonómica y táctil de botones de acción
+  assert.ok(
+    codigo.includes('gap-3 sm:gap-4') && codigo.includes('flex flex-wrap items-center'),
+    'Los botones de cabecera deben contar con separación desahogada gap-3 sm:gap-4 en contenedor flexible',
+  );
+  assert.ok(
+    codigo.includes('gap-2 sm:gap-3 flex-wrap'),
+    'La botonera de filtros rápidos debe tener separación holgada gap-2 sm:gap-3 flex-wrap',
+  );
+
+  // 5. Tipografía retro 100% integral
+  assert.ok(
+    codigo.includes('BITÁCORA DE EXPEDICIONES') && codigo.includes('retro'),
+    'El título principal debe utilizar tipografía retro Press Start 2P',
+  );
+  assert.ok(
+    codigo.includes('retro text-[8px] sm:text-[9px]') || codigo.includes('retro text-[9px] sm:text-[10px]'),
+    'Las descripciones y etiquetas deben utilizar tipografía retro escalada',
+  );
+
+  // 6. Higiene de código: erradicación de duplicación de import/export de catalogo-historial
+  const coincidenciasImport = codigo.match(/from ["']@\/lib\/catalogo-historial["']/g);
+  assert.strictEqual(
+    coincidenciasImport?.length,
+    1,
+    'No debe existir importación duplicada de catalogo-historial',
+  );
+});

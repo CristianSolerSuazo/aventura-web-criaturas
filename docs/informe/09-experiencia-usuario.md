@@ -1073,3 +1073,82 @@ La auditoría heurística y de ergonomía visual sobre `PaginaCreditos.tsx` medi
 - **Regla R1 Estricta:** Verificación de 0 emojis unicode en `PaginaCreditos.tsx` auditada por la suite automatizada.
 - **Linter Web (`pnpm --filter web lint`):** 0 errores de TypeScript y Oxlint en los 80 archivos del proyecto.
 - **Compilación de Producción (`pnpm --filter web build`):** 0 errores de compilación, empaquetado completado en Vite en 3.27s.
+
+
+---
+
+## 17. Sub-Fase 10i: Rediseño Visual de Bitácora de Expediciones Impeccable (Estética Retro-Brutalist 8-Bit, Tipografía Integral y Cero Overflow Móvil en PantallaHistorial.tsx)
+
+### 17.1 Diagnóstico Inicial y Auditoría Impeccable
+La auditoría heurística y de ergonomía visual sobre `PantallaHistorial.tsx` mediante la skill `impeccable` y los lineamientos de `docs/DESIGN.md` reveló oportunidades críticas de mejora estética, consistencia retro y adaptabilidad:
+1. **Desplazamiento Horizontal y Truncamiento en Móvil (360px–420px):** Disposición rígida en fila horizontal que asfixiaba el sello de fecha/hora, el badge de categoría y la información en pantallas estrechas. El contenedor carecía de confinamiento con `overflow-x-hidden` y utilizaba la clase `truncate` que cortaba el registro técnico del evento si el tipo era extenso o la resolución reducida.
+2. **Inconsistencia Tipográfica:** Presencia de fuentes sans-serif convencionales (`font-sans font-medium`) en el cuerpo descriptivo de las crónicas y fuentes monoespaciadas (`font-mono`) en fechas, sellos temporales y botones de filtro, rompiendo la inmersión auténtica de cartucho RPG retro.
+3. **Carencia de Separación y Ergonomía en Botones de Acción:** Filtros rápidos apiñados con un espaciado reducido (`gap-1.5`), botones de cabecera con espacio insuficiente (`gap-2`) para interacción táctil cómoda en pantallas móviles y falta de separación holgada en la barra de búsqueda y estado vacío.
+4. **Ausencia de Marcos Retro-Brutalistas:** Falta de bordes negros gruesos (`border-2 border-black` / `border-4 border-black`), esquinas vivas sin curvas (`rounded-none`) y sombras sólidas ortogonales proyectadas (`shadow-[4px_4px_0_0_#000]`, `shadow-[2px_2px_0_0_#000]`), descansando en bordes sutiles `border-border/80` sin la contundencia física de `8bitcn/ui` y NES.css.
+5. **Higiene de Código:** Presencia de una re-exportación e importación redundante de funciones auxiliares desde `@/lib/catalogo-historial`, provocando advertencias de Fast Refresh en el linter.
+
+---
+
+### 17.2 Mejoras Implementadas
+
+#### A. Identidad Retro-Brutalist y Marcos 8bitcn/ui
+- **Cabecera Ceremonial de Crónicas:** Enmarcado perimetral contundente con `border-4 border-black bg-bastion shadow-[6px_6px_0_0_#000] p-4 sm:p-5 rounded-none`, presentando el título `BITÁCORA DE EXPEDICIONES` con sombra proyectada ortogonal (`drop-shadow-[2px_2px_0_#000] text-primary`).
+- **Insignia Heráldica de Crónicas:** Badge superior en relieve pixelado (`border-2 border-black shadow-[2px_2px_0_0_#000] bg-background text-foreground retro text-[8px] sm:text-[9px] py-1 px-2.5 rounded-none`) con icono SVG `BookOpen`.
+- **Panel de Filtros y Búsqueda Brutalista:** Módulo de control unificado con `border-2 border-black shadow-[4px_4px_0_0_#000] bg-bastion p-3.5 sm:p-4 rounded-none space-y-4`.
+- **Tarjetas de Crónicas con Relieve Interactivo:** Cada entrada histórica cuenta con marco negro grueso `border-2 border-black shadow-[4px_4px_0_0_#000] bg-bastion rounded-none p-3.5 sm:p-4` y micro-interacción al cursor (`hover:translate-x-0.5 hover:shadow-[5px_5px_0_0_#000] transition-all`).
+- **Badges de Categoría Estilo Cartucho de Consola:** Insignias temáticas con relieve ortogonal (`border-2 border-black shadow-[2px_2px_0_0_#000] rounded-none retro text-[8px] sm:text-[9px] px-2 py-1`) con paleta canónica de alto contraste:
+  - `COMBATE`: Fondo carmesí oscuro (`bg-red-950/90 text-red-300`) con icono SVG `Swords`.
+  - `CAPTURA`: Fondo místico púrpura (`bg-purple-950/90 text-purple-300`) con icono SVG `Sparkles`.
+  - `EXPLORACIÓN`: Fondo cian boreal (`bg-cyan-950/90 text-cyan-300`) con icono SVG `Compass`.
+  - `TIENDA`: Fondo ámbar dorado (`bg-amber-950/90 text-amber-300`) con icono SVG `ShoppingBag`.
+  - `CURACIÓN`: Fondo esmeralda vital (`bg-emerald-950/90 text-emerald-300`) con icono SVG `HeartPulse`.
+- **Sello de Tiempo Cronológico:** Caja retro tipo pergamino (`border-2 border-black bg-background shadow-[2px_2px_0_0_#000] p-1.5 sm:p-2 text-center rounded-none w-24 shrink-0`).
+- **Skeletons y Estado Vacío Retro:** Barras de carga con marcos negros pixelados (`border-2 border-black bg-muted/60 animate-pulse shadow-[2px_2px_0_0_#000] rounded-none h-20`). Tarjeta de estado vacío ceremonial sellada con `border-4 border-black shadow-[6px_6px_0_0_#000] bg-bastion text-center p-6 sm:p-8 rounded-none space-y-4`.
+
+#### B. Tipografía Retro Integral (`Press Start 2P` / `.retro` 100%)
+- **Erradicación Universal de Fuentes Convencionales:** Supresión total de `font-sans` y `font-mono`, aplicando la tipografía retro pixelada `Press Start 2P` (`.retro`) en **absolutamente todos** los textos y controles:
+  - Título principal (`text-base sm:text-xl md:text-2xl`), subtítulo de ambientación (`text-[8px] sm:text-[9px] leading-relaxed`) e insignia de crónicas.
+  - Botones de filtros rápidos por categoría y píldoras numéricas de conteo (`text-[7px] sm:text-[8px]`).
+  - Campo de búsqueda (`text-[8px] sm:text-[9px] placeholder:text-[8px] sm:placeholder:text-[9px]`) y botón «Limpiar filtros».
+  - Sello temporal de hora (`text-[9px] sm:text-[10px]`) y fecha (`text-[7px] sm:text-[8px]`).
+  - Insignias de categoría (`text-[8px] sm:text-[9px]`).
+  - Descripciones narrativas de los eventos (`text-[9px] sm:text-[10px] leading-relaxed`).
+  - Registro técnico de evento (`text-[7px] sm:text-[8px]`).
+  - Títulos, descripciones y botones de estado vacío (`text-[8px]` a `text-xs`).
+
+#### C. Confinamiento Móvil y Erradicación de Truncamientos (360px–420px)
+- **Contenedor Raíz Confinado:** `w-full max-w-5xl mx-auto px-2 sm:px-4 py-3 sm:py-6 overflow-x-hidden space-y-5 sm:space-y-6`, previniendo de manera estricta cualquier desbordamiento horizontal.
+- **Ajuste Flexible Sin Amputaciones:** Supresión de cualquier clase `truncate` destructiva, implementando flujo multilínea con `break-words` y `break-all`.
+- **Adaptación Fluida de Tarjetas:**
+  - En pantallas móviles (<640px): la cabecera interna agrupa el sello temporal y la insignia de categoría en una micro-fila compacta superior, liberando el 100% del ancho inferior para el texto descriptivo y el registro técnico.
+  - En pantallas de escritorio (>=640px): se preserva la alineación horizontal natural (`sm:flex-row items-center gap-4`), brindando lectura cómoda sin compresión.
+
+#### D. Ergonomía Táctil y Separación de Botones
+- **Botones de Cabecera:** Separación generosa (`gap-3 sm:gap-4`) en contenedor elástico `flex flex-wrap items-center w-full sm:w-auto`, con botones de altura táctil mínima de 36px–40px (`min-h-[36px] sm:h-10 px-3 sm:px-4`) y relieve táctil retro (`border-2 border-black shadow-[2px_2px_0_0_#000] active:translate-y-0.5 active:shadow-none hover:shadow-[3px_3px_0_0_#000]`).
+- **Filtros Rápidos por Categoría:** Separación holgada (`gap-2 sm:gap-3 flex-wrap`), botones con área de pulsación garantizada de 36px–38px de altura y feedback físico al presionar.
+- **Buscador y Restablecimiento:** Espaciado explícito (`gap-3 sm:gap-4`) entre el input de búsqueda y el botón «Limpiar filtros».
+- **Botones de Estado Vacío:** Separación táctil (`gap-3 flex-wrap`) entre las acciones disponibles.
+
+#### E. Reglas de Servidor, Audio y Cero Emojis Unicode (Regla R1)
+- **Preservación Funcional Estricta:** Conservación íntegra de `api.obtenerHistorial()`, sincronización en tiempo real de estados de carga (`cargando`, `actualizando`), conteos reactivos por categoría y filtrado combinado (categoría canónica + búsqueda insensible a acentos mediante `filtrarEventosHistorial`).
+- **Hardening Antirrebote y Accesibilidad:** Atributo `aria-busy={actualizando}`, deshabilitación durante peticiones activas e icono animado con `RefreshCw` en estado de rotación.
+- **Audio Web Audio API Centralizado:** Disparo consistente de `reproducirSonido("click")` al interactuar con botones de navegación, cambio de categoría, búsqueda y actualización manual.
+- **Cumplimiento Estricto de la Regla R1:** 100% español riguroso y cero emojis unicode en la interfaz, utilizando exclusivamente iconos vectoriales SVG de Lucide (`BookOpen`, `Swords`, `Sparkles`, `Compass`, `ShoppingBag`, `HeartPulse`, `RefreshCw`, `ArrowLeft`, `Search`, `RotateCcw`).
+- **Higiene de Código:** Eliminación de la exportación redundante de funciones utilitarias en el archivo de la página.
+
+---
+
+### 17.3 Verificación de Calidad y Cero Regresiones
+- **Pruebas Automatizadas Unitarias (`pnpm --filter web test`):**
+  - **83 de 83 pruebas aprobadas** (100% de éxito, 0 fallos).
+  - Nueva prueba especializada `Hardening, Ergonomía y Estética Retro-Brutalist: PantallaHistorial cuenta con marcos 8bitcn, sombras sólidas, tipografía retro integral y confinamiento sin overflow` que audita:
+    1. Confinamiento de pantalla contra overflow horizontal (`overflow-x-hidden`, `max-w-5xl mx-auto px-2 sm:px-4`).
+    2. Erradicación total de clases `truncate` y adopción de `break-words` y `break-all`.
+    3. Marcos negros brutalistas `border-2 border-black` y `border-4 border-black` con sombras sólidas `shadow-[4px_4px_0_0_#000]`, `shadow-[6px_6px_0_0_#000]` y `shadow-[2px_2px_0_0_#000]`.
+    4. Separación táctil y holgada en botones de cabecera (`gap-3 sm:gap-4 flex flex-wrap items-center`) y filtros rápidos (`gap-2 sm:gap-3 flex-wrap`).
+    5. Tipografía retro 100% integral (`Press Start 2P` / `.retro`) en títulos, subtítulos, sellos y descripciones.
+    6. Higiene de código: ausencia de importación duplicada de `catalogo-historial`.
+- **Regla R1 Estricta:** Verificación de 0 emojis unicode en `PantallaHistorial.tsx` validada por la suite de pruebas unitarias.
+- **Pruebas Automatizadas API (`pnpm --filter api test`):** 115 de 115 pruebas aprobadas (100% de éxito), confirmando que `HistorialService` y el backend operan sin regresiones.
+- **Linter Web (`pnpm --filter web lint`):** 0 errores de TypeScript y Oxlint en los 80 archivos del proyecto.
+- **Compilación de Producción (`pnpm --filter web build`):** 0 errores de compilación, empaquetado completado en Vite en 3.19s.
