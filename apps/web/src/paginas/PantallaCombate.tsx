@@ -867,7 +867,7 @@ export function PantallaCombate() {
                 </div>
               )}
 
-              {/* Barra de Salud del Rival con Porcentaje */}
+              {/* Barra de Salud del Rival con Valores Numéricos y Porcentaje */}
               <div className="flex items-center gap-1.5 pt-0.5">
                 <span className="text-[8px] sm:text-[9px] font-bold text-red-400 retro">HP</span>
                 <div className="flex-1">
@@ -877,8 +877,8 @@ export function PantallaCombate() {
                     className="h-2 border-black shadow-[1px_1px_0_0_#000]"
                   />
                 </div>
-                <span className="text-[8px] sm:text-[9px] text-muted-foreground shrink-0 font-bold retro">
-                  {porcentajeHpRival}%
+                <span className="text-[7.5px] sm:text-[8.5px] text-muted-foreground shrink-0 font-bold retro">
+                  {rival.hpActual}/{rival.hpMaximo} ({porcentajeHpRival}%)
                 </span>
               </div>
 
