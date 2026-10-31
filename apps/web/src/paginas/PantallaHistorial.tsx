@@ -151,7 +151,7 @@ export function PantallaHistorial() {
   return (
     <div className="w-full max-w-5xl mx-auto px-2 sm:px-4 py-3 sm:py-6 overflow-x-hidden space-y-5 sm:space-y-6">
       {/* Cabecera Ceremonial y Navegación Retro */}
-      <div className="border-4 border-black bg-bastion shadow-[6px_6px_0_0_#000] p-4 sm:p-5 rounded-none flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+      <div className="border-4 border-black bg-bastion shadow-[6px_6px_0_0_#000] p-4 sm:p-5 rounded-none flex flex-col sm:flex-row items-start sm:items-center justify-between gap-5 sm:gap-6">
         <div className="space-y-2">
           <div className="flex items-center gap-2.5 flex-wrap">
             <h1 className="text-base sm:text-xl md:text-2xl font-bold text-primary tracking-wide retro drop-shadow-[2px_2px_0_#000]">
@@ -170,11 +170,11 @@ export function PantallaHistorial() {
           </p>
         </div>
 
-        <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3.5 sm:gap-4 w-full sm:w-auto shrink-0 pt-2 sm:pt-0">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4 w-full sm:w-auto shrink-0 pt-2 sm:pt-0">
           <Button
             variant="outline"
             size="sm"
-            className="retro text-[8px] sm:text-[9px] min-h-[38px] sm:h-10 px-3.5 sm:px-4 rounded-none flex items-center gap-2 border-2 border-black shadow-[2px_2px_0_0_#000] active:translate-y-0.5 active:shadow-none hover:shadow-[3px_3px_0_0_#000] w-full sm:w-auto justify-center"
+            className="retro text-[8px] sm:text-[9px] min-h-[40px] sm:h-10 px-4 rounded-none flex items-center gap-2 border-2 border-black shadow-[2px_2px_0_0_#000] active:translate-y-0.5 active:shadow-none hover:shadow-[3px_3px_0_0_#000] w-full justify-center"
             onClick={() => {
               reproducirSonido("click");
               cargarHistorial(true);
@@ -189,7 +189,7 @@ export function PantallaHistorial() {
           <Button
             variant="secondary"
             size="sm"
-            className="retro text-[8px] sm:text-[9px] min-h-[38px] sm:h-10 px-3.5 sm:px-4 rounded-none flex items-center gap-2 border-2 border-black shadow-[2px_2px_0_0_#000] active:translate-y-0.5 active:shadow-none hover:shadow-[3px_3px_0_0_#000] w-full sm:w-auto justify-center"
+            className="retro text-[8px] sm:text-[9px] min-h-[40px] sm:h-10 px-4 rounded-none flex items-center gap-2 border-2 border-black shadow-[2px_2px_0_0_#000] active:translate-y-0.5 active:shadow-none hover:shadow-[3px_3px_0_0_#000] w-full justify-center"
             onClick={() => {
               reproducirSonido("click");
               navigate("/hub");
@@ -201,10 +201,10 @@ export function PantallaHistorial() {
         </div>
       </div>
 
-      {/* Panel de Control: Filtros Rápidos y Buscador de Crónicas */}
-      <div className="p-3.5 sm:p-4 bg-bastion border-2 border-black shadow-[4px_4px_0_0_#000] rounded-none space-y-4 sm:space-y-5">
-        {/* Filtros Rápidos por Categoría Canónica con separación holgada vertical y horizontal */}
-        <div className="flex items-center gap-x-2.5 gap-y-3 sm:gap-3.5 flex-wrap">
+      {/* Panel de Control: Filtros Rápidos en Cuadrícula Táctica y Buscador de Crónicas */}
+      <div className="p-3.5 sm:p-5 bg-bastion border-2 border-black shadow-[4px_4px_0_0_#000] rounded-none space-y-4 sm:space-y-5">
+        {/* Filtros Rápidos por Categoría Canónica en Rejilla Simétrica (2 cols en móvil, 3 en tablet, 6 en desktop) */}
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2.5 sm:gap-3 w-full">
           {(
             [
               { id: "TODOS", etiqueta: "TODOS", icono: BookOpen },
@@ -224,7 +224,7 @@ export function PantallaHistorial() {
                 key={cat.id}
                 size="sm"
                 variant={activo ? "default" : "outline"}
-                className={`retro text-[8px] sm:text-[9px] min-h-[36px] sm:h-9 px-3 py-1.5 rounded-none flex items-center gap-2 border-2 border-black ${
+                className={`retro text-[8px] sm:text-[9px] min-h-[40px] sm:h-10 px-2 sm:px-2.5 py-1.5 rounded-none flex items-center justify-between w-full border-2 border-black ${
                   activo
                     ? "shadow-[3px_3px_0_0_#000] bg-primary text-primary-foreground font-bold"
                     : "shadow-[2px_2px_0_0_#000] bg-background hover:bg-muted text-foreground"
@@ -234,10 +234,12 @@ export function PantallaHistorial() {
                   setCategoriaActiva(cat.id);
                 }}
               >
-                <Icono className="w-3.5 h-3.5" aria-hidden="true" />
-                <span>{cat.etiqueta}</span>
+                <div className="flex items-center gap-1.5 min-w-0 overflow-hidden">
+                  <Icono className="w-3.5 h-3.5 shrink-0" aria-hidden="true" />
+                  <span className="tracking-tight">{cat.etiqueta}</span>
+                </div>
                 <span
-                  className={`retro text-[7px] sm:text-[8px] px-1.5 py-0.5 border border-black ${
+                  className={`retro text-[7px] sm:text-[8px] px-1.5 py-0.5 border border-black shrink-0 ml-1 ${
                     activo
                       ? "bg-black text-white"
                       : "bg-muted text-muted-foreground"
@@ -251,15 +253,15 @@ export function PantallaHistorial() {
         </div>
 
         {/* Buscador Textual y Botón Limpiar Filtros con placeholder conciso sin truncamiento */}
-        <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 sm:gap-4 pt-3 border-t-2 border-black/40">
+        <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 sm:gap-4 pt-3.5 border-t-2 border-black/40">
           <div className="relative flex-1">
-            <Search className="absolute left-2.5 top-3 w-4 h-4 text-muted-foreground pointer-events-none" aria-hidden="true" />
+            <Search className="absolute left-3 top-3 w-4 h-4 text-muted-foreground pointer-events-none" aria-hidden="true" />
             <Input
               value={busqueda}
               onChange={(e) => setBusqueda(e.target.value)}
               placeholder="Buscar crónica..."
               aria-label="Buscar crónica"
-              className="retro pl-8 sm:pl-9 text-[8px] sm:text-[9px] placeholder:text-[7.5px] sm:placeholder:text-[9px] rounded-none bg-background border-2 border-black shadow-[2px_2px_0_0_#000] h-10 w-full"
+              className="retro pl-9 pr-3 text-[8px] sm:text-[9px] placeholder:text-[7.5px] sm:placeholder:text-[8.5px] rounded-none bg-background border-2 border-black shadow-[2px_2px_0_0_#000] h-10 w-full"
             />
           </div>
 
@@ -267,7 +269,7 @@ export function PantallaHistorial() {
             <Button
               variant="ghost"
               size="sm"
-              className="retro text-[8px] sm:text-[9px] min-h-[36px] sm:h-10 px-3 rounded-none flex items-center justify-center gap-2 text-muted-foreground hover:text-foreground border-2 border-dashed border-black/50 hover:border-black shrink-0 active:translate-y-0.5"
+              className="retro text-[8px] sm:text-[9px] min-h-[40px] sm:h-10 px-4 rounded-none flex items-center justify-center gap-2 text-muted-foreground hover:text-foreground border-2 border-dashed border-black/50 hover:border-black shrink-0 active:translate-y-0.5"
               onClick={limpiarFiltros}
             >
               <RotateCcw className="w-3.5 h-3.5" aria-hidden="true" />
@@ -297,11 +299,11 @@ export function PantallaHistorial() {
               ? "Emprende expediciones, desafía criaturas y visita mercaderes para forjar tu historia en Aethelgard."
               : "Prueba seleccionando otra categoría o borrando el término de búsqueda."}
           </CardDescription>
-          <div className="flex justify-center pt-2 gap-3 sm:gap-4 flex-wrap">
+          <div className="flex justify-center pt-3 gap-4 sm:gap-5 flex-wrap">
             {eventos.length === 0 ? (
               <Button
                 size="sm"
-                className="retro text-[8px] sm:text-[9px] min-h-[36px] sm:h-10 px-4 rounded-none border-2 border-black shadow-[3px_3px_0_0_#000] active:translate-y-0.5 active:shadow-none"
+                className="retro text-[8px] sm:text-[9px] min-h-[40px] sm:h-10 px-5 rounded-none border-2 border-black shadow-[3px_3px_0_0_#000] active:translate-y-0.5 active:shadow-none"
                 onClick={() => {
                   reproducirSonido("click");
                   navigate("/exploracion");
@@ -313,7 +315,7 @@ export function PantallaHistorial() {
               <Button
                 size="sm"
                 variant="outline"
-                className="retro text-[8px] sm:text-[9px] min-h-[36px] sm:h-10 px-4 rounded-none border-2 border-black shadow-[3px_3px_0_0_#000] active:translate-y-0.5 active:shadow-none"
+                className="retro text-[8px] sm:text-[9px] min-h-[40px] sm:h-10 px-5 rounded-none border-2 border-black shadow-[3px_3px_0_0_#000] active:translate-y-0.5 active:shadow-none"
                 onClick={limpiarFiltros}
               >
                 Restablecer filtros
