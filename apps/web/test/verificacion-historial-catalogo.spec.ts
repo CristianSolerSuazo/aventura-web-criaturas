@@ -372,3 +372,51 @@ test('Hardening, Ergonomía y Estética Retro-Brutalist: PantallaCatalogo cuenta
     'La tarjeta debe presentar el botón de acción INSPECCIONAR FICHA',
   );
 });
+
+
+test('Hardening, Ergonomía y Estética Retro-Brutalist: PaginaCreditos cuenta con marcos 8bitcn, sombras sólidas, tipografía retro integral y botones táctiles separados', () => {
+  const rutaCreditos = join(__dirname, '../src/paginas/PaginaCreditos.tsx');
+  const codigo = readFileSync(rutaCreditos, 'utf-8');
+
+  // 1. Confinamiento contra desbordamiento horizontal en móvil
+  assert.ok(
+    codigo.includes('overflow-x-hidden') && codigo.includes('max-w-5xl mx-auto px-2 sm:px-4'),
+    'PaginaCreditos debe confinar el contenedor raíz con overflow-x-hidden y márgenes adaptativos',
+  );
+
+  // 2. Marco retro-brutalist ceremonial en la cabecera (Salón de la Fama)
+  assert.ok(
+    codigo.includes('border-4 border-black') && codigo.includes('shadow-[6px_6px_0_0_#000]'),
+    'La cabecera ceremonial debe utilizar marco retro-brutalist border-4 border-black y sombra shadow-[6px_6px_0_0_#000]',
+  );
+
+  // 3. Separación holgada y táctil en los botones de acción
+  assert.ok(
+    codigo.includes('gap-3 sm:gap-4 flex-wrap'),
+    'Los botones de cabecera deben contar con separación holgada gap-3 sm:gap-4 flex-wrap',
+  );
+  assert.ok(
+    codigo.includes('border-2 border-black shadow-[2px_2px_0_0_#000]') &&
+      codigo.includes('active:translate-y-0.5 active:shadow-none'),
+    'Los botones de acción deben poseer relieve retro-brutalist con feedback táctil activo',
+  );
+
+  // 4. Eliminación de clases truncate rígidas en nombres de criaturas
+  assert.ok(
+    !codigo.includes('truncate'),
+    'No debe contener clases truncate rígidas que corten nombres de criaturas en móviles',
+  );
+
+  // 5. Cajas de licencias con scroll vertical interno y relieve hundido
+  assert.ok(
+    codigo.includes('max-h-48 overflow-y-auto overflow-x-hidden') &&
+      codigo.includes('shadow-[inset_2px_2px_0_0_rgba(0,0,0,0.6)]'),
+    'Las cajas de licencia deben contar con scroll vertical contenido y relieve hundido retro',
+  );
+
+  // 6. Hardening y prevención de pulsaciones superpuestas
+  assert.ok(
+    codigo.includes('if (celebrando) return;') && codigo.includes('aria-busy={celebrando}'),
+    'Debe evitar pulsaciones superpuestas de fanfarria con guarda y aria-busy',
+  );
+});
