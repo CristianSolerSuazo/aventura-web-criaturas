@@ -990,3 +990,76 @@ Tras la estabilización mecánica de la Fase 10l, se realizó una auditoría vis
 
 
 
+
+
+---
+
+## 16. Sub-Fase 10i: Rediseño Visual de Créditos y Atribución Legal Impeccable (Estética Retro-Brutalist, Tipografía 8-Bit Integral y Cero Overflow Móvil)
+
+### 16.1 Diagnóstico Inicial y Auditoría Impeccable
+La auditoría heurística y de ergonomía visual sobre `PaginaCreditos.tsx` mediante la skill `impeccable` y los lineamientos de `docs/DESIGN.md` reveló oportunidades críticas de mejora estética y adaptabilidad:
+1. **Apiñamiento y Separación Deficiente en Botones de Acción:** Los botones de cabecera (`CELEBRAR FANFARRIA` y `Volver al Asentamiento`) estaban dispuestos con un espaciado reducido (`gap-2`), generando apiñamiento y dificultad táctil en pantallas móviles; de igual forma, el pie de página requería una delimitación clara entre el aviso de derechos y el botón de retorno.
+2. **Riesgo de Desbordamiento Horizontal en Móvil (360px–420px):** Las cajas de licencias legales (MIT de 8bitcn y CC BY 4.0 de Wizards of the Coast / Open5e) y las tarjetas técnicas carecían de confinamiento estricto contra desbordamientos, con riesgo de provocar desplazamiento horizontal indeseado.
+3. **Acortamiento Excesivo de Textos (`truncate`):** La galería de criaturas emblemáticas utilizaba la clase utilitaria `truncate`, recortando títulos y nombres de especies con longitud media o alta en resoluciones móviles reducidas.
+4. **Disparidad Tipográfica:** Existía una mezcla entre fuentes sans-serif genéricas, fuentes mono y la fuente retro del sistema, diluyendo la experiencia inmersiva de cartucho RPG retro.
+5. **Falta de Relieve Brutalista:** Los contenedores empleaban sombras tenues o bordes estándar sin la contundencia física de la estética retro-brutalista de Aethelgard (`border-4 border-black shadow-[6px_6px_0_0_#000]`).
+
+---
+
+### 16.2 Mejoras Implementadas
+
+#### A. Salón de la Fama Ceremonial con Marco Retro-Brutalist de Alto Contraste
+- **Marco de Consola Dorada:** Enmarcado perimetral de alto impacto con `border-4 border-black shadow-[6px_6px_0_0_#000] bg-bastion p-4 sm:p-6 rounded-none space-y-5`.
+- **Insignias Ceremoniales:** Badges temáticos con relieve ortogonal (`border-2 border-black shadow-[2px_2px_0_0_#000] retro text-[8px] sm:text-[9px]`):
+  - `SALÓN DE LA FAMA`: Fondo ámbar translúcido (`bg-amber-500/20 text-amber-400`) con icono SVG `Crown`.
+  - `ISC-305 · III PAC 2026`: Fondo secundario con icono SVG `Trophy`.
+- **Título de Pantalla con Relieve y Sombra Densa:** Título principal «AETHELGARD: CRÉDITOS Y HONOR» en tipografía pixelada `Press Start 2P` con sombra proyectada ortogonal (`retro text-base sm:text-xl md:text-2xl font-bold tracking-tight text-primary drop-shadow-[2px_2px_0_#000] break-words leading-snug`).
+
+#### B. Separación Holgada y Relieve Táctil en Botones de Acción
+- **Botonera de Cabecera:** Separación táctil ampliada (`gap-3 sm:gap-4 flex-wrap`) que asegura un área de pulsación cómoda y holgada en terminales táctiles.
+- **Botón de Fanfarria Reactivo:**
+  - Estilizado en oro solar con `bg-amber-500 hover:bg-amber-400 text-black border-2 border-black shadow-[2px_2px_0_0_#000] active:translate-y-0.5 active:shadow-none hover:shadow-[4px_4px_0_0_#000]`.
+  - Icono `Volume2` con micro-animación de rebote (`animate-bounce`) y estado textual reactivo (`CELEBRANDO...` frente a `CELEBRAR FANFARRIA`).
+  - Hardening antirrebote con guarda inmediata (`if (celebrando) return;`), `disabled={celebrando}` y atributo accesible `aria-busy={celebrando}`.
+- **Botones de Retorno al Asentamiento:**
+  - Preservación estricta de identificadores de pruebas y accesibilidad: `id="boton-volver-inicio-creditos"` y `data-testid="boton-volver-inicio-creditos"`.
+  - Navegación autoritativa hacia `/hub` con disparo de síntesis sonora retro mediante `reproducirSonido("victoria")`.
+- **Pie Ceremonial Separado:** Delimitación formal con `flex flex-col sm:flex-row items-center justify-between gap-4 pt-4 border-t-2 border-black`, separando el crédito institucional con `ShieldCheck` del botón de retorno secundario.
+
+#### C. Tipografía Retro Integral (`Press Start 2P` / `.retro` 100%)
+- **Erradicación Total de Fuentes Sans-Serif y Mono Estándar:** Adopción universal de la clase `.retro` (`Press Start 2P`) en absolutamente todos los elementos de la vista:
+  - Títulos principales, insignias heráldicas y descripciones.
+  - Homenaje académico al Ingeniero Claudio y principios rectores de software.
+  - Cuadrícula técnica de arquitectura full-stack (Front-End React 19, Back-End NestJS 11, Audio Web Audio API).
+  - Mención de 8bitcn/ui y texto literal de la Licencia MIT.
+  - Atribución exigida de Open5e / SRD 5.2 (en inglés canónico y traducción de cortesía en español).
+  - Galería de criaturas victoriosas y botones de interacción.
+- **Calibración Antiacortamiento en Móvil:**
+  - Textos extensos de licencias y descripciones: `text-[8px] sm:text-[9px]` con `leading-relaxed` y `break-words`.
+  - Módulos de arquitectura y principios rectores: `text-[9px] sm:text-[10px]`.
+  - Títulos y botones: `text-[10px] sm:text-xs` con interlineado fluido.
+
+#### D. Ergonomía Móvil y Cero Desbordamiento Horizontal (360px–420px)
+- **Confinamiento Seguro:** Contenedor raíz delimitado con `w-full max-w-5xl mx-auto px-2 sm:px-4 space-y-6 sm:space-y-8 py-4 sm:py-6 overflow-x-hidden`.
+- **Bestiario Victorioso:** Rejilla flexible `grid-cols-2 sm:grid-cols-4 gap-2.5 sm:gap-3` con tarjetas `bg-abismo/90 border-2 border-black shadow-[2px_2px_0_0_#000]`. Se eliminó la clase `truncate` permitiendo que nombres extensos como *Quimera Tricéfala* o *Hidra de las Marismas* fluyan limpiamente en dos líneas sin cortes abruptos.
+- **Cajas de Licencias con Scroll Contenido:** Cajas legales configuradas con `max-h-48 overflow-y-auto overflow-x-hidden p-3 border-2 border-black bg-black/40 text-[8px] leading-relaxed break-words shadow-[inset_2px_2px_0_0_rgba(0,0,0,0.6)]`, permitiendo inspección íntegra del texto legal sin deformar la maquetación.
+
+#### E. Cumplimiento Estricto de la Regla R1 (Cero Emojis Unicode)
+- Cero emojis unicode en toda la pantalla; empleo exclusivo de iconos SVG vectoriales de Lucide: `Trophy`, `Crown`, `Sparkles`, `ArrowLeft`, `Volume2`, `Award`, `GraduationCap`, `Code2`, `ShieldCheck` y `BookOpen`.
+- Todos los textos de interfaz redactados en español riguroso conforme a la directriz académica.
+
+---
+
+### 16.3 Verificación de Calidad y Cero Regresiones
+- **Pruebas Automatizadas Unitarias (`pnpm --filter web test`):**
+  - **80 de 80 pruebas aprobadas** (100% de éxito, 0 fallos).
+  - Nueva prueba especializada `Hardening, Ergonomía y Estética Retro-Brutalist: PaginaCreditos cuenta con marcos 8bitcn, sombras sólidas, tipografía retro integral y botones táctiles separados` que valida:
+    1. Confinamiento de pantalla sin overflow horizontal (`overflow-x-hidden`, `max-w-5xl`).
+    2. Marco retro-brutalist ceremonial en la cabecera (`border-4 border-black`, `shadow-[6px_6px_0_0_#000]`).
+    3. Separación holgada y táctil en los botones de acción (`gap-3 sm:gap-4 flex-wrap`, `border-2 border-black shadow-[2px_2px_0_0_#000]`).
+    4. Cero clases `truncate` rígidas en los nombres de criaturas.
+    5. Cajas de licencias con scroll vertical contenido y relieve hundido retro.
+    6. Guarda antirrebote con `if (celebrando) return;` y accesibilidad con `aria-busy={celebrando}`.
+- **Regla R1 Estricta:** Verificación de 0 emojis unicode en `PaginaCreditos.tsx` auditada por la suite automatizada.
+- **Linter Web (`pnpm --filter web lint`):** 0 errores de TypeScript y Oxlint en los 80 archivos del proyecto.
+- **Compilación de Producción (`pnpm --filter web build`):** 0 errores de compilación, empaquetado completado en Vite en 3.27s.
