@@ -475,13 +475,13 @@ test('Hardening, Ergonomía y Estética Retro-Brutalist: PantallaHistorial cuent
 
   // 4. Separación ergonómica y táctil de botones de acción
   assert.ok(
-    (codigo.includes('gap-3.5 sm:gap-4') || codigo.includes('gap-3 sm:gap-4')) &&
-      (codigo.includes('flex flex-col sm:flex-row') || codigo.includes('flex-wrap')),
-    'Los botones de cabecera deben contar con separación desahogada en contenedor flexible',
+    (codigo.includes('grid-cols-1 sm:grid-cols-2') || codigo.includes('gap-3 sm:gap-4') || codigo.includes('gap-4 sm:gap-5')) &&
+      codigo.includes('sm:w-auto'),
+    'Los botones de cabecera deben contar con separación desahogada y cuadrícula adaptativa',
   );
   assert.ok(
-    codigo.includes('gap-y-3') || codigo.includes('gap-2 sm:gap-3 flex-wrap'),
-    'La botonera de filtros rápidos debe tener separación holgada entre filas y botones',
+    codigo.includes('grid grid-cols-2') || codigo.includes('gap-2.5 sm:gap-3'),
+    'La botonera de filtros rápidos debe organizarse en una rejilla simétrica con separación uniforme',
   );
 
   // 5. Tipografía retro 100% integral
