@@ -22,6 +22,10 @@ import {
   bloquearYVerificarTurno,
 } from '../combate.service';
 import { calcularXpRequerida, ProgresoService } from '../../progreso/progreso.service';
+import {
+  BESTIARIO,
+  calcularTasaCapturaPorPresupuesto,
+} from '../../externo/bestiario-canonico';
 
 export const MULTIPLICADORES_TALISMAN: Record<string, number> = {
   'talisman-basico': 1.0,
@@ -164,9 +168,23 @@ export class CapturaService {
     );
     const multiplicadorEstado = rivalConEstado ? 1.25 : 1.0;
 
+    const especieRival = encuentro.criaturaRival.especie as any;
+    let tasaCapturaEfectiva = especieRival.tasaCaptura;
+    if (especieRival?.slug) {
+      const canonica = BESTIARIO.find((b) => b.slug === especieRival.slug);
+      if (canonica) {
+        const bst =
+          canonica.statsBase.hpBase +
+          canonica.statsBase.ataqueBase +
+          canonica.statsBase.defensaBase +
+          canonica.statsBase.velocidadBase;
+        tasaCapturaEfectiva = calcularTasaCapturaPorPresupuesto(bst);
+      }
+    }
+
     const multiplicador = MULTIPLICADORES_TALISMAN[itemCodigo] ?? 1.0;
     const probabilidadFinal = calcularProbabilidadCaptura(
-      encuentro.criaturaRival.especie.tasaCaptura,
+      tasaCapturaEfectiva,
       encuentro.criaturaRival.hpActual,
       encuentro.criaturaRival.hpMaximo,
       multiplicador,

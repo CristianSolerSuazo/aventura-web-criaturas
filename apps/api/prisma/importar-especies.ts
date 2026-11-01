@@ -8,7 +8,6 @@ import {
   calcularTasaCapturaPorPresupuesto,
 } from '../src/modulos/externo/bestiario-canonico';
 import {
-  calcularTasaCaptura,
   CATALOGO_ESPECIES_PROPENSO,
 } from '../src/modulos/externo/normalizador-criaturas.util';
 
@@ -85,6 +84,28 @@ async function importarEspecies() {
     });
 
     mapaEspeciesPorSlug.set(canonica.slug, especieDb.id);
+
+    // Recalibrar criaturas existentes para sincronizar estadísticas base de la especie
+    const criaturasExistentes = await prisma.criatura.findMany({
+      where: { especieId: especieDb.id },
+    });
+    for (const cr of criaturasExistentes) {
+      const factorEscalado = 1.0 + (cr.nivel - 1) * 0.08;
+      const nuevoHpMax = Math.round(canonica.statsBase.hpBase * (1.0 + (cr.nivel - 1) * 0.1));
+      const nuevoAtq = Math.round(canonica.statsBase.ataqueBase * factorEscalado);
+      const nuevaDef = Math.round(canonica.statsBase.defensaBase * factorEscalado);
+      const nuevaVel = Math.round(canonica.statsBase.velocidadBase * (1.0 + (cr.nivel - 1) * 0.05));
+      await prisma.criatura.update({
+        where: { id: cr.id },
+        data: {
+          hpMaximo: nuevoHpMax,
+          hpActual: Math.min(cr.hpActual, nuevoHpMax),
+          ataque: nuevoAtq,
+          defensa: nuevaDef,
+          velocidad: nuevaVel,
+        },
+      });
+    }
 
     // Movimientos soberanos: eliminar existentes y recrear exactamente los 4 slots tácticos
     await prisma.movimiento.deleteMany({
