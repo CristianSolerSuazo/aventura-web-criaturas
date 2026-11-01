@@ -4,10 +4,85 @@ import {
   BadRequestException,
   ForbiddenException,
   ConflictException,
+  Optional,
 } from '@nestjs/common';
 import { PrismaService } from '../../comun/prisma/prisma.service';
-import { ProgresoService } from '../progreso/progreso.service';
-import { Optional } from '@nestjs/common';
+import {
+  ProgresoService,
+  calcularPoderEquipoDesdeCriaturas,
+  PoderEquipoDto,
+  RequisitoCartografiaDto,
+  RequisitoNivelEquipoDto,
+} from '../progreso/progreso.service';
+import {
+  BESTIARIO,
+  TABLAS_APARICION,
+} from '../externo/bestiario-canonico';
+
+export interface EspecieHabitanteDto {
+  slug: string;
+  nombre: string;
+  tipo: string;
+  elemento: string;
+  esEspecial: boolean;
+  esLegendaria: boolean;
+  pesoAparicion: number;
+}
+
+export interface NodoMapaTerritorialDto {
+  id: string;
+  nombre: string;
+  tipo: 'LOCALIDAD' | 'ZONA';
+  esSegura: boolean;
+  faunaNivelMinimo: number | null;
+  faunaNivelMaximo: number | null;
+  desbloqueada: boolean;
+  progreso: number;
+  esActual: boolean;
+  esAdyacente: boolean;
+  conexionesIds: string[];
+}
+
+// simplificacion: resolución de hábitats y fauna en memoria a partir del catálogo canónico y tablas de aparición fijas; suficiente para el mundo actual de 6 zonas silvestres sin sobrecargar la base de datos con consultas N+1 en cada petición de ubicación.
+export function obtenerEspeciesHabitantesZona(zonaId: string): EspecieHabitanteDto[] {
+  const apariciones = TABLAS_APARICION.filter((t) => t.zonaId === zonaId);
+  if (apariciones.length === 0) {
+    return [];
+  }
+  const mapaBestiario = new Map(BESTIARIO.map((b) => [b.slug, b]));
+  return apariciones.map((a) => {
+    const b = mapaBestiario.get(a.especieSlug);
+    return {
+      slug: a.especieSlug,
+      nombre: b?.nombre ?? a.especieSlug,
+      tipo: b?.tipo ?? 'bestia',
+      elemento: b?.elemento ?? 'fisico',
+      esEspecial: Boolean(b?.esEspecial),
+      esLegendaria: Boolean(b?.esLegendaria),
+      pesoAparicion: a.peso,
+    };
+  });
+}
+
+export const NODOS_CANONICOS_MUNDO: {
+  id: string;
+  nombre: string;
+  tipo: 'LOCALIDAD' | 'ZONA';
+  esSegura: boolean;
+  faunaNivelMinimo: number | null;
+  faunaNivelMaximo: number | null;
+  conexionesIds: string[];
+}[] = [
+  { id: 'LOC-01', nombre: 'Villa Serena', tipo: 'LOCALIDAD', esSegura: true, faunaNivelMinimo: null, faunaNivelMaximo: null, conexionesIds: ['ZON-01', 'ZON-02'] },
+  { id: 'ZON-01', nombre: 'Praderas del Amanecer', tipo: 'ZONA', esSegura: false, faunaNivelMinimo: 1, faunaNivelMaximo: 3, conexionesIds: ['LOC-01', 'LOC-02'] },
+  { id: 'ZON-02', nombre: 'Riberas del Lago Espejo', tipo: 'ZONA', esSegura: false, faunaNivelMinimo: 2, faunaNivelMaximo: 4, conexionesIds: ['LOC-01', 'ZON-03'] },
+  { id: 'LOC-02', nombre: 'Puesto Fronterizo del Río', tipo: 'LOCALIDAD', esSegura: true, faunaNivelMinimo: null, faunaNivelMaximo: null, conexionesIds: ['ZON-01', 'ZON-03', 'ZON-04'] },
+  { id: 'ZON-03', nombre: 'Bosque Susurrante', tipo: 'ZONA', esSegura: false, faunaNivelMinimo: 3, faunaNivelMaximo: 5, conexionesIds: ['ZON-02', 'LOC-02'] },
+  { id: 'ZON-04', nombre: 'Paso de los Riscos', tipo: 'ZONA', esSegura: false, faunaNivelMinimo: 5, faunaNivelMaximo: 7, conexionesIds: ['LOC-02', 'LOC-03', 'ZON-05'] },
+  { id: 'LOC-03', nombre: 'Bastión del Norte', tipo: 'LOCALIDAD', esSegura: true, faunaNivelMinimo: null, faunaNivelMaximo: null, conexionesIds: ['ZON-04', 'ZON-06'] },
+  { id: 'ZON-05', nombre: 'Cueva Umbría', tipo: 'ZONA', esSegura: false, faunaNivelMinimo: 7, faunaNivelMaximo: 10, conexionesIds: ['ZON-04', 'ZON-06'] },
+  { id: 'ZON-06', nombre: 'Pico de la Cumbre', tipo: 'ZONA', esSegura: false, faunaNivelMinimo: 8, faunaNivelMaximo: 12, conexionesIds: ['LOC-03', 'ZON-05'] },
+];
 
 @Injectable()
 export class MundoService {
@@ -39,6 +114,19 @@ export class MundoService {
       });
     }
 
+    let criaturas: { nivel: number; enEquipo: boolean }[] = [];
+    if (this.prisma.criatura?.findMany) {
+      try {
+        criaturas = await this.prisma.criatura.findMany({
+          where: { personajeId: personaje.id },
+          select: { nivel: true, enEquipo: true },
+        });
+      } catch {
+        criaturas = [];
+      }
+    }
+    const poderEquipo: PoderEquipoDto = calcularPoderEquipoDesdeCriaturas(criaturas);
+
     const conexionesOrigen = await this.prisma.conexionZona.findMany({
       where: { zonaOrigenId: zona.id },
       include: { zonaDestino: true },
@@ -64,6 +152,8 @@ export class MundoService {
         let progresoObjetivo = 100;
         let cumpleRequisito = estaDesbloqueada;
         let detalleProgreso: string | null = null;
+        let requisitoCartografia: RequisitoCartografiaDto | null = null;
+        let requisitoNivelEquipo: RequisitoNivelEquipoDto | null = null;
 
         if (this.progresoService) {
           const evalReq = await this.progresoService.evaluarEstadoRequisitoZona(
@@ -78,6 +168,8 @@ export class MundoService {
           detalleProgreso = estaDesbloqueada
             ? 'Sendas exploradas y cartografiadas.'
             : evalReq.detalleProgreso;
+          requisitoCartografia = estaDesbloqueada ? null : evalReq.requisitoCartografia;
+          requisitoNivelEquipo = estaDesbloqueada ? null : evalReq.requisitoNivelEquipo;
         } else {
           requisito = !estaDesbloqueada ? 'Requiere progreso en el gremio o equipo' : null;
           progresoActual = estaDesbloqueada ? 100 : 0;
@@ -87,6 +179,11 @@ export class MundoService {
         return {
           ubicacionDestinoId: c.zonaDestinoId,
           nombre: c.zonaDestino.nombre,
+          tipoDestino: c.zonaDestino.tipo as 'LOCALIDAD' | 'ZONA',
+          esSegura: Boolean(c.zonaDestino.esSegura),
+          faunaNivelMinimo: c.zonaDestino.nivelMinimo ?? null,
+          faunaNivelMaximo: c.zonaDestino.nivelMaximo ?? null,
+          especiesHabitantes: obtenerEspeciesHabitantesZona(c.zonaDestinoId),
           nivelSugerido,
           estaBloqueada: !estaDesbloqueada,
           requisito,
@@ -94,6 +191,8 @@ export class MundoService {
           progresoObjetivo,
           cumpleRequisito,
           detalleProgreso,
+          requisitoCartografia,
+          requisitoNivelEquipo,
         };
       }),
     );
@@ -118,6 +217,26 @@ export class MundoService {
           ? `${zona.nivelMinimo}+`
           : null;
 
+    const adyacentesSet = new Set(conexionesOrigen.map((c) => c.zonaDestinoId));
+    const nodosMapa: NodoMapaTerritorialDto[] = NODOS_CANONICOS_MUNDO.map((nodo) => {
+      const reg = zonasDesbloqueadas.find((z) => z.zonaId === nodo.id);
+      const desbloqueada = desbloqueadasSet.has(nodo.id);
+      const progreso = desbloqueada ? (reg?.progreso ?? (nodo.esSegura ? 100 : 0)) : 0;
+      return {
+        id: nodo.id,
+        nombre: nodo.nombre,
+        tipo: nodo.tipo,
+        esSegura: nodo.esSegura,
+        faunaNivelMinimo: nodo.faunaNivelMinimo,
+        faunaNivelMaximo: nodo.faunaNivelMaximo,
+        desbloqueada,
+        progreso,
+        esActual: nodo.id === zona.id,
+        esAdyacente: adyacentesSet.has(nodo.id),
+        conexionesIds: nodo.conexionesIds,
+      };
+    });
+
     return {
       ubicacionId: zona.id,
       nombre: zona.nombre,
@@ -127,9 +246,14 @@ export class MundoService {
       descripcion: zona.descripcion,
       nivelMinimo: zona.nivelMinimo,
       nivelMaximo: zona.nivelMaximo,
+      faunaNivelMinimo: zona.nivelMinimo ?? null,
+      faunaNivelMaximo: zona.nivelMaximo ?? null,
+      especiesHabitantes: obtenerEspeciesHabitantesZona(zona.id),
       nivelSugerido,
       servicios: zona.servicios,
       progresoZona,
+      poderEquipo,
+      nodosMapa,
       conexiones,
     };
   }
