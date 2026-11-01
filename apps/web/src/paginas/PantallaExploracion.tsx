@@ -48,6 +48,8 @@ import {
   sanitizarSlugZona,
 } from "@/lib/assets";
 import { cn } from "@/lib/utils";
+import { MinimapaRedTerritorial } from "@/components/mundo/MinimapaRedTerritorial";
+import { construirNodosMapaFallback } from "@/lib/servicios-hub";
 
 export interface EntradaBitacora {
   id: string;
@@ -340,9 +342,18 @@ export function PantallaExploracion() {
                   className="bg-[#1a2332]/95 text-[#14d1e8] border-2 border-black shadow-[2px_2px_0_0_#000] gap-1 py-0.5 sm:py-1 px-1.5 sm:px-2.5 text-[8px] sm:text-[9px]"
                 >
                   <MapPin className="size-2.5 sm:size-3 text-[#14d1e8] shrink-0" />
-                  <span>NV. SUGERIDO: {ubicacion?.nivelSugerido || "1-3"}</span>
+                  <span>FAUNA SALVAJE: NV. {ubicacion?.nivelSugerido || "1-3"}</span>
                 </Badge>
               )}
+
+              <Badge
+                variant="outline"
+                font="retro"
+                className="bg-[#1a2332]/95 text-emerald-400 border-2 border-black shadow-[2px_2px_0_0_#000] gap-1 py-0.5 sm:py-1 px-1.5 sm:px-2.5 text-[8px] sm:text-[9px]"
+              >
+                <Swords className="size-2.5 sm:size-3 text-emerald-400 shrink-0" />
+                <span>EQUIPO: NV. {ubicacion?.poderEquipo?.nivelMaximoEquipo ?? 1}</span>
+              </Badge>
 
               {progresoZona >= 100 && (
                 <Badge
@@ -693,7 +704,45 @@ export function PantallaExploracion() {
         </ul>
       </div>
 
-      {/* 5. Modal / Diálogo de Encuentro Hostil Cinemático (Dialog 8-bit Brutalist) */}
+      {/* 5. Hábitat Autóctono y Red Territorial Conectada */}
+      {ubicacion?.especiesHabitantes && ubicacion.especiesHabitantes.length > 0 && (
+        <div className="bg-card border-2 border-black shadow-[4px_4px_0_0_#000] p-3.5 sm:p-4 space-y-2.5">
+          <div className="flex items-center gap-2 border-b-2 border-black/60 pb-1.5">
+            <Sparkles className="size-3.5 text-amber-400 shrink-0" />
+            <h3 className="retro text-[9px] sm:text-[10px] text-slate-100 font-bold uppercase tracking-wider">
+              FAUNA AVISTADA EN ESTE HÁBITAT ({ubicacion.especiesHabitantes.length} ESPECIES)
+            </h3>
+          </div>
+          <div className="flex flex-wrap gap-2">
+            {ubicacion.especiesHabitantes.map((esp) => (
+              <div
+                key={esp.slug ?? esp.nombre}
+                className="bg-[#1a2332] border-2 border-black shadow-[2px_2px_0_0_#000] px-2 py-1 flex items-center gap-1.5 text-[8px] sm:text-[9px] retro text-slate-200"
+              >
+                <span className="font-bold">{esp.nombre}</span>
+                <span className="text-slate-400 text-[7px] sm:text-[8px]">({esp.tipo})</span>
+                {esp.esLegendaria && (
+                  <Crown className="size-3 text-amber-400 shrink-0" />
+                )}
+                {esp.esEspecial && !esp.esLegendaria && (
+                  <Sparkles className="size-3 text-amber-300 shrink-0" />
+                )}
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* Red Territorial y Rutas */}
+      {ubicacion && (
+        <MinimapaRedTerritorial
+          nodos={construirNodosMapaFallback(ubicacion)}
+          ubicacionActualId={ubicacion.ubicacionId}
+          compacto
+        />
+      )}
+
+      {/* 6. Modal / Diálogo de Encuentro Hostil Cinemático (Dialog 8-bit Brutalist) */}
       <Dialog open={modalEncuentroAbierto} onOpenChange={setModalEncuentroAbierto}>
         <DialogContent
           font="normal"
@@ -945,3 +994,5 @@ export function PantallaExploracion() {
 }
 
 export default PantallaExploracion;
+
+

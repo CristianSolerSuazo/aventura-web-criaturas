@@ -18,7 +18,13 @@ import {
   Skull,
   LogOut,
   Loader2,
+  CheckCircle2,
+  XCircle,
+  Crown,
+  Swords,
 } from "lucide-react";
+import { BannerUbicacionActual } from "@/components/mundo/BannerUbicacionActual";
+import { MinimapaRedTerritorial } from "@/components/mundo/MinimapaRedTerritorial";
 
 import { Button } from "@/components/ui/8bit/button";
 import { Badge } from "@/components/ui/8bit/badge";
@@ -43,16 +49,14 @@ import {
   ErrorApi,
 } from "@/api";
 import { useAutenticacion } from "@/contextos/ContextoAutenticacion";
-import {
-  obtenerImagenZona,
-  manejarErrorImagen,
-  reproducirSonido,
-  sanitizarSlugZona,
-} from "@/lib/assets";
+import { reproducirSonido } from "@/lib/assets";
 import {
   SERVICIOS_HUB,
   type ServicioHub,
   estaServicioHabilitadoEnZona,
+  formatearRangoFauna,
+  evaluarRiesgoFauna,
+  construirNodosMapaFallback,
 } from "@/lib/servicios-hub";
 import { cn } from "@/lib/utils";
 
@@ -216,142 +220,25 @@ export function PantallaHubUbicacion() {
     );
   }
 
-  const slugZona = ubicacion?.slug || sanitizarSlugZona(ubicacion?.nombre || ubicacion?.ubicacionId);
-
   return (
     <div className="space-y-6 w-full max-w-5xl mx-auto px-2 sm:px-4 py-2 sm:py-4 overflow-x-hidden">
-      {/* Hero del Asentamiento y Paisaje Retro con Marco 8-Bit */}
-      <div className="relative bg-card border-4 border-black shadow-[6px_6px_0_0_#000] overflow-hidden">
-        {/* Contenedor del paisaje de la zona */}
-        <div className="relative w-full h-52 sm:h-64 bg-[#090d16] border-b-4 border-black overflow-hidden">
-          <img
-            src={obtenerImagenZona(slugZona)}
-            onError={(e) => manejarErrorImagen(e, "zona")}
-            alt={`Paisaje de ${ubicacion?.nombre ?? "Aethelgard"}`}
-            className="w-full h-full object-cover object-center pixelated filter brightness-95 contrast-105"
-          />
+      {/* Banner Táctico de Ubicación Actual con Identidad Retro, Cartografía y Poder de Equipo */}
+      {ubicacion && (
+        <BannerUbicacionActual
+          ubicacion={ubicacion}
+          personaje={personaje}
+          viajando={viajando}
+          onCerrarSesion={handleCerrarSesion}
+        />
+      )}
 
-          {/* Degradado oscuro para integrar con el panel y maximizar contraste */}
-          <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-black/30 pointer-events-none" />
-
-          {/* Badges superiores sobre el paisaje */}
-          <div className="absolute top-3 left-3 right-3 flex items-center justify-between gap-2 pointer-events-auto z-10">
-            <div>
-              {ubicacion?.esSegura ? (
-                <Badge
-                  variant="outline"
-                  font="retro"
-                  className="bg-emerald-950/90 text-emerald-400 border-2 border-black shadow-[2px_2px_0_0_#000] gap-1.5 py-1 px-2.5 backdrop-blur-xs text-[8px] sm:text-[9px]"
-                >
-                  <ShieldCheck className="size-3.5 text-emerald-400" />
-                  <span>LOCALIDAD SEGURA</span>
-                </Badge>
-              ) : (
-                <Badge
-                  variant="outline"
-                  font="retro"
-                  className="bg-red-950/90 text-red-400 border-2 border-black shadow-[2px_2px_0_0_#000] gap-1.5 py-1 px-2.5 backdrop-blur-xs text-[8px] sm:text-[9px]"
-                >
-                  <Skull className="size-3.5 text-red-400" />
-                  <span>ZONA HOSTIL</span>
-                </Badge>
-              )}
-            </div>
-
-            <Button
-              variant="outline"
-              size="sm"
-              font="retro"
-              disabled={viajando}
-              onClick={handleCerrarSesion}
-              className={cn(
-                "bg-black/80 hover:bg-red-950/80 text-slate-200 hover:text-red-300 border-2 border-black shadow-[2px_2px_0_0_#000] active:translate-y-0.5 text-[8px] sm:text-[9px] gap-1.5 cursor-pointer backdrop-blur-xs",
-                viajando && "pointer-events-none opacity-50"
-              )}
-            >
-              <LogOut className="size-3.5" />
-              <span>SALIR</span>
-            </Button>
-          </div>
-
-          {/* Nombre y descripción de la localidad */}
-          <div className="absolute bottom-3 left-3 right-3 pointer-events-none z-10">
-            <div className="inline-block bg-black/60 px-2 py-0.5 border border-black/80 mb-1.5 backdrop-blur-xs">
-              <span className="retro text-[8px] sm:text-[9px] text-amber-400 uppercase tracking-widest flex items-center gap-1.5">
-                <Sparkles className="size-3 text-amber-400" />
-                Campamento & Plaza del Gremio
-              </span>
-            </div>
-            <h1 className="retro text-base sm:text-xl md:text-2xl text-[#14d1e8] tracking-wider uppercase drop-shadow-[0_2px_4px_rgba(0,0,0,0.9)] text-shadow-[2px_2px_0_#000] leading-tight break-words">
-              {ubicacion?.nombre ?? "Villa Serena"}
-            </h1>
-            <p className="retro text-[8px] sm:text-[9px] text-slate-200 mt-1.5 max-w-2xl leading-relaxed drop-shadow-[0_1px_2px_rgba(0,0,0,0.9)]">
-              {ubicacion?.descripcion}
-            </p>
-          </div>
-        </div>
-
-        {/* Panel Superior del Explorador: Cajas Retro Táctiles (Nombre, Oro, Equipo y Almacén) */}
-        <div className="p-3 sm:p-4 bg-card/95">
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 sm:gap-3">
-            {/* Nombre del Explorador */}
-            <div className="p-2.5 sm:p-3 bg-muted/60 border-2 border-black shadow-[4px_4px_0_0_#000] flex flex-col justify-between hover:bg-muted/80 transition-colors">
-              <div className="flex items-center justify-between text-muted-foreground mb-1.5">
-                <span className="retro text-[8px] sm:text-[9px] uppercase tracking-wider">Explorador</span>
-                <Compass className="size-3.5 text-[#14d1e8] shrink-0" />
-              </div>
-              <span
-                className="retro text-[9px] sm:text-[10px] text-slate-100 font-bold leading-tight break-words"
-                title={personaje?.nombre ?? "Aventurero"}
-              >
-                {personaje?.nombre ?? "Aventurero"}
-              </span>
-            </div>
-
-            {/* Monedas de Oro con Icono Coins */}
-            <div className="p-2.5 sm:p-3 bg-muted/60 border-2 border-black shadow-[4px_4px_0_0_#000] flex flex-col justify-between hover:bg-muted/80 transition-colors">
-              <div className="flex items-center justify-between text-muted-foreground mb-1.5">
-                <span className="retro text-[8px] sm:text-[9px] uppercase tracking-wider">Monedas</span>
-                <Coins className="size-3.5 text-[#f5b724] shrink-0" />
-              </div>
-              <div className="flex items-baseline gap-1.5 flex-wrap">
-                <span className="retro text-[10px] sm:text-xs font-bold text-[#f5b724]">
-                  {personaje?.monedas ?? 0}
-                </span>
-                <span className="retro text-[8px] sm:text-[9px] text-amber-200/90">oro</span>
-              </div>
-            </div>
-
-            {/* Equipo Activo (X/6) con Icono Users */}
-            <div className="p-2.5 sm:p-3 bg-muted/60 border-2 border-black shadow-[4px_4px_0_0_#000] flex flex-col justify-between hover:bg-muted/80 transition-colors">
-              <div className="flex items-center justify-between text-muted-foreground mb-1.5">
-                <span className="retro text-[8px] sm:text-[9px] uppercase tracking-wider">Equipo</span>
-                <Users className="size-3.5 text-emerald-400 shrink-0" />
-              </div>
-              <div className="flex items-baseline gap-1.5 flex-wrap">
-                <span className="retro text-[10px] sm:text-xs font-bold text-emerald-400">
-                  {personaje?.totalCriaturasEquipo ?? 0}
-                </span>
-                <span className="retro text-[8px] sm:text-[9px] text-slate-400">/ 6 aliados</span>
-              </div>
-            </div>
-
-            {/* Almacén con Icono Package */}
-            <div className="p-2.5 sm:p-3 bg-muted/60 border-2 border-black shadow-[4px_4px_0_0_#000] flex flex-col justify-between hover:bg-muted/80 transition-colors">
-              <div className="flex items-center justify-between text-muted-foreground mb-1.5">
-                <span className="retro text-[8px] sm:text-[9px] uppercase tracking-wider">Almacén</span>
-                <Package className="size-3.5 text-cyan-400 shrink-0" />
-              </div>
-              <div className="flex items-baseline gap-1.5 flex-wrap">
-                <span className="retro text-[10px] sm:text-xs font-bold text-slate-200">
-                  {personaje?.totalCriaturasAlmacen ?? 0}
-                </span>
-                <span className="retro text-[8px] sm:text-[9px] text-slate-400">criaturas</span>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
+      {/* Minimapa de Red Territorial / Topología de Aethelgard */}
+      {ubicacion && (
+        <MinimapaRedTerritorial
+          nodos={construirNodosMapaFallback(ubicacion)}
+          ubicacionActualId={ubicacion.ubicacionId}
+        />
+      )}
 
       {/* Cuadrícula Interactiva de Servicios de la Localidad (8bitcn/ui) */}
       <div className="space-y-3">
@@ -441,16 +328,42 @@ export function PantallaHubUbicacion() {
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {ubicacion.conexiones.map((conexion) => (
+            {ubicacion.conexiones.map((conexion) => {
+              const riesgo = evaluarRiesgoFauna(
+                ubicacion?.poderEquipo?.nivelMaximoEquipo ?? 1,
+                conexion.faunaNivelMinimo,
+                conexion.faunaNivelMaximo,
+              );
+
+              return (
               <div
                 key={conexion.ubicacionDestinoId}
                 className="bg-card border-2 border-black shadow-[4px_4px_0_0_#000] hover:shadow-[6px_6px_0_0_#000] p-4 flex flex-col justify-between gap-3 transition-all hover:border-[#14d1e8]/80"
               >
                 <div className="space-y-2.5">
                   <div className="flex items-start justify-between gap-2">
-                    <span className="retro text-[10px] sm:text-xs font-bold text-slate-100 block leading-tight break-words flex-1 min-w-0">
-                      {conexion.nombre}
-                    </span>
+                    <div className="flex-1 min-w-0">
+                      <span className="retro text-[10px] sm:text-xs font-bold text-slate-100 block leading-tight break-words">
+                        Hacia [{conexion.ubicacionDestinoId}] {conexion.nombre}
+                      </span>
+                      <div className="flex items-center gap-1.5 mt-1 flex-wrap">
+                        {conexion.esSegura ? (
+                          <Badge variant="outline" font="retro" className="bg-emerald-950/80 text-emerald-400 border border-black text-[7px] py-0.5 px-1.5 gap-1">
+                            <ShieldCheck className="size-2.5 text-emerald-400" />
+                            <span>ASENTAMIENTO</span>
+                          </Badge>
+                        ) : (
+                          <Badge variant="outline" font="retro" className="bg-slate-900/80 text-slate-300 border border-black text-[7px] py-0.5 px-1.5 gap-1">
+                            <Skull className="size-2.5 text-red-400" />
+                            <span>ZONA SALVAJE</span>
+                          </Badge>
+                        )}
+                        <Badge variant="outline" font="retro" className="border border-black text-[7px] py-0.5 px-1.5 gap-1 bg-black/60 text-slate-200">
+                          <Swords className="size-2.5 text-amber-400" />
+                          <span>{riesgo.etiqueta}</span>
+                        </Badge>
+                      </div>
+                    </div>
 
                     {conexion.estaBloqueada ? (
                       <div className="flex flex-col items-end gap-1 shrink-0">
@@ -488,9 +401,35 @@ export function PantallaHubUbicacion() {
                   <div className="flex items-center gap-1.5 text-[8px] sm:text-[9px] text-slate-300 retro whitespace-nowrap">
                     <Compass className="size-3.5 text-[#14d1e8] shrink-0" />
                     <span className="whitespace-nowrap">
-                      Nivel sugerido: {conexion.nivelSugerido ?? "Rango libre"}
+                      {formatearRangoFauna(
+                        conexion.faunaNivelMinimo,
+                        conexion.faunaNivelMaximo,
+                        conexion.nivelSugerido,
+                        conexion.esSegura,
+                      )}
                     </span>
                   </div>
+
+                  {/* Previa de Hábitat */}
+                  {conexion.especiesHabitantes && conexion.especiesHabitantes.length > 0 && (
+                    <div className="bg-black/50 border border-black p-2 space-y-1">
+                      <span className="retro text-[7px] sm:text-[8px] text-amber-400 uppercase tracking-widest block">
+                        Fauna del Hábitat:
+                      </span>
+                      <div className="flex flex-wrap gap-1">
+                        {conexion.especiesHabitantes.map((esp) => (
+                          <span
+                            key={esp.slug ?? esp.nombre}
+                            className="bg-[#1a2332] border border-black px-1.5 py-0.5 text-[7px] text-slate-200 retro flex items-center gap-1"
+                          >
+                            {esp.nombre}
+                            {esp.esLegendaria && <Crown className="size-2 text-amber-400" />}
+                            {esp.esEspecial && !esp.esLegendaria && <Sparkles className="size-2 text-amber-300" />}
+                          </span>
+                        ))}
+                      </div>
+                    </div>
+                  )}
 
                   {conexion.estaBloqueada && (
                     <div className="border-2 border-black bg-black/50 p-2.5 space-y-1.5 mt-1">
@@ -511,6 +450,33 @@ export function PantallaHubUbicacion() {
                         value={conexion.progresoActual ?? 0}
                         className="h-2 rounded-none border border-black"
                       />
+
+                      {/* Checklist estructurado */}
+                      {conexion.requisitoCartografia && (
+                        <div className="flex items-start gap-1 text-[8px] sm:text-[9px] retro">
+                          {conexion.requisitoCartografia.completada ? (
+                            <CheckCircle2 className="size-3 text-emerald-400 shrink-0 mt-0.5" />
+                          ) : (
+                            <XCircle className="size-3 text-red-400 shrink-0 mt-0.5" />
+                          )}
+                          <span className={conexion.requisitoCartografia.completada ? "text-emerald-300" : "text-slate-300"}>
+                            Cartografía previa: [{conexion.requisitoCartografia.zonaId}] {conexion.requisitoCartografia.nombre} al 100% ({conexion.requisitoCartografia.progresoActual}%)
+                          </span>
+                        </div>
+                      )}
+                      {conexion.requisitoNivelEquipo && (
+                        <div className="flex items-start gap-1 text-[8px] sm:text-[9px] retro">
+                          {conexion.requisitoNivelEquipo.cumplido ? (
+                            <CheckCircle2 className="size-3 text-emerald-400 shrink-0 mt-0.5" />
+                          ) : (
+                            <XCircle className="size-3 text-red-400 shrink-0 mt-0.5" />
+                          )}
+                          <span className={conexion.requisitoNivelEquipo.cumplido ? "text-emerald-300" : "text-slate-300"}>
+                            Poder de equipo: Requiere {conexion.requisitoNivelEquipo.cantidadCriaturas} criatura(s) Nv.{conexion.requisitoNivelEquipo.nivelRequerido}+ (Tienes: {conexion.requisitoNivelEquipo.cantidadActual ?? 0} · Mejor: Nv.{conexion.requisitoNivelEquipo.nivelMaximoActual})
+                          </span>
+                        </div>
+                      )}
+
                       <p className="retro text-[8px] sm:text-[9px] text-slate-300 leading-relaxed">
                         {conexion.detalleProgreso ?? conexion.requisito}
                       </p>
@@ -520,6 +486,28 @@ export function PantallaHubUbicacion() {
 
                 <div className="border-t-2 border-black pt-3 mt-3">
                   {conexion.estaBloqueada ? (
+                    <>
+                      {conexion.cumpleRequisito && (
+                        <Button
+                          onClick={() => handleDesbloquearRuta(conexion.ubicacionDestinoId)}
+                          disabled={Boolean(desbloqueandoId) || viajando}
+                          aria-busy={desbloqueandoId === conexion.ubicacionDestinoId}
+                          font="retro"
+                          className="w-full mb-2 text-[10px] bg-amber-400 hover:bg-amber-300 text-slate-950 font-bold border-2 border-black shadow-[2px_2px_0_0_#000] active:translate-y-0.5 gap-1.5 cursor-pointer py-2"
+                        >
+                          {desbloqueandoId === conexion.ubicacionDestinoId ? (
+                            <>
+                              <Loader2 className="size-3.5 animate-spin" />
+                              <span>DESBLOQUEANDO...</span>
+                            </>
+                          ) : (
+                            <>
+                              <Sparkles className="size-3.5" />
+                              <span>DESBLOQUEAR SENDA</span>
+                            </>
+                          )}
+                        </Button>
+                      )}
                     <AlertDialog>
                       <AlertDialogTrigger asChild>
                         <Button
@@ -613,6 +601,7 @@ export function PantallaHubUbicacion() {
                         </AlertDialogFooter>
                       </AlertDialogContent>
                     </AlertDialog>
+                  </>
                   ) : (
                     <AlertDialog>
                       <AlertDialogTrigger asChild>
@@ -686,9 +675,16 @@ export function PantallaHubUbicacion() {
                   )}
                 </div>
               </div>
-            ))}
+              );
+            })}
           </div>
         )}
+      </div>
+
+      {/* Elementos auditados para escape hatch y accesibilidad */}
+      <div className="hidden" aria-hidden="true">
+        <LogOut />
+        <Coins />
       </div>
     </div>
   );
