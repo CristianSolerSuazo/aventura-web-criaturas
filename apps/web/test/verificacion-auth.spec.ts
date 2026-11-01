@@ -89,7 +89,6 @@ test("Ergonomía y Libertad de Usuario: PantallaCrearPersonaje y PantallaHubUbic
   assert.ok(layoutCodigo.includes('to="/kit-ui"'), "LayoutPrincipal debe incluir enlace a Kit de interfaz accesible desde celular");
 });
 
-
 test("Regla R1: Cero emojis unicode en PantallaIngreso.tsx, PantallaRegistro.tsx, PantallaCrearPersonaje.tsx y LayoutPrincipal.tsx", async () => {
   const { readFileSync } = await import("node:fs");
   const { join, dirname } = await import("node:path");
@@ -148,4 +147,65 @@ test("Hardening y Ergonomía: PantallaRegistro cuenta con aria-busy, estética r
   assert.ok(contenido.includes("pointer-events-none opacity-50"), "PantallaRegistro debe proteger enlaces secundarios durante el envío");
 });
 
+test("Auditoría Impeccable: PantallaIngreso consolida estética retro-brutalist 8-bit, tipografía integral, confinamiento móvil y espaciado ergonómico", async () => {
+  const { readFileSync } = await import("node:fs");
+  const { join, dirname } = await import("node:path");
+  const { fileURLToPath } = await import("node:url");
 
+  const __dirname = dirname(fileURLToPath(import.meta.url));
+  const ingresoCodigo = readFileSync(join(__dirname, "../src/paginas/PantallaIngreso.tsx"), "utf-8");
+
+  // 1. Estética retro-brutalist 8-bit (8bitcn/ui)
+  assert.ok(
+    ingresoCodigo.includes("border-4 border-black"),
+    "La tarjeta principal y el botón deben usar marcos negros sólidos de 4px",
+  );
+  assert.ok(
+    ingresoCodigo.includes("shadow-[6px_6px_0_0_#000]"),
+    "La tarjeta principal debe proyectar sombra ortogonal sólida de 6px",
+  );
+  assert.ok(
+    ingresoCodigo.includes("shadow-[2px_2px_0_0_#000]"),
+    "Insignia y campos de entrada deben tener sombras ortogonales sólidas de 2px",
+  );
+  assert.ok(
+    ingresoCodigo.includes("shadow-[4px_4px_0_0_#000]"),
+    "El botón arcade principal debe tener sombra ortogonal de 4px",
+  );
+  assert.ok(
+    ingresoCodigo.includes("rounded-none"),
+    "Los componentes deben preservar esquinas ortogonales vivas estilo 8-bit",
+  );
+
+  // 2. Confinamiento móvil y erradicación de desbordamiento horizontal (360px-420px)
+  assert.ok(
+    ingresoCodigo.includes("overflow-x-hidden"),
+    "El contenedor principal debe confinar el ancho con overflow-x-hidden",
+  );
+  assert.ok(
+    ingresoCodigo.includes("pr-10 sm:pr-12"),
+    "El campo de contraseña debe tener margen interior derecho adecuado para evitar superposición con el botón de ojo",
+  );
+  assert.ok(
+    ingresoCodigo.includes("size-8"),
+    "El botón de visibilidad de contraseña debe tener área táctil ergonómica de 32px (size-8)",
+  );
+
+  // 3. Ergonomía táctil y separación de controles
+  assert.ok(
+    ingresoCodigo.includes("space-y-4 sm:space-y-5"),
+    "Los campos de formulario deben contar con separación vertical holgada",
+  );
+  assert.ok(
+    ingresoCodigo.includes("h-12 sm:h-14"),
+    "El botón de acción principal debe disponer de altura táctil ergonómica de 48px-56px",
+  );
+  assert.ok(
+    ingresoCodigo.includes("border-black/40 gap-3 sm:gap-4"),
+    "El pie de navegación secundaria debe contar con divisor físico claro y espaciado generoso",
+  );
+  assert.ok(
+    ingresoCodigo.includes("flex-col sm:flex-row items-center justify-between"),
+    "Los enlaces del pie deben usar disposición adaptativa en columna/fila para móviles estrechos",
+  );
+});
