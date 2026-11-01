@@ -1266,10 +1266,20 @@ La auditoría de diseño heurístico y técnico realizada con la skill `impeccab
   - **Leyenda institucional del pie:** `text-[7px] sm:text-[8px] md:text-[9px] text-muted-foreground leading-relaxed break-words` («(c) 2026 Aethelgard · Proyecto Integrador ISC-305»).
   - **Enlaces secundarios del pie:** `text-[8px] sm:text-[9px]` («Kit de interfaz» y «Créditos y licencias»).
 
-#### C. Confinamiento Móvil y Cero Desbordamiento (360px–420px)
+#### C. Confinamiento Móvil, Erradicación de Desbordamiento y Calibración Ergonómica (360px–420px)
 - **Confinamiento Anti-Overflow Raíz:** Contenedor raíz sellado con `min-h-screen flex flex-col bg-background text-foreground antialiased selection:bg-primary selection:text-primary-foreground max-w-full overflow-x-hidden`.
-- **Cabecera Compacta sin `flex-wrap`:** Barra superior estrictamente en una sola fila (`flex items-center justify-between gap-2 sm:gap-4 w-full`) con ancho de padding calibrado (`px-2.5 py-2 sm:px-6 sm:py-3`), garantizando que en viewports de 360px el logotipo y los dos cartuchos coexistan con holgura sin desbordar ni provocar quiebres de línea indeseados.
-- **Pie de Página Adaptable:** Cuadrícula fluida con apilamiento vertical elástico en dispositivos móviles y horizontal en escritorio (`flex-col sm:flex-row items-center justify-between gap-3 sm:gap-4 text-center sm:text-left`), blindando la leyenda de derechos con `break-words` para evitar mutilaciones de texto.
+- **Cabecera Compacta sin Desbordamiento ni `flex-wrap`:**
+  - Barra superior en una sola fila (`flex items-center justify-between gap-2 sm:gap-4 w-full`) con padding vertical/horizontal afinado (`px-2.5 py-1.5 sm:px-6 sm:py-2.5`).
+  - Nombre de marca con escala responsive y tracking adaptado (`text-[10px] sm:text-base md:text-lg font-bold tracking-tight sm:tracking-wider`).
+  - El enlace a `/kit-ui` adopta etiqueta responsive adaptada: en móviles reducidos (<640px) despliega `Kit UI` (ahorrando 9 caracteres de ancho fijo) y en escritorio (>=640px) despliega `Kit de interfaz`. Esto erradica de forma definitiva la colisión y corte lateral del botón activo de la derecha («Créditos») en viewports de 360px a 390px, asegurando visualización íntegra de bordes negros y sombras proyectadas.
+- **Pie de Página con Jerarquía Estructurada y sin Quiebres Huérfanos:**
+  - Sombra ortogonal retro negra sólida visible (`shadow-[0_-4px_0_0_#000]`) sobre marco perimetral negro de 4px (`border-t-4 border-black bg-card/95`).
+  - Desglose jerárquico de la leyenda institucional en pantallas móviles mediante contenedor flex elástico:
+    - Línea principal: `(c) 2026 Aethelgard` con alto contraste y negrita retro (`text-[8px] sm:text-[9px] text-foreground/90 font-bold tracking-tight`).
+    - Línea secundaria: `Proyecto Integrador ISC-305` como complemento armónico calibrado (`text-[7px] sm:text-[8px] text-muted-foreground/80 tracking-tight`).
+    - En pantallas de escritorio (`sm:`), ambas cadenas se unifican en un único renglón con separador `·`.
+    - Esto elimina el quiebre accidental que aislaba a «ISC-305» en una línea descolgada.
+  - Enlaces del pie concebidos como micro-cartuchos retro interactivos (`border border-black/80 bg-background/60 hover:bg-background shadow-[1px_1px_0_0_#000] hover:shadow-[2px_2px_0_0_#000] active:translate-y-0.5 px-2.5 py-1 sm:px-3 sm:py-1.5`), erradicando el subrayado tosco que causaba efecto de tachado visual.
 
 #### D. Ergonomía Táctil y Separación de Acciones
 - **Botonera Superior:** Separación explícita (`gap-2 sm:gap-3`) entre cartuchos, con altura ergonómica táctil de 32px–36px (`h-8 sm:h-9`) y acolchado táctil holgado (`px-2 sm:px-3 py-1 sm:py-1.5`).
