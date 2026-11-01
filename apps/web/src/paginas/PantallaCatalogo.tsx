@@ -52,6 +52,10 @@ export {
   TRADUCCION_TIPOS_ESPECIE,
   TRADUCCION_ELEMENTOS,
   calcularArquetipoCriatura,
+  calcularPresupuestoCriatura,
+  resolverRarezaEspecie,
+  ordenarEspeciesCatalogo,
+  type CriterioOrdenCatalogo,
   type CriteriosFiltroCatalogo,
   filtrarEspeciesCatalogo,
   agruparEspeciesPorZona,
@@ -60,6 +64,10 @@ import {
   TRADUCCION_TIPOS_ESPECIE,
   TRADUCCION_ELEMENTOS,
   calcularArquetipoCriatura,
+  calcularPresupuestoCriatura,
+  resolverRarezaEspecie,
+  ordenarEspeciesCatalogo,
+  type CriterioOrdenCatalogo,
   filtrarEspeciesCatalogo,
   agruparEspeciesPorZona,
 } from "@/lib/catalogo-historial";
@@ -80,10 +88,39 @@ export function PantallaCatalogo() {
   const [totalEspecies, setTotalEspecies] = useState<number>(0);
   const [tipoFiltro, setTipoFiltro] = useState<string>("todos");
   const [arquetipoFiltro, setArquetipoFiltro] = useState<string>("TODOS");
+  const [criterioOrden, setCriterioOrden] = useState<CriterioOrdenCatalogo>("ZONA_ASC");
   const [busqueda, setBusqueda] = useState<string>("");
   const [cargando, setCargando] = useState<boolean>(true);
   const [especieSeleccionada, setEspecieSeleccionada] = useState<EspecieCatalogo | null>(null);
   const [modalAbierto, setModalAbierto] = useState<boolean>(false);
+
+  const obtenerBadgeRareza = (esp: EspecieCatalogo) => {
+    const info = resolverRarezaEspecie(esp);
+
+    let icono = BookOpen;
+    let estilo = "bg-secondary text-secondary-foreground border-black shadow-[1px_1px_0_0_#000]";
+    if (info.codigo === "LEGENDARIA") {
+      icono = Crown;
+      estilo = "bg-amber-400/25 text-amber-300 border-black shadow-[1px_1px_0_0_#000]";
+    } else if (info.codigo === "ESPECIAL") {
+      icono = Sparkles;
+      estilo = "bg-purple-500/25 text-purple-300 border-black shadow-[1px_1px_0_0_#000]";
+    } else if (info.codigo === "RARA") {
+      icono = Zap;
+      estilo = "bg-blue-500/25 text-blue-300 border-black shadow-[1px_1px_0_0_#000]";
+    } else if (info.codigo === "FRECUENTE") {
+      icono = Shield;
+      estilo = "bg-emerald-500/25 text-emerald-300 border-black shadow-[1px_1px_0_0_#000]";
+    }
+
+    return {
+      rareza: info.codigo,
+      porcentaje: info.peso,
+      texto: info.etiqueta,
+      icono,
+      estilo,
+    };
+  };
 
   /**
    * Carga el catálogo completo en una ÚNICA petición O(1), erradicando las ráfagas N+1.
@@ -118,10 +155,15 @@ export function PantallaCatalogo() {
     });
   }, [especies, tipoFiltro, arquetipoFiltro, busqueda]);
 
-  // Agrupamiento por hábitat de zona (Subfase 10l)
+  // Ordenamiento monótono jerárquico (Subfase 10m)
+  const especiesOrdenadas = useMemo(() => {
+    return ordenarEspeciesCatalogo(especiesFiltradas, criterioOrden);
+  }, [especiesFiltradas, criterioOrden]);
+
+  // Agrupamiento por hábitat de zona (Subfase 10l / 10m)
   const gruposPorZona = useMemo(() => {
-    return agruparEspeciesPorZona(especiesFiltradas);
-  }, [especiesFiltradas]);
+    return agruparEspeciesPorZona(especiesOrdenadas, criterioOrden);
+  }, [especiesOrdenadas, criterioOrden]);
 
   // Métricas para la barra de avistamiento
   const metricas = useMemo(() => {
@@ -268,7 +310,7 @@ export function PantallaCatalogo() {
           </div>
 
           {/* Selector de los 6 tipos biológicos en español */}
-          <div className="w-full sm:w-56 shrink-0 relative">
+          <div className="w-full sm:w-52 shrink-0 relative">
             <select
               value={tipoFiltro}
               onChange={(e) => {
@@ -285,6 +327,26 @@ export function PantallaCatalogo() {
               <option value="elemental">ELEMENTAL</option>
               <option value="construct">AUTÓMATA</option>
               <option value="plant">PLANTA</option>
+            </select>
+            <ChevronDown className="absolute right-2.5 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground pointer-events-none" aria-hidden="true" />
+          </div>
+
+          {/* Selector de ordenamiento jerárquico (Subfase 10m) */}
+          <div className="w-full sm:w-56 shrink-0 relative">
+            <select
+              value={criterioOrden}
+              onChange={(e) => {
+                reproducirSonido("click");
+                setCriterioOrden(e.target.value as CriterioOrdenCatalogo);
+              }}
+              aria-label="Ordenar especies del catálogo"
+              className="w-full h-10 px-3 pr-8 bg-background border-2 border-black shadow-[2px_2px_0_0_#000] retro text-[8px] sm:text-[9px] text-foreground rounded-none focus:outline-none focus:border-primary cursor-pointer appearance-none"
+            >
+              <option value="ZONA_ASC">ORDEN: HÁBITAT Y RAREZA</option>
+              <option value="BST_DESC">ORDEN: MAYOR PODER (BST)</option>
+              <option value="BST_ASC">ORDEN: MENOR PODER (BST)</option>
+              <option value="CAPTURA_ASC">ORDEN: MÁS DIFÍCIL CAPTURA</option>
+              <option value="RAREZA_DESC">ORDEN: MAYOR RAREZA</option>
             </select>
             <ChevronDown className="absolute right-2.5 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground pointer-events-none" aria-hidden="true" />
           </div>
@@ -436,7 +498,7 @@ export function PantallaCatalogo() {
                           {especie.keyExterna || `srd-2024_${especie.slug}`}
                         </p>
 
-                        {/* Badges de Tipo, Afinidad Elemental y Arquetipo */}
+                        {/* Badges de Tipo, Afinidad Elemental, Arquetipo y Rareza */}
                         <div className="flex items-center gap-1.5 flex-wrap pt-1">
                           <span className="inline-flex items-center px-1.5 py-0.5 retro text-[8px] font-semibold uppercase bg-secondary text-secondary-foreground border border-black shadow-[1px_1px_0_0_#000] rounded-none">
                             {tipoEspanol}
@@ -454,6 +516,16 @@ export function PantallaCatalogo() {
                             {renderIconoArquetipo(arquetipo)}
                             <span>{arquetipo}</span>
                           </span>
+                          {(() => {
+                            const badge = obtenerBadgeRareza(especie);
+                            const IconoBadge = badge.icono;
+                            return (
+                              <span className={`inline-flex items-center gap-1 px-1.5 py-0.5 retro text-[8px] font-semibold uppercase border rounded-none ${badge.estilo}`}>
+                                <IconoBadge className="w-2.5 h-2.5" aria-hidden="true" />
+                                <span>{badge.texto}</span>
+                              </span>
+                            );
+                          })()}
                         </div>
                       </CardHeader>
 
@@ -508,7 +580,8 @@ export function PantallaCatalogo() {
                           </div>
                         </div>
 
-                        <div className="flex items-center justify-between retro text-[8px] sm:text-[9px] px-0.5 text-muted-foreground">
+                        <div className="flex items-center justify-between retro text-[8px] sm:text-[9px] px-0.5 text-muted-foreground flex-wrap gap-1">
+                          <span>BST: <strong className="text-emerald-400">{calcularPresupuestoCriatura(especie)}</strong></span>
                           <span>CR: <strong className="text-primary">{especie.challengeRating}</strong></span>
                           <span>Captura: <strong className="text-amber-400">{Math.round(especie.tasaCaptura * 100)}%</strong></span>
                         </div>
@@ -609,6 +682,16 @@ export function PantallaCatalogo() {
                     {renderIconoArquetipo(calcularArquetipoCriatura(especieSeleccionada))}
                     <span>{calcularArquetipoCriatura(especieSeleccionada)}</span>
                   </span>
+                  {(() => {
+                    const badge = obtenerBadgeRareza(especieSeleccionada);
+                    const IconoBadge = badge.icono;
+                    return (
+                      <span className={`inline-flex items-center gap-1 px-1.5 py-0.5 retro text-[8px] font-semibold uppercase border rounded-none ${badge.estilo}`}>
+                        <IconoBadge className="w-2.5 h-2.5" aria-hidden="true" />
+                        <span>{badge.texto}</span>
+                      </span>
+                    );
+                  })()}
                   <span className="inline-flex items-center px-1.5 py-0.5 retro text-[8px] border border-black shadow-[1px_1px_0_0_#000] text-muted-foreground rounded-none">
                     CR {especieSeleccionada.challengeRating}
                   </span>
@@ -669,7 +752,8 @@ export function PantallaCatalogo() {
                     </div>
                   </div>
 
-                  <div className="grid grid-cols-2 gap-2 pt-2 border-t-2 border-black/40 retro text-[8px] sm:text-[9px]">
+                  <div className="grid grid-cols-3 gap-2 pt-2 border-t-2 border-black/40 retro text-[8px] sm:text-[9px]">
+                    <div>BST: <strong className="text-emerald-400">{calcularPresupuestoCriatura(especieSeleccionada)}</strong></div>
                     <div>CR: <strong className="text-primary">{especieSeleccionada.challengeRating}</strong></div>
                     <div>Tasa Captura: <strong className="text-amber-400">{Math.round(especieSeleccionada.tasaCaptura * 100)}%</strong></div>
                   </div>

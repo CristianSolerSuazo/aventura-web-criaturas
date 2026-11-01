@@ -7,6 +7,8 @@ import type {
   CriterioOrdenCatalogo,
 } from "../api/ApiJuego";
 
+export type { CriterioOrdenCatalogo, RarezaEspecie };
+
 /**
  * Mapeo canónico en español de los 6 tipos biológicos del SRD 5.2 (Open5e).
  */
