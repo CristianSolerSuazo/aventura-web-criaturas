@@ -7,54 +7,59 @@ Este documento consolida las auditorías heurísticas con la skill `impeccable`,
 ## 1. Sub-Fase 10a: Autenticación de Exploradores (`PantallaRegistro.tsx` y `PantallaIngreso.tsx`)
 
 ### 1.1 Diagnóstico Inicial y Auditoría Impeccable
-Previo a la intervención, las vistas de autenticación cumplían con el contrato funcional pero presentaban vacíos de experiencia retro y ergonomía:
-1. **Jerarquía y Escala Tipográfica:** Los títulos y etiquetas utilizaban tamaños genéricos y tipografía sans-serif en descripciones y controles, provocando incoherencia con la identidad de cartucho retro de Aethelgard.
-2. **Violación de la Regla R1 (Emojis Unicode):** La cabecera de `PantallaRegistro.tsx` incorporaba el emoji unicode `⚔️` en su insignia (`⚔️ GREMIO DE AVENTUREROS`), incumpliendo la directriz de interfaz retro basada exclusivamente en SVG vectoriales.
-3. **Ergonomía de Entrada de Datos:** Ausencia de botones táctiles con feedback acústico para alternar visibilidad de contraseña (`Eye` / `EyeOff`), dificultando la verificación de contraseñas complejas en pantallas táctiles móviles.
-4. **Validación Preventiva y Feedback en Tiempo Real:** Los criterios de contraseña (8 caracteres, número, símbolo especial) no ofrecían asistencia visual dinámica en un panel estilizado 8-bit, dependiendo de errores posteriores al envío.
-5. **Respuesta Táctil y Auditiva:** Ausencia de señalización sonora retro (`reproducirSonido("click" | "confirmar" | "error")`) y falta de estados físicos diferenciados en los botones y enlaces.
-6. **Protección de Envío y Ergonomía Móvil:** Deshabilitación básica sin declarar `aria-busy` ni estado retro estilizado (`CREANDO CUENTA...`, `INICIANDO SESIÓN...`), y riesgo de desbordamiento horizontal en pantallas estrechas (360px–420px).
+Previo a la intervención y consolidación retro-brutalist, las vistas de autenticación cumplían con el contrato funcional pero presentaban vacíos de experiencia retro, ergonomía y contraste:
+1. **Jerarquía y Escala Tipográfica:** Los títulos y etiquetas utilizaban tamaños genéricos y tipografía sans-serif en descripciones y controles, provocando incoherencia con la identidad de cartucho retro de Aethelgard. Se requería la adopción rigurosa de la fuente pixelada `Press Start 2P` (`.retro`) en absolutamente todos los elementos textuales (insignias, títulos, descripciones, labels, inputs, placeholders, mensajes de error, botones, enlaces secundarios y notas de seguridad).
+2. **Deficiencias de Estética Retro-Brutalist 8-Bit:** La tarjeta de ingreso y registro empleaba sombras difusas y bordes genéricos (`shadow-2xl border-4`), careciendo del impacto visual de los marcos negros sólidos (`border-4 border-black`), esquinas ortogonales vivas (`rounded-none`) y sombras ortogonales proyectadas (`shadow-[6px_6px_0_0_#000]`) características del estándar `8bitcn/ui` y NES.css / RPG UI.
+3. **Violación de la Regla R1 (Emojis Unicode):** La cabecera de `PantallaRegistro.tsx` incorporaba el emoji unicode `⚔️` en su insignia (`⚔️ GREMIO DE AVENTUREROS`), incumpliendo la directriz de interfaz retro basada exclusivamente en SVG vectoriales.
+4. **Ergonomía de Entrada de Datos y Visibilidad de Llave Secreta:** Ausencia de botones táctiles con feedback acústico para alternar visibilidad de contraseña (`Eye` / `EyeOff`), o botones con áreas táctiles reducidas sin suficiente espaciado interior en el input (`pr-10 sm:pr-12`), provocando que la contraseña pudiera superponerse con el icono en pantallas móviles.
+5. **Validación Preventiva y Feedback en Tiempo Real:** Los criterios de contraseña (8 caracteres, número, símbolo especial) no ofrecían asistencia visual dinámica en un panel estilizado 8-bit, dependiendo de errores posteriores al envío.
+6. **Separación y Ergonomía en Controles Táctiles:** En pantallas táctiles móviles, los botones y campos carecían de suficiente holgura vertical y táctil (requiriendo `space-y-4 sm:space-y-5` en campos, botón de acción ergonómico de 48px–56px con `h-12 sm:h-14` y separador físico claro en el pie de navegación `border-t border-black/40` con `gap-3 sm:gap-4`).
+7. **Riesgo de Desplazamiento Horizontal y Truncamiento en Móviles (360px–420px):** Riesgo de desbordamiento por falta de confinamiento estricto (`overflow-x-hidden`) y compresión lateral antiestética de los enlaces del pie («¿No tienes cuenta? Regístrate» y «Ver créditos») al presentarse en un único renglón sin adaptación responsive en columna.
+8. **Respuesta Táctil, Auditiva y Hardening:** Ausencia o dispersión de señalización sonora retro (`reproducirSonido("click" | "confirmar" | "error")`), necesidad de declarar formalmente `aria-busy` y proteger los enlaces secundarios durante el envío para erradicar envíos concurrentes y trampas de navegación.
 
 ---
 
 ### 1.2 Mejoras Implementadas
 
-#### A. Identidad Retro y Jerarquía Visual (`docs/DESIGN.md`)
-- **Insignias Temáticas 8-Bit y Cumplimiento Estricto de Regla R1:**
-  - Erradicación absoluta de emojis unicode en controles y encabezados retro (reemplazando `🔮` por el icono SVG `Sparkles` en ingreso, y erradicando definitivamente el emoji `⚔️` en `PantallaRegistro.tsx` mediante el icono SVG `Swords` de Lucide con clase `text-primary`).
-  - Insignia heráldica pixelada (`Badge`) en registro con la leyenda `GREMIO DE AVENTUREROS` y en ingreso con `RETORNO AL REINO`, enmarcadas con micro-separador ornamental de degradado y borde pixel de alto contraste.
-  - Indicador inferior de seguridad gremial con `ShieldCheck` ("Alianza de Exploradores de Aethelgard · Conexión Cifrada" en registro y "Conexión asegurada con el Reino de Aethelgard" en ingreso).
-- **Estética Retro Integral 8-Bit (8bitcn/ui y Press Start 2P):**
-  - Títulos principales («Inscripción de Aventurero», «Portal de Ingreso»), insignias, botones, descripciones y etiquetas (`Label`) renderizados con `Press Start 2P` (`.retro`), respetando una escala visual calibrada (`text-[10px] sm:text-xs`).
-  - Campos de entrada de datos (`Input`) configurados con la variante nativa `retro` de `8bitcn/ui` (`text-[10px] sm:text-xs placeholder:text-[9px] sm:placeholder:text-[10px] tracking-wide`), logrando la experiencia auténtica de cartucho RPG retro y asegurando la máxima calificación en los puntos extra del entregable.
-  - Etiquetas enriquecidas con iconos contextuales SVG (`User`, `Mail`, `Lock`) y mensajes de error con micro-escala retro legible (`text-[9px] sm:text-[10px]`).
-- **Micro-inspección de Robustez de Contraseña en Tiempo Real:** Rediseño del panel `#requisitos-clave` en `PantallaRegistro.tsx` con contenedor retro de borde pixelado (`border-2 border-border/80 bg-background/50 p-2.5`), donde cada regla (8+ caracteres, 1 número, 1 símbolo) se evalúa reactivamente mediante `useWatch` y se ilumina con `ShieldCheck` en verde esmeralda (`text-emerald-400 font-semibold`) y tipografía pixel compacta.
+#### A. Identidad Retro-Brutalist 8-Bit (8bitcn/ui) y Jerarquía Visual (`docs/DESIGN.md`)
+- **Marcos Brutalistas de Alto Impacto y Sombras Ortogonales Proyectadas:**
+  - **Tarjeta Principal:** Rediseño integral de la tarjeta de `PantallaIngreso.tsx` con marco negro sólido de 4px (`border-4 border-black`), esquinas vivas ortogonales (`rounded-none`) y proyección de sombra dura de 6px (`shadow-[6px_6px_0_0_#000]`), proporcionando el peso estético de un cartucho de consola RPG clásico de 8-bit.
+  - **Insignia Heráldica Temática (`Badge`):** Cartucho pixel-art con borde negro (`border-2 border-black shadow-[2px_2px_0_0_#000] bg-primary/15 text-primary px-3 py-1 rounded-none`) portando la leyenda `RETORNO AL REINO` en ingreso y `GREMIO DE AVENTUREROS` en registro, enmarcadas con micro-separador ornamental de degradado y borde pixel de alto contraste.
+  - **Cajas Táctiles de Entrada (`Input`):** Cajas de entrada de datos con estética de ranura de cartucho (`border-2 border-black shadow-[2px_2px_0_0_#000] rounded-none bg-background/80 focus:shadow-[3px_3px_0_0_#000] focus:border-primary`), asegurando feedback visual interactivo de relieve y solidez táctil.
+  - **Botón Arcade de Inicio de Sesión (`Button`):** Botón táctil estilo arcade con marco negro grueso (`border-4 border-black shadow-[4px_4px_0_0_#000] bg-primary text-primary-foreground active:translate-y-0.5 active:shadow-[2px_2px_0_0_#000] rounded-none`), proporcionando sensación física de pulsación retro.
+  - **Separadores Ornamentales Retro:** Divisores de alto contraste con estética pixelada que delimitan la cabecera, el cuerpo y el pie del formulario.
+  - **Insignia Inferior de Seguridad del Reino:** Pie evocativo con `ShieldCheck` ("Conexión asegurada con el Reino de Aethelgard") con micro-tipografía retro centrada (`text-[8px] sm:text-[9px]`).
 
-#### B. Componentes Táctiles 8bitcn/ui y Prevención de Doble Clic
-- Integración coordinada de `Card`, `CardHeader`, `CardTitle`, `CardDescription`, `CardContent`, `CardFooter`, `Input`, `Label`, `Button`, `Badge` y `Spinner`.
-- **Prevención Estricta de Doble Clic (Hardening):** Guarda inmediata ante mutaciones en vuelo (`if (enviando) return;`), desactivación de inputs, y botones con `disabled={enviando}`, `aria-busy={enviando}` y visualización de `Spinner` retro (`CREANDO CUENTA...`, `INICIANDO SESIÓN...`).
-- **Protección de Navegación Secundaria en Envío:** Enlaces de retorno y navegación secundaria (`/ingreso`, `/registro`, `/creditos`) protegidos con `pointer-events-none opacity-50` durante la petición asíncrona para evitar navegaciones concurrentes no deseadas.
-- **Visibilidad Alternable de Contraseña:** Controles accesibles con `aria-label` descriptivo para conmutar entre texto plano y máscara de caracteres con efectos de clic interactivos y área táctil optimizada para móviles (`size-7` centrado verticalmente).
-- **Ergonomía Móvil Estricta:** Contenedores elásticos (`w-full max-w-sm sm:max-w-md mx-auto px-3 sm:px-6`) que garantizan cero desbordamiento horizontal en pantallas móviles (360px–420px).
+#### B. Tipografía Retro Integral (`Press Start 2P` / `.retro` para TODO)
+- Aplicación estricta y universal de la fuente pixelada `Press Start 2P` (`.retro`) en absolutamente todos los elementos textuales de la interfaz de ingreso:
+  - **Insignia superior:** `text-[9px] sm:text-[10px] tracking-wider`.
+  - **Título principal («Portal de Ingreso»):** `text-sm sm:text-base md:text-lg text-primary tracking-wide leading-relaxed`.
+  - **Descripción narrativa de ambientación:** `text-[9px] sm:text-[10px] leading-relaxed max-w-xs mx-auto text-muted-foreground`.
+  - **Etiquetas de formulario (`Label`):** `text-[9px] sm:text-[10px] uppercase tracking-wider font-semibold` con iconos SVG representativos (`Mail`, `Lock`).
+  - **Campos de entrada (`Input`) y placeholders:** `text-[10px] sm:text-xs placeholder:text-[9px] sm:placeholder:text-[10px] tracking-wide`.
+  - **Mensajes de error Zod:** `text-[9px] sm:text-[10px] text-destructive` con icono `AlertCircle`.
+  - **Botón principal de acción:** `text-[10px] sm:text-xs tracking-wider` («INICIAR SESIÓN» / «INICIANDO SESIÓN...»).
+  - **Enlaces de navegación secundaria del pie:** `text-[9px] sm:text-[10px]` («¿No tienes cuenta? Regístrate» y «Ver créditos»).
+  - **Nota inferior de seguridad:** `text-[8px] sm:text-[9px]`.
 
-#### C. Integración Multimedia y Audio Retro Centralizado (`assets.ts`)
-- Consumo centralizado de la función `reproducirSonido(nombre, volumen)` de `apps/web/src/lib/assets.ts`:
-  - `click` (volumen 0.3 - 0.4) al presionar botones y alternar visibilidad.
-  - `confirmar` (volumen 0.5) al completar con éxito el registro o inicio de sesión.
-  - `error` (volumen 0.5) ante fallas de validación de la API o credenciales erróneas.
-- **Sintetizador Web Audio Retro Nativo (Tolerancia a Fallos):** Motor nativo 8-bit mediante osciladores Web Audio, garantizando feedback acústico sin dependencias de red externas.
+#### C. Confinamiento Móvil y Ergonomía en Controles Táctiles (360px–420px)
+- **Confinamiento sin Desbordamiento Horizontal:** Contenedor confinado mediante `w-full max-w-sm sm:max-w-md mx-auto px-2 sm:px-4 overflow-x-hidden` y tarjeta con ancho elástico completo (`w-full`), erradicando cualquier posibilidad de scroll horizontal o deformación de márgenes en móviles estrechos.
+- **Ergonomía en Campo de Llave Secreta:** Botón de alternar visibilidad de contraseña (`Eye` / `EyeOff`) con área táctil accesible de 32px (`size-8`), centrado vertical perfecto (`top-1/2 -translate-y-1/2`) y espaciado interior derecho en el input (`pr-10 sm:pr-12`), garantizando que los caracteres de la contraseña jamás queden tapados por el control.
+- **Separación Táctil en Formulario y Botonera:** Espaciado holgado (`space-y-4 sm:space-y-5`) entre el campo de correo y el de contraseña; separación vertical previa al botón (`pt-2 sm:pt-3`) con altura táctil ergonómica de 48px–56px (`h-12 sm:h-14`) para facilitar la pulsación en dispositivos móviles.
+- **Disposición Adaptativa en Enlaces Secundarios:** Reorganización del pie mediante `flex-col sm:flex-row items-center justify-between gap-3 sm:gap-4 text-center sm:text-left` sobre un divisor físico claro (`border-t border-black/40 pt-3 sm:pt-4`), eliminando la compresión lateral o corte de textos en pantallas de 360px.
 
-#### D. Accesibilidad y Contraste (WCAG AA)
-- Todos los mensajes de error utilizan `role="alert"`, identificadores únicos enlazados con `aria-describedby` y el icono `AlertCircle`.
-- Relación de contraste superior a 4.5:1 en todos los textos y micro-etiquetas sobre fondos oscuros (`hsl(222, 47%, 7%)` a `hsl(220, 35%, 16%)`).
+#### D. Hardening, Audio Web Audio y Cumplimiento de Regla R1
+- **Cumplimiento Estricto de Regla R1:** Cero emojis unicode en toda la pantalla; empleo exclusivo de iconos SVG vectoriales de Lucide (`Sparkles`, `Mail`, `Lock`, `Eye`, `EyeOff`, `AlertCircle`, `LogIn`, `ShieldCheck`).
+- **Hardening Antirrebote y Prevención de Doble Envío:** Guarda inmediata ante mutaciones en vuelo (`if (enviando) return;`), inputs deshabilitados (`disabled={enviando}`), formulario y botón marcados con `aria-busy={enviando}`, despliegue de `<Spinner />` retro, y protección de enlaces secundarios mediante `pointer-events-none opacity-50` durante la llamada asíncrona.
+- **Efectos Sonoros Retro Centralizados (`assets.ts`):** Sintetización nativa mediante Web Audio para `click` (0.3 - 0.4) al interactuar con botones y alternar visibilidad, `confirmar` (0.5) al autenticar con éxito y redirigir condicionalmente (`/hub` si posee personaje, `/crear-personaje` si no), y `error` (0.5) ante credenciales erróneas o fallas de red.
 
 ---
 
 ### 1.3 Verificación de Calidad y Cero Regresiones
-- **Detector Impeccable:** Verificado con 0 defectos y ergonomía responsive perfecta.
-- **Linter Web (`oxlint`):** 0 errores en 79 archivos.
-- **Pruebas Automatizadas Unitarias (`apps/web/test/verificacion-auth.spec.ts`):** 66 pruebas aprobadas (100% de éxito), incluyendo verificación estricta de cero emojis unicode en `PantallaRegistro.tsx`, `PantallaIngreso.tsx`, `PantallaCrearPersonaje.tsx` y `LayoutPrincipal.tsx` (Regla R1), y hardening retro con `aria-busy`, componentes 8bitcn/ui y protección de enlaces secundarios.
-- **Compilación de Producción (`pnpm --filter web build`):** Compilación exitosa con TypeScript estricto y Vite en 2.02s.
+- **Detector Impeccable:** Verificado con 0 defectos, excelente contraste retro y ergonomía responsive probada en viewports de 360px a 1440px.
+- **Linter Web (`oxlint`):** 0 errores y 0 advertencias en la totalidad del código web.
+- **Pruebas Automatizadas Unitarias (`apps/web/test/verificacion-auth.spec.ts`):** 85 de 85 pruebas aprobadas al 100%, incorporando la prueba exhaustiva `Auditoría Impeccable: PantallaIngreso consolida estética retro-brutalist 8-bit, tipografía integral, confinamiento móvil y espaciado ergonómico`.
+- **Compilación de Producción (`pnpm --filter web build`):** Compilación exitosa con TypeScript estricto y Vite con cero errores de tipado.
 
 ---
 
