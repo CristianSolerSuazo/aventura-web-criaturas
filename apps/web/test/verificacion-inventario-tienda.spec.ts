@@ -13,7 +13,6 @@ import {
 import type {
   ItemInventario,
   RespuestaInventario,
-  ArticuloCatalogoTienda,
   RespuestaCatalogoTienda,
   RespuestaComprarTienda,
   RespuestaUsarItem,
@@ -221,5 +220,83 @@ test('Multimedia y Audio: assets.ts sintetiza tonos retro para monedas/compra y 
     contenido.includes('curar') && contenido.includes('pocion'),
     true,
     'assets.ts debe sintetizar tonos para curar y pocion',
+  );
+});
+
+
+test('Hardening, Ergonomía y Estética Retro-Brutalist: PantallaInventario cuenta con marcos 8bitcn, sombras sólidas, prevención de doble clic y confinamiento sin overflow', () => {
+  const ruta = join(__dirname, '../src/paginas/PantallaInventario.tsx');
+  const contenido = readFileSync(ruta, 'utf-8');
+
+  assert.strictEqual(
+    contenido.includes('border-2 border-black') && contenido.includes('border-4 border-black'),
+    true,
+    'PantallaInventario debe emplear marcos retro-brutalistas de 2px y 4px negros',
+  );
+
+  assert.strictEqual(
+    contenido.includes('shadow-[4px_4px_0_0_#000]') && contenido.includes('shadow-[8px_8px_0_0_#000]'),
+    true,
+    'PantallaInventario debe emplear sombras ortogonales sólidas retro 8-bit',
+  );
+
+  assert.strictEqual(
+    contenido.includes('overflow-x-hidden'),
+    true,
+    'El contenedor principal debe incluir overflow-x-hidden para sellar el ancho móvil',
+  );
+
+  assert.strictEqual(
+    contenido.includes('aria-busy={enProceso}') && contenido.includes('disabled={usando || vista.yaSaludCompleta}'),
+    true,
+    'El botón de curación de compañero debe incluir hardening contra doble clic y aria-busy',
+  );
+
+  assert.strictEqual(
+    contenido.includes('line-clamp'),
+    false,
+    'PantallaInventario no debe truncar descripciones tácticas con line-clamp rígido',
+  );
+});
+
+
+test('Hardening, Ergonomía y Estética Retro-Brutalist: PantallaTienda cuenta con marcos 8bitcn, sombras sólidas, prevención de doble compra y confinamiento sin overflow', () => {
+  const ruta = join(__dirname, '../src/paginas/PantallaTienda.tsx');
+  const contenido = readFileSync(ruta, 'utf-8');
+
+  assert.strictEqual(
+    contenido.includes('border-2 border-black') && contenido.includes('border-4 border-black'),
+    true,
+    'PantallaTienda debe emplear marcos retro-brutalistas de 2px y 4px negros',
+  );
+
+  assert.strictEqual(
+    contenido.includes('shadow-[4px_4px_0_0_#000]') && contenido.includes('shadow-[8px_8px_0_0_#000]'),
+    true,
+    'PantallaTienda debe emplear sombras ortogonales sólidas retro 8-bit',
+  );
+
+  assert.strictEqual(
+    contenido.includes('overflow-x-hidden'),
+    true,
+    'El contenedor principal debe incluir overflow-x-hidden para sellar el ancho móvil',
+  );
+
+  assert.strictEqual(
+    contenido.includes('aria-busy={comprando}') && contenido.includes('disabled={comprando || !resumenModal.puedeComprar}'),
+    true,
+    'El botón de confirmación de compra debe incluir hardening contra doble adquisición y aria-busy',
+  );
+
+  assert.strictEqual(
+    contenido.includes('line-clamp'),
+    false,
+    'PantallaTienda no debe truncar descripciones tácticas con line-clamp rígido',
+  );
+
+  assert.strictEqual(
+    contenido.includes('truncate'),
+    false,
+    'PantallaTienda no debe acortar nombres de artículos con truncate rígido',
   );
 });

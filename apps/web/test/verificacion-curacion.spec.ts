@@ -171,3 +171,56 @@ test('Hardening y Cinemática: PantallaCuracion.tsx incluye aria-busy, estado re
     'Debe disparar la fanfarria sonora retro santuario al completar la restauración',
   );
 });
+
+test('Hardening, Ergonomía y Estética Retro-Brutalist: PantallaCuracion cuenta con marcos 8bitcn, sombras sólidas, tipografía retro integral y confinamiento sin overflow', () => {
+  const ruta = join(__dirname, '../src/paginas/PantallaCuracion.tsx');
+  const contenido = readFileSync(ruta, 'utf-8');
+
+  // Confinamiento responsive sin overflow horizontal
+  assert.strictEqual(
+    contenido.includes('overflow-x-hidden') && contenido.includes('max-w-4xl'),
+    true,
+    'Debe contener el layout con overflow-x-hidden y max-w-4xl para evitar desbordamiento horizontal en móviles de 360px',
+  );
+
+  // Marcos y sombras sólidas ortogonales retro-brutalistas
+  assert.strictEqual(
+    contenido.includes('border-4 border-black') && contenido.includes('border-2 border-black'),
+    true,
+    'Debe implementar bordes gruesos negros retro-brutalistas (border-4 border-black y border-2 border-black)',
+  );
+
+  assert.strictEqual(
+    contenido.includes('shadow-[6px_6px_0_0_#000]') &&
+      contenido.includes('shadow-[4px_4px_0_0_#000]') &&
+      contenido.includes('shadow-[2px_2px_0_0_#000]'),
+    true,
+    'Debe proyectar sombras sólidas ortogonales 8-bit (6px, 4px y 2px)',
+  );
+
+  // Ausencia de truncamiento rígido en nombres y apodos
+  assert.strictEqual(
+    contenido.includes('truncate'),
+    false,
+    'No debe usar truncate rígido en los textos y nombres de criaturas; debe usar envoltura flexible break-words',
+  );
+
+  assert.strictEqual(
+    contenido.includes('break-words'),
+    true,
+    'Debe asegurar lectura completa de nombres y descripciones con break-words',
+  );
+
+  // Tipografía retro e insignias
+  assert.strictEqual(
+    contenido.includes('SANTUARIO ANCESTRAL') && contenido.includes('SERVICIO GRATUITO'),
+    true,
+    'Debe exhibir las insignias retro ancestral y servicio gratuito',
+  );
+
+  assert.strictEqual(
+    contenido.includes('HealthBar'),
+    true,
+    'Debe renderizar la barra de salud retro HealthBar para cada criatura',
+  );
+});

@@ -31,11 +31,6 @@ import {
 } from "@/api";
 import { reproducirSonido } from "@/lib/assets";
 
-export {
-  resolverCategoriaEvento,
-  formatearFechaAmigable,
-  filtrarEventosHistorial,
-} from "@/lib/catalogo-historial";
 import {
   resolverCategoriaEvento,
   formatearFechaAmigable,
@@ -111,42 +106,42 @@ export function PantallaHistorial() {
     switch (categoria) {
       case "COMBATE":
         return (
-          <Badge className="border-red-500/60 bg-red-500/15 text-red-300 text-[10px] px-2 py-0.5 rounded-none flex items-center gap-1 font-mono">
-            <Swords className="w-3 h-3" aria-hidden="true" />
+          <Badge className="border-2 border-black bg-red-950/90 text-red-300 shadow-[2px_2px_0_0_#000] rounded-none px-2 py-1 flex items-center gap-1.5 retro text-[8px] sm:text-[9px]">
+            <Swords className="w-3.5 h-3.5 text-red-400 shrink-0" aria-hidden="true" />
             <span>COMBATE</span>
           </Badge>
         );
       case "CAPTURA":
         return (
-          <Badge className="border-purple-500/60 bg-purple-500/15 text-purple-300 text-[10px] px-2 py-0.5 rounded-none flex items-center gap-1 font-mono">
-            <Sparkles className="w-3 h-3" aria-hidden="true" />
+          <Badge className="border-2 border-black bg-purple-950/90 text-purple-300 shadow-[2px_2px_0_0_#000] rounded-none px-2 py-1 flex items-center gap-1.5 retro text-[8px] sm:text-[9px]">
+            <Sparkles className="w-3.5 h-3.5 text-purple-400 shrink-0" aria-hidden="true" />
             <span>CAPTURA</span>
           </Badge>
         );
       case "EXPLORACION":
         return (
-          <Badge className="border-cyan-500/60 bg-cyan-500/15 text-cyan-300 text-[10px] px-2 py-0.5 rounded-none flex items-center gap-1 font-mono">
-            <Compass className="w-3 h-3" aria-hidden="true" />
+          <Badge className="border-2 border-black bg-cyan-950/90 text-cyan-300 shadow-[2px_2px_0_0_#000] rounded-none px-2 py-1 flex items-center gap-1.5 retro text-[8px] sm:text-[9px]">
+            <Compass className="w-3.5 h-3.5 text-cyan-400 shrink-0" aria-hidden="true" />
             <span>EXPLORACIÓN</span>
           </Badge>
         );
       case "TIENDA":
         return (
-          <Badge className="border-amber-500/60 bg-amber-500/15 text-amber-300 text-[10px] px-2 py-0.5 rounded-none flex items-center gap-1 font-mono">
-            <ShoppingBag className="w-3 h-3" aria-hidden="true" />
+          <Badge className="border-2 border-black bg-amber-950/90 text-amber-300 shadow-[2px_2px_0_0_#000] rounded-none px-2 py-1 flex items-center gap-1.5 retro text-[8px] sm:text-[9px]">
+            <ShoppingBag className="w-3.5 h-3.5 text-amber-400 shrink-0" aria-hidden="true" />
             <span>TIENDA</span>
           </Badge>
         );
       case "CURACION":
         return (
-          <Badge className="border-emerald-500/60 bg-emerald-500/15 text-emerald-300 text-[10px] px-2 py-0.5 rounded-none flex items-center gap-1 font-mono">
-            <HeartPulse className="w-3 h-3" aria-hidden="true" />
+          <Badge className="border-2 border-black bg-emerald-950/90 text-emerald-300 shadow-[2px_2px_0_0_#000] rounded-none px-2 py-1 flex items-center gap-1.5 retro text-[8px] sm:text-[9px]">
+            <HeartPulse className="w-3.5 h-3.5 text-emerald-400 shrink-0" aria-hidden="true" />
             <span>CURACIÓN</span>
           </Badge>
         );
       default:
         return (
-          <Badge variant="outline" className="text-[10px] px-2 py-0.5 rounded-none font-mono">
+          <Badge variant="outline" className="border-2 border-black bg-muted text-foreground shadow-[2px_2px_0_0_#000] rounded-none px-2 py-1 flex items-center gap-1.5 retro text-[8px] sm:text-[9px]">
             {categoria}
           </Badge>
         );
@@ -154,29 +149,32 @@ export function PantallaHistorial() {
   };
 
   return (
-    <div className="space-y-6 max-w-5xl mx-auto py-2 sm:py-4">
-      {/* Cabecera y Navegación Retro */}
-      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
-        <div>
-          <div className="flex items-center gap-2 flex-wrap">
-            <h1 className="text-xl sm:text-2xl font-bold text-primary tracking-wide retro">
+    <div className="w-full max-w-5xl mx-auto px-2 sm:px-4 py-3 sm:py-6 overflow-x-hidden space-y-5 sm:space-y-6">
+      {/* Cabecera Ceremonial y Navegación Retro */}
+      <div className="border-4 border-black bg-bastion shadow-[6px_6px_0_0_#000] p-4 sm:p-5 rounded-none flex flex-col sm:flex-row items-start sm:items-center justify-between gap-5 sm:gap-6">
+        <div className="space-y-2">
+          <div className="flex items-center gap-2.5 flex-wrap">
+            <h1 className="text-base sm:text-xl md:text-2xl font-bold text-primary tracking-wide retro drop-shadow-[2px_2px_0_#000]">
               BITÁCORA DE EXPEDICIONES
             </h1>
-            <Badge variant="secondary" className="font-mono text-xs flex items-center gap-1">
-              <BookOpen className="w-3 h-3" aria-hidden="true" />
-              {eventos.length} CRÓNICAS REGISTRADAS
+            <Badge
+              variant="secondary"
+              className="retro text-[8px] sm:text-[9px] flex items-center gap-1.5 border-2 border-black shadow-[2px_2px_0_0_#000] bg-background text-foreground py-1 px-2.5 rounded-none"
+            >
+              <BookOpen className="w-3.5 h-3.5 text-primary" aria-hidden="true" />
+              <span>{eventos.length} CRÓNICAS REGISTRADAS</span>
             </Badge>
           </div>
-          <p className="text-xs sm:text-sm text-muted-foreground mt-1">
+          <p className="retro text-[8px] sm:text-[9px] text-muted-foreground leading-relaxed">
             Registro cronológico transversal de hazañas, capturas, comercio y travesías en Aethelgard.
           </p>
         </div>
 
-        <div className="flex items-center gap-2">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4 w-full sm:w-auto shrink-0 pt-2 sm:pt-0">
           <Button
             variant="outline"
             size="sm"
-            className="text-xs rounded-none flex items-center gap-1.5"
+            className="retro text-[8px] sm:text-[9px] min-h-[40px] sm:h-10 px-4 rounded-none flex items-center gap-2 border-2 border-black shadow-[2px_2px_0_0_#000] active:translate-y-0.5 active:shadow-none hover:shadow-[3px_3px_0_0_#000] w-full justify-center"
             onClick={() => {
               reproducirSonido("click");
               cargarHistorial(true);
@@ -191,7 +189,7 @@ export function PantallaHistorial() {
           <Button
             variant="secondary"
             size="sm"
-            className="text-xs rounded-none flex items-center gap-1.5"
+            className="retro text-[8px] sm:text-[9px] min-h-[40px] sm:h-10 px-4 rounded-none flex items-center gap-2 border-2 border-black shadow-[2px_2px_0_0_#000] active:translate-y-0.5 active:shadow-none hover:shadow-[3px_3px_0_0_#000] w-full justify-center"
             onClick={() => {
               reproducirSonido("click");
               navigate("/hub");
@@ -203,10 +201,10 @@ export function PantallaHistorial() {
         </div>
       </div>
 
-      {/* Panel de Control: Filtros Rápidos y Buscador de Crónicas */}
-      <div className="p-3 bg-bastion border-2 border-border/80 space-y-3">
-        {/* Filtros Rápidos por Categoría Canónica */}
-        <div className="flex items-center gap-1.5 flex-wrap text-xs">
+      {/* Panel de Control: Filtros Rápidos en Cuadrícula Táctica y Buscador de Crónicas */}
+      <div className="p-3 sm:p-5 bg-bastion border-2 border-black shadow-[4px_4px_0_0_#000] rounded-none space-y-4 sm:space-y-5">
+        {/* Filtros Rápidos por Categoría Canónica en Rejilla Simétrica (2 cols en móvil, 3 en tablet, 6 en desktop) */}
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2 sm:gap-3 w-full">
           {(
             [
               { id: "TODOS", etiqueta: "TODOS", icono: BookOpen },
@@ -226,15 +224,27 @@ export function PantallaHistorial() {
                 key={cat.id}
                 size="sm"
                 variant={activo ? "default" : "outline"}
-                className="text-[11px] h-8 px-2.5 rounded-none flex items-center gap-1.5 font-mono"
+                className={`retro text-[7px] sm:text-[8px] lg:text-[8.5px] min-h-[40px] sm:h-10 px-1.5 sm:px-2.5 py-1.5 rounded-none flex items-center justify-between w-full border-2 border-black ${
+                  activo
+                    ? "shadow-[3px_3px_0_0_#000] bg-primary text-primary-foreground font-bold"
+                    : "shadow-[2px_2px_0_0_#000] bg-background hover:bg-muted text-foreground"
+                } active:translate-y-0.5 active:shadow-none transition-all`}
                 onClick={() => {
                   reproducirSonido("click");
                   setCategoriaActiva(cat.id);
                 }}
               >
-                <Icono className="w-3 h-3" aria-hidden="true" />
-                <span>{cat.etiqueta}</span>
-                <span className={`text-[10px] px-1 rounded ${activo ? "bg-background/30 text-foreground" : "bg-muted text-muted-foreground"}`}>
+                <div className="flex items-center gap-1 sm:gap-1.5 min-w-0">
+                  <Icono className="w-3 h-3 sm:w-3.5 sm:h-3.5 shrink-0" aria-hidden="true" />
+                  <span className="whitespace-nowrap tracking-tight">{cat.etiqueta}</span>
+                </div>
+                <span
+                  className={`retro text-[6.5px] sm:text-[7.5px] px-1 sm:px-1.5 py-0.5 border border-black shrink-0 ml-0.5 sm:ml-1 ${
+                    activo
+                      ? "bg-black text-white"
+                      : "bg-muted text-muted-foreground"
+                  }`}
+                >
                   {conteo}
                 </span>
               </Button>
@@ -242,16 +252,16 @@ export function PantallaHistorial() {
           })}
         </div>
 
-        {/* Buscador Textual y Botón Limpiar Filtros */}
-        <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-2 pt-1 border-t border-border/40">
+        {/* Buscador Textual y Botón Limpiar Filtros con placeholder conciso sin truncamiento */}
+        <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 sm:gap-4 pt-3.5 border-t-2 border-black/40">
           <div className="relative flex-1">
-            <Search className="absolute left-2.5 top-2.5 w-4 h-4 text-muted-foreground pointer-events-none" aria-hidden="true" />
+            <Search className="absolute left-3 top-3 w-4 h-4 text-muted-foreground pointer-events-none" aria-hidden="true" />
             <Input
               value={busqueda}
               onChange={(e) => setBusqueda(e.target.value)}
-              placeholder="Buscar crónica por palabra clave..."
+              placeholder="Buscar crónica..."
               aria-label="Buscar crónica"
-              className="pl-8 text-xs rounded-none bg-background h-9"
+              className="retro pl-9 pr-3 text-[8px] sm:text-[9px] placeholder:text-[7.5px] sm:placeholder:text-[8.5px] rounded-none bg-background border-2 border-black shadow-[2px_2px_0_0_#000] h-10 w-full"
             />
           </div>
 
@@ -259,7 +269,7 @@ export function PantallaHistorial() {
             <Button
               variant="ghost"
               size="sm"
-              className="text-xs rounded-none flex items-center gap-1.5 text-muted-foreground hover:text-foreground shrink-0"
+              className="retro text-[8px] sm:text-[9px] min-h-[40px] sm:h-10 px-4 rounded-none flex items-center justify-center gap-2 text-muted-foreground hover:text-foreground border-2 border-dashed border-black/50 hover:border-black shrink-0 active:translate-y-0.5"
               onClick={limpiarFiltros}
             >
               <RotateCcw className="w-3.5 h-3.5" aria-hidden="true" />
@@ -273,43 +283,48 @@ export function PantallaHistorial() {
       {cargando ? (
         <div className="space-y-3">
           {Array.from({ length: 4 }).map((_, i) => (
-            <Skeleton key={i} className="h-16 w-full rounded-none" />
+            <Skeleton
+              key={i}
+              className="h-20 w-full rounded-none border-2 border-black bg-muted/60 animate-pulse shadow-[2px_2px_0_0_#000]"
+            />
           ))}
         </div>
       ) : eventosFiltrados.length === 0 ? (
-        <Card className="text-center p-8 bg-bastion border-2 rounded-none">
-          <CardTitle className="text-base text-muted-foreground mb-2">
+        <Card className="text-center p-6 sm:p-8 bg-bastion border-4 border-black shadow-[6px_6px_0_0_#000] rounded-none space-y-4">
+          <CardTitle className="retro text-xs sm:text-sm md:text-base text-muted-foreground">
             No se encontraron crónicas en este filtro
           </CardTitle>
-          <CardDescription className="text-xs mb-4">
+          <CardDescription className="retro text-[8px] sm:text-[9px] leading-relaxed max-w-xl mx-auto text-muted-foreground/80">
             {eventos.length === 0
               ? "Emprende expediciones, desafía criaturas y visita mercaderes para forjar tu historia en Aethelgard."
               : "Prueba seleccionando otra categoría o borrando el término de búsqueda."}
           </CardDescription>
-          {eventos.length === 0 ? (
-            <Button
-              size="sm"
-              className="rounded-none"
-              onClick={() => {
-                reproducirSonido("click");
-                navigate("/exploracion");
-              }}
-            >
-              Comenzar Exploración
-            </Button>
-          ) : (
-            <Button
-              size="sm"
-              variant="outline"
-              className="rounded-none"
-              onClick={limpiarFiltros}
-            >
-              Restablecer filtros
-            </Button>
-          )}
+          <div className="flex justify-center pt-3 gap-4 sm:gap-5 flex-wrap">
+            {eventos.length === 0 ? (
+              <Button
+                size="sm"
+                className="retro text-[8px] sm:text-[9px] min-h-[40px] sm:h-10 px-5 rounded-none border-2 border-black shadow-[3px_3px_0_0_#000] active:translate-y-0.5 active:shadow-none"
+                onClick={() => {
+                  reproducirSonido("click");
+                  navigate("/exploracion");
+                }}
+              >
+                Comenzar Exploración
+              </Button>
+            ) : (
+              <Button
+                size="sm"
+                variant="outline"
+                className="retro text-[8px] sm:text-[9px] min-h-[40px] sm:h-10 px-5 rounded-none border-2 border-black shadow-[3px_3px_0_0_#000] active:translate-y-0.5 active:shadow-none"
+                onClick={limpiarFiltros}
+              >
+                Restablecer filtros
+              </Button>
+            )}
+          </div>
         </Card>
       ) : (
-        <div className="space-y-2.5">
+        <div className="space-y-3">
           {eventosFiltrados.map((evento) => {
             const categoria = resolverCategoriaEvento(evento);
             const tiempo = formatearFechaAmigable(evento.marcaTiempo);
@@ -317,26 +332,29 @@ export function PantallaHistorial() {
             return (
               <div
                 key={evento.eventoId}
-                className="p-3 bg-bastion border-2 border-border/70 rounded-none flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 hover:border-border transition-colors"
+                className="p-3.5 sm:p-4 bg-bastion border-2 border-black shadow-[4px_4px_0_0_#000] rounded-none flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 sm:gap-4 hover:border-black hover:translate-x-0.5 hover:shadow-[5px_5px_0_0_#000] transition-all"
               >
-                <div className="flex items-start sm:items-center gap-3 min-w-0 flex-1">
-                  {/* Sello de Fecha y Hora */}
-                  <div className="font-mono text-center shrink-0 w-24 p-1.5 bg-background border border-border/50 text-[11px]">
-                    <span className="font-bold text-foreground block text-xs">{tiempo.hora}</span>
-                    <span className="text-[9px] text-muted-foreground block">{tiempo.fecha}</span>
+                <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3 sm:gap-4 min-w-0 w-full flex-1">
+                  {/* Sello de Fecha/Hora e Insignia */}
+                  <div className="flex items-center gap-2.5 sm:gap-3 shrink-0 flex-wrap sm:flex-nowrap">
+                    {/* Sello de Fecha y Hora */}
+                    <div className="retro text-center shrink-0 w-24 p-1.5 sm:p-2 bg-background border-2 border-black shadow-[2px_2px_0_0_#000] rounded-none">
+                      <span className="retro font-bold text-foreground block text-[9px] sm:text-[10px]">{tiempo.hora}</span>
+                      <span className="retro text-[7px] sm:text-[8px] text-muted-foreground block mt-0.5">{tiempo.fecha}</span>
+                    </div>
+
+                    {/* Insignia de Categoría */}
+                    <div className="shrink-0">
+                      {renderBadgeCategoria(categoria)}
+                    </div>
                   </div>
 
-                  {/* Insignia de Categoría */}
-                  <div className="shrink-0">
-                    {renderBadgeCategoria(categoria)}
-                  </div>
-
-                  {/* Descripción de la Crónica */}
-                  <div className="min-w-0 flex-1">
-                    <p className="text-xs sm:text-sm text-foreground font-sans font-medium leading-snug">
+                  {/* Descripción de la Crónica y Registro Técnico */}
+                  <div className="min-w-0 flex-1 w-full space-y-1.5">
+                    <p className="retro text-[9px] sm:text-[10px] text-foreground font-normal leading-relaxed break-words">
                       {evento.descripcion}
                     </p>
-                    <span className="text-[10px] text-muted-foreground font-mono mt-0.5 block truncate">
+                    <span className="retro text-[7px] sm:text-[8px] text-muted-foreground block break-words break-all">
                       Registro técnico: {evento.tipo}
                     </span>
                   </div>

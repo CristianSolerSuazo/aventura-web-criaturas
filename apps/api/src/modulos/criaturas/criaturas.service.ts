@@ -5,6 +5,8 @@ import {
   BESTIARIO,
   EspecieCanonica,
   TABLAS_APARICION,
+  calcularPresupuestoEspecie,
+  calcularTasaCapturaPorPresupuesto,
 } from '../externo/bestiario-canonico';
 import {
   CATALOGO_ESPECIES_PROPENSO,
@@ -40,6 +42,9 @@ export interface EspecieEnriquecidaDto {
   arquetipo: ArquetipoEspecie;
   movimientos: MovimientoEnriquecidoDto[];
   zona: { id: string; nombre: string } | null;
+  presupuestoTotal?: number;
+  pesoAparicion?: number;
+  rareza?: 'COMUN' | 'FRECUENTE' | 'RARA' | 'ESPECIAL' | 'LEGENDARIA';
 }
 
 /**
@@ -49,6 +54,18 @@ export interface EspecieEnriquecidaDto {
  * - VELOZ: velocidadBase >= 70 y supera a ataqueBase.
  * - EQUILIBRADO: en cualquier otro caso.
  */
+export function resolverRarezaDesdeAparicion(
+  peso: number,
+  esEspecial: boolean,
+  esLegendaria: boolean,
+): 'COMUN' | 'FRECUENTE' | 'RARA' | 'ESPECIAL' | 'LEGENDARIA' {
+  if (esLegendaria) return 'LEGENDARIA';
+  if (esEspecial || peso <= 5) return 'ESPECIAL';
+  if (peso <= 10) return 'RARA';
+  if (peso <= 15) return 'FRECUENTE';
+  return 'COMUN';
+}
+
 export function determinarArquetipoEspecie(stats: {
   hpBase: number;
   ataqueBase: number;
@@ -107,9 +124,12 @@ export class CriaturasService {
         (esp.esLegendaria ? 11 : esp.esEspecial ? 5 : 1);
       const tipo =
         (typeof crudo?.type === 'object' ? crudo.type.key : crudo?.type) || esp.tipo;
-      const tasaCaptura = calcularTasaCaptura(challengeRating);
       const aparicion = TABLAS_APARICION.find((a) => a.especieSlug === esp.slug);
       const zona = aparicion ? { id: aparicion.zonaId, nombre: aparicion.zonaId } : null;
+      const presupuestoTotal = esp.statsBase.hpBase + esp.statsBase.ataqueBase + esp.statsBase.defensaBase + esp.statsBase.velocidadBase;
+      const tasaCaptura = calcularTasaCapturaPorPresupuesto(presupuestoTotal);
+      const pesoAparicion = aparicion?.peso ?? (esp.esLegendaria || esp.esEspecial ? 5 : 35);
+      const rareza = resolverRarezaDesdeAparicion(pesoAparicion, esp.esEspecial, esp.esLegendaria);
 
       return {
         slug: esp.slug,
@@ -136,12 +156,22 @@ export class CriaturasService {
           efecto: m.efecto,
         })),
         zona,
+        presupuestoTotal,
+        pesoAparicion,
+        rareza,
       };
     });
 
     resultado.sort((a, b) => {
-      if (a.challengeRating !== b.challengeRating) {
-        return a.challengeRating - b.challengeRating;
+      const zonaA = a.zona?.id ?? '';
+      const zonaB = b.zona?.id ?? '';
+      if (zonaA !== zonaB) {
+        return zonaA.localeCompare(zonaB);
+      }
+      const bstA = a.presupuestoTotal ?? 0;
+      const bstB = b.presupuestoTotal ?? 0;
+      if (bstA !== bstB) {
+        return bstA - bstB;
       }
       return a.nombre.localeCompare(b.nombre, 'es');
     });
@@ -189,6 +219,9 @@ export class CriaturasService {
       const zona = aparicion?.zona
         ? { id: aparicion.zona.id, nombre: aparicion.zona.nombre }
         : null;
+      const presupuestoTotal = esp.hpBase + esp.ataqueBase + esp.defensaBase + esp.velocidadBase;
+      const pesoAparicion = aparicion?.peso ?? TABLAS_APARICION.find((a) => a.especieSlug === esp.slug)?.peso ?? (esp.esLegendaria || esp.esEspecial ? 5 : 35);
+      const rareza = resolverRarezaDesdeAparicion(pesoAparicion, esp.esEspecial, esp.esLegendaria);
 
       return {
         slug: esp.slug,
@@ -216,6 +249,9 @@ export class CriaturasService {
           efecto: m.efecto,
         })),
         zona,
+        presupuestoTotal,
+        pesoAparicion,
+        rareza,
       };
     });
 
@@ -263,6 +299,9 @@ export class CriaturasService {
     const zona = aparicion?.zona
       ? { id: aparicion.zona.id, nombre: aparicion.zona.nombre }
       : null;
+    const presupuestoTotal = esp.hpBase + esp.ataqueBase + esp.defensaBase + esp.velocidadBase;
+    const pesoAparicion = aparicion?.peso ?? TABLAS_APARICION.find((a) => a.especieSlug === esp.slug)?.peso ?? (esp.esLegendaria || esp.esEspecial ? 5 : 35);
+    const rareza = resolverRarezaDesdeAparicion(pesoAparicion, esp.esEspecial, esp.esLegendaria);
 
     return {
       slug: esp.slug,
@@ -290,6 +329,9 @@ export class CriaturasService {
         efecto: m.efecto,
       })),
       zona,
+      presupuestoTotal,
+      pesoAparicion,
+      rareza,
     };
   }
 }

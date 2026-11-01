@@ -23,6 +23,7 @@ import {
 import { Button } from "@/components/ui/8bit/button";
 import { Badge } from "@/components/ui/8bit/badge";
 import { Skeleton } from "@/components/ui/8bit/skeleton";
+import { Progress } from "@/components/ui/8bit/progress";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -62,6 +63,32 @@ export function PantallaHubUbicacion() {
   const [personaje, setPersonaje] = useState<PersonajeActivo | null>(null);
   const [cargando, setCargando] = useState(true);
   const [viajando, setViajando] = useState(false);
+  const [desbloqueandoId, setDesbloqueandoId] = useState<string | null>(null);
+
+  const handleDesbloquearRuta = async (zonaId: string) => {
+    if (desbloqueandoId || viajando) return;
+    try {
+      setDesbloqueandoId(zonaId);
+      reproducirSonido("click", 0.4);
+      const res = await api.verificarZona({ zonaId });
+      if (res.desbloqueada) {
+        reproducirSonido("confirmar", 0.6);
+        toast.success(res.mensaje);
+        const nuevaUbicacion = await api.obtenerUbicacionActual();
+        setUbicacion(nuevaUbicacion);
+      }
+    } catch (error) {
+      reproducirSonido("error", 0.5);
+      if (error instanceof ErrorApi) {
+        toast.error(error.message);
+      } else {
+        toast.error("No fue posible desbloquear la senda.");
+      }
+    } finally {
+      setDesbloqueandoId(null);
+    }
+  };
+
 
   useEffect(() => {
     let cancelado = false;
@@ -151,7 +178,7 @@ export function PantallaHubUbicacion() {
 
   if (cargando) {
     return (
-      <div className="space-y-6 max-w-5xl mx-auto py-2 sm:py-4 animate-pulse">
+      <div className="space-y-6 w-full max-w-5xl mx-auto px-2 sm:px-4 py-2 sm:py-4 overflow-x-hidden animate-pulse">
         {/* Skeleton del Hero del Asentamiento con Marco 8-Bit */}
         <div className="bg-card border-4 border-black shadow-[6px_6px_0_0_#000] p-4 space-y-4">
           <Skeleton className="h-48 sm:h-64 w-full bg-[#1a2332] border-2 border-black" />
@@ -165,7 +192,9 @@ export function PantallaHubUbicacion() {
 
         {/* Skeleton de Servicios */}
         <div className="space-y-3">
-          <Skeleton className="h-6 w-64 bg-[#1a2332] border-2 border-black" />
+          <div className="flex items-center gap-2 border-b-2 border-black pb-2">
+            <Skeleton className="h-6 w-48 sm:w-64 bg-[#1a2332] border-2 border-black" />
+          </div>
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4">
             {Array.from({ length: 8 }).map((_, i) => (
               <Skeleton key={i} className="h-28 w-full bg-card border-2 border-black shadow-[4px_4px_0_0_#000]" />
@@ -175,7 +204,9 @@ export function PantallaHubUbicacion() {
 
         {/* Skeleton de Rutas */}
         <div className="space-y-3">
-          <Skeleton className="h-6 w-64 bg-[#1a2332] border-2 border-black" />
+          <div className="flex items-center gap-2 border-b-2 border-black pb-2">
+            <Skeleton className="h-6 w-48 sm:w-64 bg-[#1a2332] border-2 border-black" />
+          </div>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <Skeleton className="h-32 w-full bg-card border-2 border-black shadow-[4px_4px_0_0_#000]" />
             <Skeleton className="h-32 w-full bg-card border-2 border-black shadow-[4px_4px_0_0_#000]" />
@@ -188,7 +219,7 @@ export function PantallaHubUbicacion() {
   const slugZona = ubicacion?.slug || sanitizarSlugZona(ubicacion?.nombre || ubicacion?.ubicacionId);
 
   return (
-    <div className="space-y-6 max-w-5xl mx-auto py-2 sm:py-4">
+    <div className="space-y-6 w-full max-w-5xl mx-auto px-2 sm:px-4 py-2 sm:py-4 overflow-x-hidden">
       {/* Hero del Asentamiento y Paisaje Retro con Marco 8-Bit */}
       <div className="relative bg-card border-4 border-black shadow-[6px_6px_0_0_#000] overflow-hidden">
         {/* Contenedor del paisaje de la zona */}
@@ -210,7 +241,7 @@ export function PantallaHubUbicacion() {
                 <Badge
                   variant="outline"
                   font="retro"
-                  className="bg-emerald-950/90 text-emerald-400 border-2 border-black shadow-[2px_2px_0_0_#000] gap-1.5 py-1 px-2.5 backdrop-blur-xs text-[9px] sm:text-[10px]"
+                  className="bg-emerald-950/90 text-emerald-400 border-2 border-black shadow-[2px_2px_0_0_#000] gap-1.5 py-1 px-2.5 backdrop-blur-xs text-[8px] sm:text-[9px]"
                 >
                   <ShieldCheck className="size-3.5 text-emerald-400" />
                   <span>LOCALIDAD SEGURA</span>
@@ -219,7 +250,7 @@ export function PantallaHubUbicacion() {
                 <Badge
                   variant="outline"
                   font="retro"
-                  className="bg-red-950/90 text-red-400 border-2 border-black shadow-[2px_2px_0_0_#000] gap-1.5 py-1 px-2.5 backdrop-blur-xs text-[9px] sm:text-[10px]"
+                  className="bg-red-950/90 text-red-400 border-2 border-black shadow-[2px_2px_0_0_#000] gap-1.5 py-1 px-2.5 backdrop-blur-xs text-[8px] sm:text-[9px]"
                 >
                   <Skull className="size-3.5 text-red-400" />
                   <span>ZONA HOSTIL</span>
@@ -234,7 +265,7 @@ export function PantallaHubUbicacion() {
               disabled={viajando}
               onClick={handleCerrarSesion}
               className={cn(
-                "bg-black/80 hover:bg-red-950/80 text-slate-200 hover:text-red-300 border-2 border-black shadow-[2px_2px_0_0_#000] active:translate-y-0.5 text-[9px] sm:text-[10px] gap-1.5 cursor-pointer backdrop-blur-xs",
+                "bg-black/80 hover:bg-red-950/80 text-slate-200 hover:text-red-300 border-2 border-black shadow-[2px_2px_0_0_#000] active:translate-y-0.5 text-[8px] sm:text-[9px] gap-1.5 cursor-pointer backdrop-blur-xs",
                 viajando && "pointer-events-none opacity-50"
               )}
             >
@@ -251,10 +282,10 @@ export function PantallaHubUbicacion() {
                 Campamento & Plaza del Gremio
               </span>
             </div>
-            <h1 className="retro text-lg sm:text-2xl text-[#14d1e8] tracking-wider uppercase drop-shadow-[0_2px_4px_rgba(0,0,0,0.9)] text-shadow-[2px_2px_0_#000]">
+            <h1 className="retro text-base sm:text-xl md:text-2xl text-[#14d1e8] tracking-wider uppercase drop-shadow-[0_2px_4px_rgba(0,0,0,0.9)] text-shadow-[2px_2px_0_#000] leading-tight break-words">
               {ubicacion?.nombre ?? "Villa Serena"}
             </h1>
-            <p className="font-sans text-xs sm:text-sm text-slate-200 mt-1 max-w-2xl leading-relaxed drop-shadow-[0_1px_2px_rgba(0,0,0,0.9)] line-clamp-2 sm:line-clamp-none">
+            <p className="retro text-[8px] sm:text-[9px] text-slate-200 mt-1.5 max-w-2xl leading-relaxed drop-shadow-[0_1px_2px_rgba(0,0,0,0.9)]">
               {ubicacion?.descripcion}
             </p>
           </div>
@@ -266,11 +297,11 @@ export function PantallaHubUbicacion() {
             {/* Nombre del Explorador */}
             <div className="p-2.5 sm:p-3 bg-muted/60 border-2 border-black shadow-[4px_4px_0_0_#000] flex flex-col justify-between hover:bg-muted/80 transition-colors">
               <div className="flex items-center justify-between text-muted-foreground mb-1.5">
-                <span className="retro text-[9px] uppercase tracking-wider">Explorador</span>
-                <Compass className="size-3.5 text-[#14d1e8]" />
+                <span className="retro text-[8px] sm:text-[9px] uppercase tracking-wider">Explorador</span>
+                <Compass className="size-3.5 text-[#14d1e8] shrink-0" />
               </div>
               <span
-                className="font-sans font-bold text-sm sm:text-base text-slate-100 truncate"
+                className="retro text-[9px] sm:text-[10px] text-slate-100 font-bold leading-tight break-words"
                 title={personaje?.nombre ?? "Aventurero"}
               >
                 {personaje?.nombre ?? "Aventurero"}
@@ -280,42 +311,42 @@ export function PantallaHubUbicacion() {
             {/* Monedas de Oro con Icono Coins */}
             <div className="p-2.5 sm:p-3 bg-muted/60 border-2 border-black shadow-[4px_4px_0_0_#000] flex flex-col justify-between hover:bg-muted/80 transition-colors">
               <div className="flex items-center justify-between text-muted-foreground mb-1.5">
-                <span className="retro text-[9px] uppercase tracking-wider">Monedas</span>
-                <Coins className="size-3.5 text-[#f5b724]" />
+                <span className="retro text-[8px] sm:text-[9px] uppercase tracking-wider">Monedas</span>
+                <Coins className="size-3.5 text-[#f5b724] shrink-0" />
               </div>
-              <div className="flex items-baseline gap-1.5">
-                <span className="retro text-xs sm:text-sm font-bold text-[#f5b724]">
+              <div className="flex items-baseline gap-1.5 flex-wrap">
+                <span className="retro text-[10px] sm:text-xs font-bold text-[#f5b724]">
                   {personaje?.monedas ?? 0}
                 </span>
-                <span className="font-sans text-[10px] sm:text-xs text-amber-200/90 font-medium">oro</span>
+                <span className="retro text-[8px] sm:text-[9px] text-amber-200/90">oro</span>
               </div>
             </div>
 
             {/* Equipo Activo (X/6) con Icono Users */}
             <div className="p-2.5 sm:p-3 bg-muted/60 border-2 border-black shadow-[4px_4px_0_0_#000] flex flex-col justify-between hover:bg-muted/80 transition-colors">
               <div className="flex items-center justify-between text-muted-foreground mb-1.5">
-                <span className="retro text-[9px] uppercase tracking-wider">Equipo Activo</span>
-                <Users className="size-3.5 text-emerald-400" />
+                <span className="retro text-[8px] sm:text-[9px] uppercase tracking-wider">Equipo</span>
+                <Users className="size-3.5 text-emerald-400 shrink-0" />
               </div>
-              <div className="flex items-baseline gap-1.5">
-                <span className="retro text-xs sm:text-sm font-bold text-emerald-400">
+              <div className="flex items-baseline gap-1.5 flex-wrap">
+                <span className="retro text-[10px] sm:text-xs font-bold text-emerald-400">
                   {personaje?.totalCriaturasEquipo ?? 0}
                 </span>
-                <span className="font-sans text-[10px] sm:text-xs text-slate-400">/ 6 aliados</span>
+                <span className="retro text-[8px] sm:text-[9px] text-slate-400">/ 6 aliados</span>
               </div>
             </div>
 
             {/* Almacén con Icono Package */}
             <div className="p-2.5 sm:p-3 bg-muted/60 border-2 border-black shadow-[4px_4px_0_0_#000] flex flex-col justify-between hover:bg-muted/80 transition-colors">
               <div className="flex items-center justify-between text-muted-foreground mb-1.5">
-                <span className="retro text-[9px] uppercase tracking-wider">Almacén</span>
-                <Package className="size-3.5 text-cyan-400" />
+                <span className="retro text-[8px] sm:text-[9px] uppercase tracking-wider">Almacén</span>
+                <Package className="size-3.5 text-cyan-400 shrink-0" />
               </div>
-              <div className="flex items-baseline gap-1.5">
-                <span className="retro text-xs sm:text-sm font-bold text-slate-200">
+              <div className="flex items-baseline gap-1.5 flex-wrap">
+                <span className="retro text-[10px] sm:text-xs font-bold text-slate-200">
                   {personaje?.totalCriaturasAlmacen ?? 0}
                 </span>
-                <span className="font-sans text-[10px] sm:text-xs text-slate-400">criaturas</span>
+                <span className="retro text-[8px] sm:text-[9px] text-slate-400">criaturas</span>
               </div>
             </div>
           </div>
@@ -333,7 +364,7 @@ export function PantallaHubUbicacion() {
               SERVICIOS DE LA LOCALIDAD
             </h2>
           </div>
-          <span className="font-sans text-xs text-slate-400 hidden sm:inline">
+          <span className="retro text-[8px] sm:text-[9px] text-slate-400 hidden sm:inline">
             Instalaciones y actividades del gremio
           </span>
         </div>
@@ -352,7 +383,7 @@ export function PantallaHubUbicacion() {
                   viajando && "pointer-events-none opacity-50"
                 )}
               >
-                <div className="h-full bg-card hover:bg-[#1a2332] border-2 border-black shadow-[4px_4px_0_0_#000] hover:shadow-[6px_6px_0_0_#000] hover:border-[#14d1e8] p-3 sm:p-4 text-center flex flex-col justify-between items-center transition-all duration-150 group-hover:scale-[1.02] active:translate-x-0.5 active:translate-y-0.5 active:shadow-[2px_2px_0_0_#000]">
+                <div className="h-full bg-card hover:bg-[#1a2332] border-2 border-black shadow-[4px_4px_0_0_#000] hover:shadow-[6px_6px_0_0_#000] hover:border-[#14d1e8] p-3 sm:p-4 text-left flex flex-col justify-between items-start transition-all duration-150 group-hover:scale-[1.02] active:translate-x-0.5 active:translate-y-0.5 active:shadow-[2px_2px_0_0_#000]">
                   <div className="w-full flex items-center justify-between mb-2.5">
                     <div className="size-9 sm:size-10 rounded-none bg-[#1a2332] group-hover:bg-black/60 border-2 border-black shadow-[2px_2px_0_0_#000] flex items-center justify-center transition-colors">
                       {renderIconoServicio(servicio.icono)}
@@ -371,10 +402,10 @@ export function PantallaHubUbicacion() {
                   </div>
 
                   <div className="w-full text-left">
-                    <span className="retro text-[10px] sm:text-xs font-bold text-[#14d1e8] group-hover:text-cyan-300 block truncate mb-1">
+                    <span className="retro text-[9px] sm:text-[10px] font-bold text-[#14d1e8] group-hover:text-cyan-300 block leading-tight break-words mb-1.5">
                       {servicio.titulo}
                     </span>
-                    <p className="font-sans text-[11px] text-slate-300 sm:text-slate-400 leading-snug line-clamp-2">
+                    <p className="retro text-[8px] sm:text-[9px] text-slate-300 sm:text-slate-400 leading-relaxed">
                       {servicio.descripcion}
                     </p>
                   </div>
@@ -396,7 +427,7 @@ export function PantallaHubUbicacion() {
               RUTAS Y DESTINOS DE VIAJE
             </h2>
           </div>
-          <span className="font-sans text-xs text-slate-400 hidden sm:inline">
+          <span className="retro text-[8px] sm:text-[9px] text-slate-400 hidden sm:inline">
             Senderos conectados a esta posición
           </span>
         </div>
@@ -404,7 +435,7 @@ export function PantallaHubUbicacion() {
         {!ubicacion?.conexiones || ubicacion.conexiones.length === 0 ? (
           <div className="bg-card border-2 border-black shadow-[4px_4px_0_0_#000] p-6 text-center">
             <Compass className="size-8 text-slate-500 mx-auto mb-2" />
-            <p className="font-sans text-sm text-slate-300">
+            <p className="retro text-[9px] sm:text-[10px] text-slate-300 leading-relaxed">
               No se divisan sendas transitables desde esta posición.
             </p>
           </div>
@@ -415,41 +446,79 @@ export function PantallaHubUbicacion() {
                 key={conexion.ubicacionDestinoId}
                 className="bg-card border-2 border-black shadow-[4px_4px_0_0_#000] hover:shadow-[6px_6px_0_0_#000] p-4 flex flex-col justify-between gap-3 transition-all hover:border-[#14d1e8]/80"
               >
-                <div className="flex items-start justify-between gap-2">
-                  <div>
-                    <span className="retro text-xs sm:text-sm font-bold text-slate-100 block">
+                <div className="space-y-2.5">
+                  <div className="flex items-start justify-between gap-2">
+                    <span className="retro text-[10px] sm:text-xs font-bold text-slate-100 block leading-tight break-words flex-1 min-w-0">
                       {conexion.nombre}
                     </span>
-                    <div className="flex items-center gap-1.5 text-xs text-slate-300 font-sans mt-1">
-                      <Compass className="size-3.5 text-[#14d1e8]" />
-                      <span>
-                        Nivel sugerido: {conexion.nivelSugerido ?? "Rango libre"}
-                      </span>
-                    </div>
+
+                    {conexion.estaBloqueada ? (
+                      <div className="flex flex-col items-end gap-1 shrink-0">
+                        <Badge
+                          variant="outline"
+                          font="retro"
+                          className="bg-red-950/90 text-red-400 border-2 border-black shadow-[2px_2px_0_0_#000] gap-1 text-[8px] sm:text-[9px] py-1 px-2"
+                        >
+                          <Lock className="size-3 text-red-400" />
+                          <span>BLOQUEADA</span>
+                        </Badge>
+                        {conexion.cumpleRequisito && (
+                          <Badge
+                            variant="outline"
+                            font="retro"
+                            className="bg-amber-950/90 text-amber-300 border-2 border-black shadow-[2px_2px_0_0_#000] gap-1 text-[7px] sm:text-[8px] py-0.5 px-1.5"
+                          >
+                            <Sparkles className="size-2.5 text-amber-300" />
+                            <span>LISTA PARA DESBLOQUEAR</span>
+                          </Badge>
+                        )}
+                      </div>
+                    ) : (
+                      <Badge
+                        variant="outline"
+                        font="retro"
+                        className="bg-emerald-950/90 text-emerald-400 border-2 border-black shadow-[2px_2px_0_0_#000] gap-1 text-[8px] sm:text-[9px] py-1 px-2 shrink-0"
+                      >
+                        <ArrowRight className="size-3 text-emerald-400" />
+                        <span>ACCESIBLE</span>
+                      </Badge>
+                    )}
                   </div>
 
-                  {conexion.estaBloqueada ? (
-                    <Badge
-                      variant="outline"
-                      font="retro"
-                      className="bg-red-950/90 text-red-400 border-2 border-black shadow-[2px_2px_0_0_#000] gap-1 text-[9px] py-0.5"
-                    >
-                      <Lock className="size-3 text-red-400" />
-                      <span>BLOQUEADA</span>
-                    </Badge>
-                  ) : (
-                    <Badge
-                      variant="outline"
-                      font="retro"
-                      className="bg-emerald-950/90 text-emerald-400 border-2 border-black shadow-[2px_2px_0_0_#000] gap-1 text-[9px] py-0.5"
-                    >
-                      <ArrowRight className="size-3 text-emerald-400" />
-                      <span>ACCESIBLE</span>
-                    </Badge>
+                  <div className="flex items-center gap-1.5 text-[8px] sm:text-[9px] text-slate-300 retro whitespace-nowrap">
+                    <Compass className="size-3.5 text-[#14d1e8] shrink-0" />
+                    <span className="whitespace-nowrap">
+                      Nivel sugerido: {conexion.nivelSugerido ?? "Rango libre"}
+                    </span>
+                  </div>
+
+                  {conexion.estaBloqueada && (
+                    <div className="border-2 border-black bg-black/50 p-2.5 space-y-1.5 mt-1">
+                      <div className="flex items-center justify-between text-[8px] sm:text-[9px] retro">
+                        <span className="flex items-center gap-1 text-slate-300">
+                          {conexion.cumpleRequisito ? (
+                            <Sparkles className="size-3 text-amber-400 shrink-0" />
+                          ) : (
+                            <Lock className="size-3 text-red-400 shrink-0" />
+                          )}
+                          <span className="font-bold">PROGRESO DE DESBLOQUEO</span>
+                        </span>
+                        <span className={conexion.cumpleRequisito ? "text-amber-400 font-bold" : "text-slate-300"}>
+                          {conexion.progresoActual ?? 0}% / {conexion.progresoObjetivo ?? 100}%
+                        </span>
+                      </div>
+                      <Progress
+                        value={conexion.progresoActual ?? 0}
+                        className="h-2 rounded-none border border-black"
+                      />
+                      <p className="retro text-[8px] sm:text-[9px] text-slate-300 leading-relaxed">
+                        {conexion.detalleProgreso ?? conexion.requisito}
+                      </p>
+                    </div>
                   )}
                 </div>
 
-                <div className="pt-2 border-t-2 border-black/60">
+                <div className="border-t-2 border-black pt-3 mt-3">
                   {conexion.estaBloqueada ? (
                     <AlertDialog>
                       <AlertDialogTrigger asChild>
@@ -457,40 +526,90 @@ export function PantallaHubUbicacion() {
                           variant="outline"
                           size="sm"
                           font="retro"
-                          disabled={viajando}
+                          disabled={viajando || Boolean(desbloqueandoId)}
                           onClick={() => reproducirSonido("click", 0.3)}
                           className={cn(
                             "w-full text-[10px] text-red-400 border-2 border-black shadow-[2px_2px_0_0_#000] hover:bg-red-500/10 active:translate-y-0.5 gap-1.5 cursor-pointer",
                             viajando && "pointer-events-none opacity-50"
                           )}
                         >
-                          <Lock className="size-3 text-red-400" />
+                          <Lock className="size-3 text-red-400 shrink-0" />
                           <span>REQUISITO DE ACCESO</span>
                         </Button>
                       </AlertDialogTrigger>
                       <AlertDialogContent
-                        font="normal"
-                        className="w-[calc(100vw-2rem)] sm:max-w-md! max-w-md! bg-[#121927] border-4 border-black shadow-[8px_8px_0_0_#000] text-slate-100 overflow-hidden"
+                        className="w-[calc(100vw-2rem)] sm:max-w-md !max-w-md border-4 border-black shadow-[8px_8px_0_0_#000] bg-bastion p-4 sm:p-5 overflow-hidden text-slate-100"
                       >
-                        <AlertDialogHeader className="w-full text-left">
-                          <div className="flex items-center gap-2 text-red-400">
-                            <Lock className="size-4 shrink-0" />
-                            <AlertDialogTitle className="retro text-xs sm:text-sm text-red-400">
+                        <AlertDialogHeader className="!flex !flex-col !w-full !text-left !items-stretch space-y-3">
+                          <div className="w-full flex items-center gap-2 border-b-2 border-black pb-2 text-red-400">
+                            <Lock className="size-4 shrink-0 text-red-400" />
+                            <AlertDialogTitle className="retro text-xs sm:text-sm text-red-400 tracking-wider">
                               RUTA RESTRINGIDA
                             </AlertDialogTitle>
                           </div>
-                          <AlertDialogDescription className="font-sans text-xs sm:text-sm text-slate-300 mt-2 leading-relaxed text-left">
-                            {conexion.requisito ??
+
+                          {/* Ficha Interior de Destino */}
+                          <div className="border-2 border-black bg-black/60 p-3 space-y-1.5 shadow-[inset_2px_2px_0_0_rgba(0,0,0,0.6)] w-full">
+                            <div className="flex items-center gap-2">
+                              <Lock className="size-3.5 text-red-400 shrink-0" />
+                              <span className="retro text-[9px] sm:text-[10px] text-red-400 font-bold leading-tight break-words">
+                                {conexion.nombre}
+                              </span>
+                            </div>
+                            <div className="flex items-center gap-1.5 text-slate-400 retro text-[8px] sm:text-[9px] whitespace-nowrap">
+                              <Compass className="size-3 text-[#14d1e8] shrink-0" />
+                              <span>Nivel sugerido: {conexion.nivelSugerido ?? "Rango libre"}</span>
+                            </div>
+                            <div className="pt-1.5 space-y-1 border-t border-black/40">
+                              <div className="flex items-center justify-between text-[8px] sm:text-[9px] retro">
+                                <span className="text-slate-300">ESTADO DEL REQUISITO</span>
+                                <span className={conexion.cumpleRequisito ? "text-amber-400 font-bold" : "text-slate-300"}>
+                                  {conexion.progresoActual ?? 0}% / {conexion.progresoObjetivo ?? 100}%
+                                </span>
+                              </div>
+                              <Progress
+                                value={conexion.progresoActual ?? 0}
+                                className="h-2 rounded-none border border-black"
+                              />
+                            </div>
+                          </div>
+
+                          <AlertDialogDescription className="w-full retro text-[9px] sm:text-[10px] leading-relaxed text-slate-200 text-left">
+                            {conexion.detalleProgreso ?? conexion.requisito ??
                               "Esta senda requiere mayor experiencia o cumplir misiones previas con el gremio."}
                           </AlertDialogDescription>
                         </AlertDialogHeader>
-                        <AlertDialogFooter className="mt-4 flex flex-col sm:flex-row sm:justify-end w-full">
-                          <AlertDialogAction
+                        <AlertDialogFooter className="flex flex-col-reverse sm:flex-row sm:justify-end gap-3 sm:gap-4 w-full mt-4 !m-0 !p-0 !bg-transparent !border-0 pt-4 border-t-2 border-black/60">
+                          <AlertDialogCancel
                             onClick={() => reproducirSonido("click", 0.3)}
-                            className="retro bg-[#1a2332] hover:bg-[#232d3f] text-slate-200 border-2 border-black shadow-[2px_2px_0_0_#000] active:translate-y-0.5 text-[10px] w-full sm:w-auto px-4 py-2 cursor-pointer"
+                            className="retro !bg-[#1a2332] hover:!bg-[#232d3f] !text-slate-200 border-2 border-black shadow-[2px_2px_0_0_#000] active:translate-y-0.5 active:shadow-none text-[10px] py-2.5 px-5 cursor-pointer w-full sm:w-auto text-center"
                           >
-                            COMPRENDIDO
-                          </AlertDialogAction>
+                            CERRAR
+                          </AlertDialogCancel>
+                          <Button
+                            onClick={() => handleDesbloquearRuta(conexion.ubicacionDestinoId)}
+                            disabled={Boolean(desbloqueandoId) || viajando || conexion.cumpleRequisito === false}
+                            aria-busy={desbloqueandoId === conexion.ubicacionDestinoId}
+                            font="retro"
+                            className={cn(
+                              "text-[10px] py-2.5 px-4 font-bold border-2 border-black shadow-[2px_2px_0_0_#000] active:translate-y-0.5 cursor-pointer w-full sm:w-auto gap-1.5",
+                              conexion.cumpleRequisito
+                                ? "bg-amber-400 hover:bg-amber-300 text-slate-950"
+                                : "bg-slate-800 text-slate-500 cursor-not-allowed opacity-60"
+                            )}
+                          >
+                            {desbloqueandoId === conexion.ubicacionDestinoId ? (
+                              <>
+                                <Loader2 className="size-3.5 animate-spin" />
+                                <span>DESBLOQUEANDO...</span>
+                              </>
+                            ) : (
+                              <>
+                                <Sparkles className="size-3.5" />
+                                <span>DESBLOQUEAR SENDA</span>
+                              </>
+                            )}
+                          </Button>
                         </AlertDialogFooter>
                       </AlertDialogContent>
                     </AlertDialog>
@@ -519,36 +638,45 @@ export function PantallaHubUbicacion() {
                         </Button>
                       </AlertDialogTrigger>
                       <AlertDialogContent
-                        font="normal"
-                        className="w-[calc(100vw-2rem)] sm:max-w-md! max-w-md! bg-[#121927] border-4 border-black shadow-[8px_8px_0_0_#000] text-slate-100 overflow-hidden"
+                        className="w-[calc(100vw-2rem)] sm:max-w-md !max-w-md border-4 border-black shadow-[8px_8px_0_0_#000] bg-bastion p-4 sm:p-5 overflow-hidden text-slate-100"
                       >
-                        <AlertDialogHeader className="w-full text-left">
-                          <div className="flex items-center gap-2 text-[#14d1e8]">
+                        <AlertDialogHeader className="!flex !flex-col !w-full !text-left !items-stretch space-y-3">
+                          <div className="w-full flex items-center gap-2 border-b-2 border-black pb-2 text-[#14d1e8]">
                             <Compass className="size-4 text-[#14d1e8] shrink-0" />
-                            <AlertDialogTitle className="retro text-xs sm:text-sm text-[#14d1e8]">
+                            <AlertDialogTitle className="retro text-xs sm:text-sm text-[#14d1e8] tracking-wider">
                               CONFIRMAR VIAJE
                             </AlertDialogTitle>
                           </div>
-                          <AlertDialogDescription className="font-sans text-xs sm:text-sm text-slate-300 mt-2 leading-relaxed text-left">
-                            ¿Deseas desplazarte hacia{" "}
-                            <strong className="text-white font-semibold">{conexion.nombre}</strong>?
-                            <br />
-                            <span className="text-slate-400 mt-1 block">
-                              Nivel recomendado: {conexion.nivelSugerido ?? "Rango libre"}.
-                            </span>
+
+                          {/* Ficha Interior de Destino */}
+                          <div className="border-2 border-black bg-black/60 p-3 space-y-1.5 shadow-[inset_2px_2px_0_0_rgba(0,0,0,0.6)] w-full">
+                            <div className="flex items-center gap-2">
+                              <Compass className="size-3.5 text-[#14d1e8] shrink-0" />
+                              <span className="retro text-[9px] sm:text-[10px] text-[#14d1e8] font-bold leading-tight break-words">
+                                {conexion.nombre}
+                              </span>
+                            </div>
+                            <div className="flex items-center gap-1.5 text-slate-400 retro text-[8px] sm:text-[9px] whitespace-nowrap">
+                              <ArrowRight className="size-3 text-emerald-400 shrink-0" />
+                              <span>Nivel recomendado: {conexion.nivelSugerido ?? "Rango libre"}</span>
+                            </div>
+                          </div>
+
+                          <AlertDialogDescription className="w-full retro text-[9px] sm:text-[10px] leading-relaxed text-slate-200 text-left">
+                            ¿Deseas emprender camino hacia las tierras de este sendero? Prepárate para los peligros del viaje.
                           </AlertDialogDescription>
                         </AlertDialogHeader>
-                        <AlertDialogFooter className="mt-4 flex flex-col-reverse sm:flex-row sm:justify-end gap-2.5 sm:gap-3 w-full">
+                        <AlertDialogFooter className="flex flex-col-reverse sm:flex-row sm:justify-end gap-3 sm:gap-4 w-full mt-4 !m-0 !p-0 !bg-transparent !border-0 pt-4 border-t-2 border-black/60">
                           <AlertDialogCancel
                             onClick={() => reproducirSonido("click", 0.3)}
-                            className="retro bg-[#1a2332] text-slate-300 hover:text-white border-2 border-black shadow-[2px_2px_0_0_#000] active:translate-y-0.5 text-[10px] w-full sm:w-auto px-4 py-2 shrink-0 cursor-pointer"
+                            className="retro !bg-[#1a2332] hover:!bg-[#232d3f] !text-slate-200 border-2 border-black shadow-[2px_2px_0_0_#000] active:translate-y-0.5 active:shadow-none py-2.5 px-4 text-[10px] w-full sm:w-auto shrink-0 cursor-pointer text-center"
                           >
                             PERMANECER
                           </AlertDialogCancel>
                           <AlertDialogAction
                             disabled={viajando}
                             onClick={() => handleViajar(conexion)}
-                            className="retro bg-[#14d1e8] hover:bg-[#14d1e8]/90 text-slate-950 font-bold border-2 border-black shadow-[2px_2px_0_0_#000] active:translate-y-0.5 text-[10px] w-full sm:w-auto px-4 py-2 shrink-0 cursor-pointer"
+                            className="retro !bg-[#14d1e8] hover:!bg-[#14d1e8]/90 !text-black font-bold border-2 border-black shadow-[2px_2px_0_0_#000] active:translate-y-0.5 active:shadow-none py-2.5 px-4 text-[10px] w-full sm:w-auto shrink-0 cursor-pointer text-center"
                           >
                             {viajando ? "VIAJANDO..." : "EMPRENDER CAMINO"}
                           </AlertDialogAction>
@@ -567,4 +695,3 @@ export function PantallaHubUbicacion() {
 }
 
 export default PantallaHubUbicacion;
-

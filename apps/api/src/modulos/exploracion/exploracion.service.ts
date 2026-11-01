@@ -9,7 +9,7 @@ import { PrismaService } from '../../comun/prisma/prisma.service';
 import { HistorialService } from '../historial/historial.service';
 import { SelectorPonderado } from '../../comun/azar/selector-ponderado.util';
 import { GeneradorAleatorio, GeneradorAleatorioNativo } from '../../comun/azar/generador-aleatorio.interface';
-import { calcularXpRequerida } from '../progreso/progreso.service';
+import { calcularXpRequerida, ProgresoService } from '../progreso/progreso.service';
 
 @Injectable()
 export class ExploracionService {
@@ -19,6 +19,7 @@ export class ExploracionService {
     private readonly prisma: PrismaService,
     private readonly historialService: HistorialService,
     @Optional() generador?: GeneradorAleatorio,
+    @Optional() private readonly progresoService?: ProgresoService,
   ) {
     this.generador = generador ?? new GeneradorAleatorioNativo();
   }
@@ -104,6 +105,7 @@ export class ExploracionService {
 
     // Solo se incrementa el progreso inmediato en la exploración si NO es un encuentro con criatura
     // (en los encuentros, el avance de la zona se gana al resolver con victoria o captura el combate).
+    let zonasRecienDesbloqueadas: string[] = [];
     if (tipoEventoSeleccionado !== 'ENCUENTRO') {
       nuevoProgreso = Math.min(100, progresoActual + 20);
 
@@ -121,6 +123,13 @@ export class ExploracionService {
           progreso: nuevoProgreso,
         },
       });
+
+      if (this.progresoService && nuevoProgreso > progresoActual) {
+        zonasRecienDesbloqueadas = await this.progresoService.evaluarDesbloqueosAutomaticos(
+          this.prisma as any,
+          personaje.id,
+        );
+      }
     }
 
     // 4. RESOLUCIÓN SEGÚN EL TIPO DE EVENTO SORTEADO
@@ -143,6 +152,7 @@ export class ExploracionService {
     return {
       ...resultadoExploracion,
       progresoZona: nuevoProgreso,
+      ...(zonasRecienDesbloqueadas.length > 0 ? { zonasRecienDesbloqueadas } : {}),
     };
   }
 

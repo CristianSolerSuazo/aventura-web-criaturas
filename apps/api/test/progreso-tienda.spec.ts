@@ -735,4 +735,258 @@ describe('Progreso, Curación y Tienda (Fase 7c)', () => {
       assert.strictEqual(resultado.porcentajeXp > 0, true);
     });
   });
+  describe('Grafo de Desbloqueo Territorial (LOC-02, LOC-03, ZON-03..ZON-06)', () => {
+    it('LOC-02 rechaza con REQUISITOS_NO_CUMPLIDOS si ZON-01 tiene progreso: 80 y desbloquea con progreso: 100', async () => {
+      let progresoZon01 = 80;
+      let upsertEjecutado = false;
+
+      const mockPrisma = {
+        personaje: {
+          findUnique: async () => ({ id: 'pj-1', usuarioId: 'usr-1' }),
+        },
+        zonaDesbloqueada: {
+          findUnique: async ({ where }: any) => {
+            const zonaId = where.personajeId_zonaId?.zonaId;
+            if (zonaId === 'ZON-01') return { zonaId: 'ZON-01', progreso: progresoZon01 };
+            if (zonaId === 'LOC-02') return null;
+            return null;
+          },
+          upsert: async () => {
+            upsertEjecutado = true;
+            return { zonaId: 'LOC-02', progreso: 0 };
+          },
+        },
+        historial: {
+          create: async () => ({ id: 'his-1' }),
+        },
+      } as any;
+
+      const servicio = new ProgresoService(mockPrisma);
+
+      // Con 80% debe rechazar
+      await assert.rejects(
+        async () => {
+          await servicio.verificarYDesbloquearZona('usr-1', 'LOC-02');
+        },
+        (error: any) => {
+          assert.strictEqual(error instanceof BadRequestException, true);
+          assert.strictEqual(error.getResponse().codigo, 'REQUISITOS_NO_CUMPLIDOS');
+          return true;
+        },
+      );
+
+      // Con 100% debe desbloquear
+      progresoZon01 = 100;
+      const res = await servicio.verificarYDesbloquearZona('usr-1', 'LOC-02');
+      assert.strictEqual(res.desbloqueada, true);
+      assert.strictEqual(res.zonaId, 'LOC-02');
+      assert.strictEqual(upsertEjecutado, true);
+      assert.ok(res.mensaje.includes('Puesto Fronterizo del Río'));
+    });
+
+    it('ZON-03 se desbloquea al tener ZON-02 con progreso: 100', async () => {
+      const mockPrisma = {
+        personaje: {
+          findUnique: async () => ({ id: 'pj-1', usuarioId: 'usr-1' }),
+        },
+        zonaDesbloqueada: {
+          findUnique: async ({ where }: any) => {
+            const zonaId = where.personajeId_zonaId?.zonaId;
+            if (zonaId === 'ZON-02') return { zonaId: 'ZON-02', progreso: 100 };
+            return null;
+          },
+          upsert: async () => ({ zonaId: 'ZON-03', progreso: 0 }),
+        },
+        historial: { create: async () => ({ id: 'h-1' }) },
+      } as any;
+
+      const servicio = new ProgresoService(mockPrisma);
+      const res = await servicio.verificarYDesbloquearZona('usr-1', 'ZON-03');
+      assert.strictEqual(res.desbloqueada, true);
+      assert.strictEqual(res.zonaId, 'ZON-03');
+      assert.ok(res.mensaje.includes('Bosque Susurrante'));
+    });
+
+    it('ZON-04 exige ZON-03 al 100% y al menos 1 criatura con nivel >= 5', async () => {
+      let cuentaCriaturasNv5 = 0;
+
+      const mockPrisma = {
+        personaje: {
+          findUnique: async () => ({ id: 'pj-1', usuarioId: 'usr-1' }),
+        },
+        zonaDesbloqueada: {
+          findUnique: async ({ where }: any) => {
+            const zonaId = where.personajeId_zonaId?.zonaId;
+            if (zonaId === 'ZON-03') return { zonaId: 'ZON-03', progreso: 100 };
+            return null;
+          },
+          upsert: async () => ({ zonaId: 'ZON-04', progreso: 0 }),
+        },
+        criatura: {
+          count: async () => cuentaCriaturasNv5,
+        },
+        historial: { create: async () => ({ id: 'h-1' }) },
+      } as any;
+
+      const servicio = new ProgresoService(mockPrisma);
+
+      // Falla si no tiene criaturas nivel 5+
+      await assert.rejects(
+        async () => {
+          await servicio.verificarYDesbloquearZona('usr-1', 'ZON-04');
+        },
+        (error: any) => {
+          assert.strictEqual(error instanceof BadRequestException, true);
+          assert.strictEqual(error.getResponse().codigo, 'REQUISITOS_NO_CUMPLIDOS');
+          return true;
+        },
+      );
+
+      // Pasa cuando tiene al menos 1 criatura nivel 5+
+      cuentaCriaturasNv5 = 1;
+      const res = await servicio.verificarYDesbloquearZona('usr-1', 'ZON-04');
+      assert.strictEqual(res.desbloqueada, true);
+      assert.strictEqual(res.zonaId, 'ZON-04');
+      assert.ok(res.mensaje.includes('Paso de los Riscos'));
+    });
+
+    it('LOC-03 se desbloquea al tener ZON-04 con progreso: 100', async () => {
+      const mockPrisma = {
+        personaje: {
+          findUnique: async () => ({ id: 'pj-1', usuarioId: 'usr-1' }),
+        },
+        zonaDesbloqueada: {
+          findUnique: async ({ where }: any) => {
+            const zonaId = where.personajeId_zonaId?.zonaId;
+            if (zonaId === 'ZON-04') return { zonaId: 'ZON-04', progreso: 100 };
+            return null;
+          },
+          upsert: async () => ({ zonaId: 'LOC-03', progreso: 0 }),
+        },
+        historial: { create: async () => ({ id: 'h-1' }) },
+      } as any;
+
+      const servicio = new ProgresoService(mockPrisma);
+      const res = await servicio.verificarYDesbloquearZona('usr-1', 'LOC-03');
+      assert.strictEqual(res.desbloqueada, true);
+      assert.strictEqual(res.zonaId, 'LOC-03');
+      assert.ok(res.mensaje.includes('Bastión del Norte'));
+    });
+
+    it('ZON-05 exige ZON-04 al 100% y 3 criaturas en equipo de nivel >= 5', async () => {
+      let cuentaEquipoNv5 = 2; // Menos de 3
+
+      const mockPrisma = {
+        personaje: {
+          findUnique: async () => ({ id: 'pj-1', usuarioId: 'usr-1' }),
+        },
+        zonaDesbloqueada: {
+          findUnique: async ({ where }: any) => {
+            const zonaId = where.personajeId_zonaId?.zonaId;
+            if (zonaId === 'ZON-04') return { zonaId: 'ZON-04', progreso: 100 };
+            return null;
+          },
+          upsert: async () => ({ zonaId: 'ZON-05', progreso: 0 }),
+        },
+        criatura: {
+          count: async () => cuentaEquipoNv5,
+        },
+        historial: { create: async () => ({ id: 'h-1' }) },
+      } as any;
+
+      const servicio = new ProgresoService(mockPrisma);
+
+      await assert.rejects(
+        async () => {
+          await servicio.verificarYDesbloquearZona('usr-1', 'ZON-05');
+        },
+        (error: any) => {
+          assert.strictEqual(error instanceof BadRequestException, true);
+          assert.strictEqual(error.getResponse().codigo, 'REQUISITOS_NO_CUMPLIDOS');
+          return true;
+        },
+      );
+
+      cuentaEquipoNv5 = 3;
+      const res = await servicio.verificarYDesbloquearZona('usr-1', 'ZON-05');
+      assert.strictEqual(res.desbloqueada, true);
+      assert.strictEqual(res.zonaId, 'ZON-05');
+      assert.ok(res.mensaje.includes('Cueva Umbría'));
+    });
+
+    it('ZON-06 exige ZON-05 al 100% y 1 criatura de nivel >= 10', async () => {
+      let cuentaNv10 = 0;
+
+      const mockPrisma = {
+        personaje: {
+          findUnique: async () => ({ id: 'pj-1', usuarioId: 'usr-1' }),
+        },
+        zonaDesbloqueada: {
+          findUnique: async ({ where }: any) => {
+            const zonaId = where.personajeId_zonaId?.zonaId;
+            if (zonaId === 'ZON-05') return { zonaId: 'ZON-05', progreso: 100 };
+            return null;
+          },
+          upsert: async () => ({ zonaId: 'ZON-06', progreso: 0 }),
+        },
+        criatura: {
+          count: async () => cuentaNv10,
+        },
+        historial: { create: async () => ({ id: 'h-1' }) },
+      } as any;
+
+      const servicio = new ProgresoService(mockPrisma);
+
+      await assert.rejects(
+        async () => {
+          await servicio.verificarYDesbloquearZona('usr-1', 'ZON-06');
+        },
+        (error: any) => {
+          assert.strictEqual(error instanceof BadRequestException, true);
+          assert.strictEqual(error.getResponse().codigo, 'REQUISITOS_NO_CUMPLIDOS');
+          return true;
+        },
+      );
+
+      cuentaNv10 = 1;
+      const res = await servicio.verificarYDesbloquearZona('usr-1', 'ZON-06');
+      assert.strictEqual(res.desbloqueada, true);
+      assert.strictEqual(res.zonaId, 'ZON-06');
+      assert.ok(res.mensaje.includes('Pico de la Cumbre'));
+    });
+
+    it('evaluarDesbloqueosAutomaticos desbloquea automáticamente LOC-02 en cuanto ZON-01 llega a 100%', async () => {
+      const zonasDesbloqueadas = [
+        { zonaId: 'LOC-01', progreso: 100 },
+        { zonaId: 'ZON-01', progreso: 100 },
+        { zonaId: 'ZON-02', progreso: 0 },
+      ];
+
+      const txMock: any = {
+        zonaDesbloqueada: {
+          findMany: async () => zonasDesbloqueadas,
+          findUnique: async ({ where }: any) => {
+            const zId = where.personajeId_zonaId?.zonaId;
+            return zonasDesbloqueadas.find((z) => z.zonaId === zId) ?? null;
+          },
+          upsert: async ({ create }: any) => {
+            zonasDesbloqueadas.push(create);
+            return create;
+          },
+        },
+        criatura: {
+          count: async () => 0,
+        },
+        historial: {
+          create: async () => ({ id: 'h-auto' }),
+        },
+      };
+
+      const servicio = new ProgresoService(txMock);
+      const recien = await servicio.evaluarDesbloqueosAutomaticos(txMock, 'pj-1');
+
+      assert.ok(recien.includes('LOC-02'), 'LOC-02 debe desbloquearse automáticamente al tener ZON-01 al 100%');
+      assert.strictEqual(zonasDesbloqueadas.some((z) => z.zonaId === 'LOC-02'), true);
+    });
+  });
 });

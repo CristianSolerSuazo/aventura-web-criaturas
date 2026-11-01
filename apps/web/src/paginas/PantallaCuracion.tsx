@@ -37,14 +37,9 @@ import {
 } from "@/lib/assets";
 import { cn } from "@/lib/utils";
 import {
-  type EstadoVitalCriatura,
   clasificarEstadoVital,
-  etiquetaEstadoVital,
   calcularDeltaCuracion,
 } from "@/lib/curacion-santuario";
-
-export type { EstadoVitalCriatura };
-export { clasificarEstadoVital, etiquetaEstadoVital, calcularDeltaCuracion };
 
 export function PantallaCuracion() {
   const navigate = useNavigate();
@@ -178,44 +173,54 @@ export function PantallaCuracion() {
     ubicacion?.slug || sanitizarSlugZona(ubicacion?.nombre || "villa-serena");
 
   return (
-    <div className="space-y-6 max-w-4xl mx-auto py-2 sm:py-4 px-2 sm:px-0">
-      {/* Cabecera inmersiva del Santuario */}
-      <Card className="border-2 border-primary/50 bg-bastion rounded-none overflow-hidden text-center shadow-lg">
+    <div className="w-full max-w-4xl mx-auto px-2 sm:px-4 py-2 sm:py-4 space-y-4 sm:space-y-6 overflow-x-hidden">
+      {/* Cabecera inmersiva del Santuario (8bitcn/ui Brutalist) */}
+      <Card className="rounded-none border-4 border-black shadow-[6px_6px_0_0_#000] bg-card overflow-hidden text-center">
         {/* Banner panorámico con imagen de zona y fallback pixelado */}
-        <div className="relative h-28 sm:h-40 w-full overflow-hidden border-b-2 border-primary/40 bg-abismo">
+        <div className="relative h-48 sm:h-64 md:h-72 w-full overflow-hidden border-b-4 border-black bg-[#090d16]">
           <img
             src={obtenerImagenZona(slugZona)}
             alt={ubicacion?.nombre || "Santuario de Curación"}
             onError={(e) => manejarErrorImagen(e, "zona")}
-            className="pixelated w-full h-full object-cover object-center opacity-40 scale-105"
+            className="pixelated w-full h-full object-cover object-center filter brightness-95 contrast-105 scale-100 transition-transform duration-700 hover:scale-105"
           />
-          <div className="absolute inset-0 bg-gradient-to-t from-bastion via-bastion/60 to-transparent pointer-events-none" />
+          <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/30 to-black/40 pointer-events-none" />
 
           {/* Insignias temáticas 8-bit */}
-          <div className="absolute top-2.5 left-2.5 right-2.5 flex flex-wrap gap-2 justify-between items-center pointer-events-none">
+          <div className="absolute top-2.5 left-2.5 right-2.5 flex flex-wrap gap-2 justify-between items-center pointer-events-auto z-10">
             <Badge
               variant="outline"
-              className="rounded-none border-primary/60 bg-abismo/80 text-primary retro text-[9px] sm:text-[10px] flex items-center gap-1.5 py-1 px-2"
+              className="rounded-none border-2 border-black shadow-[2px_2px_0_0_#000] bg-black/85 text-primary retro text-[8px] sm:text-[9px] flex items-center gap-1.5 py-1 px-2 backdrop-blur-xs"
             >
-              <Sparkles className="size-3 text-amber-400" />
+              <Sparkles className="size-3 text-amber-400 shrink-0" />
               <span>SANTUARIO ANCESTRAL</span>
             </Badge>
 
             <Badge
               variant="outline"
-              className="rounded-none border-emerald-500/60 bg-abismo/80 text-emerald-300 retro text-[9px] sm:text-[10px] flex items-center gap-1.5 py-1 px-2"
+              className="rounded-none border-2 border-black shadow-[2px_2px_0_0_#000] bg-black/85 text-emerald-300 retro text-[8px] sm:text-[9px] flex items-center gap-1.5 py-1 px-2 backdrop-blur-xs"
             >
-              <ShieldCheck className="size-3 text-emerald-400" />
+              <ShieldCheck className="size-3 text-emerald-400 shrink-0" />
               <span>SERVICIO GRATUITO</span>
             </Badge>
           </div>
+
+          {/* Título y locación integrados con protagonismo cinematográfico sobre el paisaje */}
+          <div className="absolute bottom-3 left-3 right-3 pointer-events-none z-10 text-center">
+            <div className="inline-flex items-center gap-1.5 bg-black/80 border border-black/80 px-2.5 py-1 mb-1.5 shadow-[2px_2px_0_0_#000]">
+              <Sparkles className="size-3 text-amber-400 shrink-0" />
+              <span className="retro text-[7px] sm:text-[8px] text-amber-300 uppercase tracking-widest">
+                Manantial Místico • {ubicacion?.nombre || "Villa Serena"}
+              </span>
+            </div>
+            <CardTitle className="retro text-base sm:text-2xl text-primary tracking-wide drop-shadow-[0_2px_4px_rgba(0,0,0,0.9)] [text-shadow:2px_2px_0_#000]">
+              SANTUARIO DE CURACIÓN
+            </CardTitle>
+          </div>
         </div>
 
-        <CardHeader className="p-4 sm:p-6 pb-2">
-          <CardTitle className="retro text-base sm:text-2xl text-primary tracking-wide mb-2">
-            SANTUARIO DE CURACIÓN
-          </CardTitle>
-          <CardDescription className="text-xs sm:text-sm text-muted-foreground max-w-lg mx-auto font-sans">
+        <CardHeader className="p-3 sm:p-4 pb-2 space-y-1">
+          <CardDescription className="retro text-[8px] sm:text-[9px] text-muted-foreground max-w-xl mx-auto leading-relaxed break-words text-center">
             Las aguas místicas del manantial sagrado en{" "}
             <span className="font-bold text-foreground">
               {ubicacion?.nombre || "este asentamiento"}
@@ -227,13 +232,13 @@ export function PantallaCuracion() {
 
         {/* Advertencia preventiva si la localidad no tiene servicio activo */}
         {!servicioDisponible && (
-          <div className="mx-4 sm:mx-6 mb-4 p-3 border-2 border-destructive/70 bg-destructive/10 rounded-none flex items-start gap-2.5 text-left">
-            <AlertCircle className="size-4 text-destructive shrink-0 mt-0.5" />
-            <div className="space-y-1 text-xs">
-              <p className="font-bold text-destructive retro text-[10px]">
+          <div className="mx-2 sm:mx-6 mb-3 sm:mb-4 p-2.5 sm:p-3 rounded-none border-2 border-black shadow-[4px_4px_0_0_#000] bg-amber-500/10 text-amber-300 flex items-start gap-2.5 text-left">
+            <AlertCircle className="size-4 text-amber-400 shrink-0 mt-0.5" />
+            <div className="space-y-1 text-left min-w-0">
+              <p className="font-bold text-amber-200 retro text-[9px] sm:text-[10px]">
                 SANTUARIO NO DISPONIBLE
               </p>
-              <p className="text-muted-foreground">
+              <p className="retro text-[8px] sm:text-[9px] text-amber-300/90 leading-relaxed break-words">
                 Te encuentras fuera de un asentamiento con santuario activo.
                 Regresa a una localidad segura para recibir la bendición del
                 manantial.
@@ -242,55 +247,55 @@ export function PantallaCuracion() {
           </div>
         )}
 
-        {/* Barra de resumen táctico del equipo */}
-        <div className="mx-4 sm:mx-6 mb-4 p-3 border-2 border-border/60 bg-abismo/60 rounded-none grid grid-cols-2 sm:grid-cols-5 gap-2 text-center text-xs">
-          <div>
-            <span className="text-[10px] text-muted-foreground block font-mono">
+        {/* Barra de resumen táctico del equipo (5 métricas tácticas) */}
+        <div className="mx-2 sm:mx-6 mb-3 sm:mb-4 p-2.5 sm:p-3 rounded-none border-2 border-black bg-black/40 shadow-[inset_2px_2px_0_0_rgba(0,0,0,0.5)] grid grid-cols-2 sm:grid-cols-5 gap-2 text-center">
+          <div className="p-1">
+            <span className="retro text-[7px] sm:text-[8px] text-muted-foreground block mb-1">
               TOTAL EQUIPO
             </span>
-            <span className="font-bold font-mono text-sm">
+            <span className="retro text-[10px] sm:text-xs font-bold text-foreground">
               {totalEnEquipo} / 6
             </span>
           </div>
-          <div>
-            <span className="text-[10px] text-muted-foreground block font-mono">
+          <div className="p-1">
+            <span className="retro text-[7px] sm:text-[8px] text-muted-foreground block mb-1">
               PLENA SALUD
             </span>
-            <span className="font-bold font-mono text-sm text-emerald-400">
+            <span className="retro text-[10px] sm:text-xs font-bold text-emerald-400">
               {enPlenaVitalidad}
             </span>
           </div>
-          <div>
-            <span className="text-[10px] text-muted-foreground block font-mono">
+          <div className="p-1">
+            <span className="retro text-[7px] sm:text-[8px] text-muted-foreground block mb-1">
               HERIDAS
             </span>
-            <span className="font-bold font-mono text-sm text-amber-400">
+            <span className="retro text-[10px] sm:text-xs font-bold text-amber-400">
               {heridas}
             </span>
           </div>
-          <div>
-            <span className="text-[10px] text-muted-foreground block font-mono">
+          <div className="p-1">
+            <span className="retro text-[7px] sm:text-[8px] text-muted-foreground block mb-1">
               DEBILITADAS
             </span>
-            <span className="font-bold font-mono text-sm text-red-400">
+            <span className="retro text-[10px] sm:text-xs font-bold text-red-400">
               {debilitadas}
             </span>
           </div>
-          <div className="col-span-2 sm:col-span-1">
-            <span className="text-[10px] text-muted-foreground block font-mono">
+          <div className="col-span-2 sm:col-span-1 p-1">
+            <span className="retro text-[7px] sm:text-[8px] text-muted-foreground block mb-1">
               DÉFICIT TOTAL
             </span>
-            <span className="font-bold font-mono text-sm text-cyan-400">
+            <span className="retro text-[10px] sm:text-xs font-bold text-cyan-400">
               +{deficitTotalHp} HP
             </span>
           </div>
         </div>
 
         {/* Botones de acción del Santuario */}
-        <CardFooter className="p-4 sm:p-6 pt-2 flex flex-col sm:flex-row gap-3 justify-center items-center border-t border-border/40">
+        <CardFooter className="p-4 sm:p-6 flex flex-col sm:flex-row gap-4 sm:gap-6 justify-center items-center border-t-2 border-black/40 bg-black/20">
           <Button
             size="lg"
-            className="w-full sm:w-auto px-8 flex items-center justify-center gap-2 rounded-none"
+            className="w-full sm:w-auto px-6 sm:px-8 py-3 rounded-none border-4 border-black shadow-[6px_6px_0_0_#000] active:translate-y-1 active:shadow-[2px_2px_0_0_#000] hover:shadow-[8px_8px_0_0_#000] transition-all cursor-pointer font-bold flex items-center justify-center gap-2"
             disabled={
               cargando || restaurando || todoSaludable || !servicioDisponible
             }
@@ -300,21 +305,21 @@ export function PantallaCuracion() {
             {restaurando ? (
               <>
                 <Spinner className="size-4" />
-                <span className="retro text-[10px]">
+                <span className="retro text-[9px] sm:text-[10px]">
                   CANALIZANDO BENDICIÓN...
                 </span>
               </>
             ) : todoSaludable ? (
               <>
                 <ShieldCheck className="size-4 text-emerald-400" />
-                <span className="retro text-[10px]">
+                <span className="retro text-[9px] sm:text-[10px]">
                   EQUIPO EN PLENA VITALIDAD
                 </span>
               </>
             ) : (
               <>
                 <Sparkles className="size-4 text-amber-300" />
-                <span className="retro text-[10px]">
+                <span className="retro text-[9px] sm:text-[10px]">
                   RESTAURAR TODO EL EQUIPO
                 </span>
               </>
@@ -324,7 +329,7 @@ export function PantallaCuracion() {
           <Button
             variant="outline"
             size="default"
-            className="w-full sm:w-auto text-xs rounded-none flex items-center justify-center gap-2"
+            className="w-full sm:w-auto px-5 sm:px-6 py-2.5 sm:py-3 rounded-none border-2 border-black shadow-[4px_4px_0_0_#000] active:translate-y-0.5 active:shadow-[1px_1px_0_0_#000] hover:shadow-[6px_6px_0_0_#000] hover:bg-muted transition-all cursor-pointer retro text-[8px] sm:text-[9px] flex items-center justify-center gap-2"
             onClick={() => {
               reproducirSonido("click");
               navigate("/hub");
@@ -338,170 +343,182 @@ export function PantallaCuracion() {
 
       {/* Desglose táctico de las criaturas del equipo */}
       <div className="space-y-3">
-        <h2 className="retro text-xs sm:text-sm text-foreground uppercase tracking-wide flex items-center gap-2">
-          <Heart className="size-4 text-rose-400" />
+        <h2 className="retro text-[10px] sm:text-xs text-foreground uppercase tracking-wide flex items-center gap-2 drop-shadow-[1px_1px_0_#000]">
+          <Heart className="size-3.5 sm:size-4 text-rose-400 shrink-0" />
           <span>DESGLOSE TÁCTICO DEL EQUIPO</span>
         </h2>
 
+        {cargando && (
+          <div className="rounded-none border-2 border-black shadow-[4px_4px_0_0_#000] p-8 text-center bg-card space-y-3">
+            <Spinner className="size-6 mx-auto text-primary" />
+            <p className="retro text-[9px] sm:text-[10px] text-muted-foreground">
+              Consultando estado del santuario...
+            </p>
+          </div>
+        )}
+
         {equipo.length === 0 && !cargando && (
-          <Card className="p-8 text-center border-2 border-dashed border-border/60 rounded-none bg-bastion/50">
-            <p className="text-sm text-muted-foreground font-mono">
+          <Card className="p-6 sm:p-8 text-center rounded-none border-2 border-dashed border-black/80 bg-card shadow-[4px_4px_0_0_#000]">
+            <p className="retro text-[8px] sm:text-[9px] text-muted-foreground leading-relaxed break-words">
               No tienes criaturas en el equipo activo. Visita el Almacén para
               incorporar compañeros.
             </p>
           </Card>
         )}
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          {equipo.map((criatura) => {
-            const estado = clasificarEstadoVital(
-              criatura.hpActual,
-              criatura.hpMaximo,
-            );
-            const esDebilitada = estado === "DEBILITADA";
-            const esHerida = estado === "HERIDA";
-            const esPlena = estado === "PLENA_VITALIDAD";
-            const esLider = criatura.orden === 1;
+        {!cargando && equipo.length > 0 && (
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-4">
+            {equipo.map((criatura) => {
+              const estado = clasificarEstadoVital(
+                criatura.hpActual,
+                criatura.hpMaximo,
+              );
+              const esDebilitada = estado === "DEBILITADA";
+              const esHerida = estado === "HERIDA";
+              const esPlena = estado === "PLENA_VITALIDAD";
+              const esLider = criatura.orden === 1;
 
-            const porcentajeHp = Math.round(
-              (Math.max(0, criatura.hpActual) /
-                Math.max(1, criatura.hpMaximo)) *
-                100,
-            );
+              const porcentajeHp = Math.round(
+                (Math.max(0, criatura.hpActual) /
+                  Math.max(1, criatura.hpMaximo)) *
+                  100,
+              );
 
-            const deltaInfo = deltasCuracion[criatura.criaturaId];
-            const tieneDelta =
-              animandoBendicion && deltaInfo && deltaInfo.delta > 0;
+              const deltaInfo = deltasCuracion[criatura.criaturaId];
+              const tieneDelta =
+                animandoBendicion && deltaInfo && deltaInfo.delta > 0;
 
-            return (
-              <Card
-                key={criatura.criaturaId}
-                className={cn(
-                  "relative p-4 border-2 rounded-none bg-bastion transition-all",
-                  esLider && "border-amber-500/80 bg-amber-500/5",
-                  tieneDelta && "anim-curacion border-emerald-500/80",
-                )}
-              >
-                {/* Cifra flotante de vitalidad o resurrección */}
-                {tieneDelta && (
-                  <div className="absolute -top-3 right-3 z-20 pointer-events-none anim-curacion-flotante retro text-xs sm:text-sm font-bold text-emerald-400 [text-shadow:2px_2px_0_#000,-2px_-2px_0_#000,2px_-2px_0_#000,-2px_2px_0_#000]">
-                    {deltaInfo.fueRevivida
-                      ? `¡REVIVIDA! +${deltaInfo.delta} HP`
-                      : `+${deltaInfo.delta} HP`}
-                  </div>
-                )}
+              return (
+                <Card
+                  key={criatura.criaturaId}
+                  className={cn(
+                    "relative p-3 sm:p-4 rounded-none border-2 border-black shadow-[4px_4px_0_0_#000] hover:shadow-[6px_6px_0_0_#000] bg-card transition-all",
+                    esLider && "border-amber-500/80 bg-amber-500/10",
+                    tieneDelta && "anim-curacion border-emerald-500",
+                  )}
+                >
+                  {/* Cifra flotante de vitalidad o resurrección */}
+                  {tieneDelta && (
+                    <div className="absolute -top-3.5 right-2 sm:right-3 z-30 pointer-events-none anim-curacion-flotante retro text-[10px] sm:text-xs font-bold text-emerald-400 [text-shadow:2px_2px_0_#000,-2px_-2px_0_#000,2px_-2px_0_#000,-2px_2px_0_#000]">
+                      {deltaInfo.fueRevivida
+                        ? `¡REVIVIDA! +${deltaInfo.delta} HP`
+                        : `+${deltaInfo.delta} HP`}
+                    </div>
+                  )}
 
-                <div className="flex items-start gap-3">
-                  {/* Marco de sprite pixel-art de 64x64 con clase .pixelated */}
-                  <div className="relative h-16 w-16 shrink-0 border-2 border-border bg-abismo/80 p-1 rounded-none flex items-center justify-center overflow-hidden">
-                    <img
-                      src={obtenerImagenCriatura(criatura.slug)}
-                      alt={criatura.nombre}
-                      onError={(e) => manejarErrorImagen(e, "criatura")}
-                      className={cn(
-                        "pixelated h-14 w-14 object-contain transition-all duration-500",
-                        esDebilitada && "grayscale opacity-70",
+                  <div className="flex items-start gap-3">
+                    {/* Marco de sprite pixel-art con relieve interior */}
+                    <div className="relative size-16 sm:size-18 shrink-0 rounded-none border-2 border-black bg-black/50 shadow-[inset_2px_2px_0_0_rgba(0,0,0,0.6)] p-1 flex items-center justify-center overflow-hidden">
+                      <img
+                        src={obtenerImagenCriatura(criatura.slug)}
+                        alt={criatura.nombre}
+                        onError={(e) => manejarErrorImagen(e, "criatura")}
+                        className={cn(
+                          "pixelated size-14 sm:size-16 object-contain transition-all duration-500",
+                          esDebilitada && "grayscale opacity-70",
+                        )}
+                        loading="lazy"
+                      />
+                      {esLider && (
+                        <div className="absolute bottom-0 right-0 p-0.5 bg-amber-500 text-black border-t-2 border-l-2 border-black">
+                          <Crown className="size-2.5" />
+                        </div>
                       )}
-                    />
-                    {esLider && (
-                      <div className="absolute bottom-0 right-0 p-0.5 bg-amber-500 text-black">
-                        <Crown className="size-2.5" />
-                      </div>
-                    )}
-                  </div>
+                    </div>
 
-                  {/* Identidad táctica y estado */}
-                  <div className="flex-1 min-w-0">
-                    <div className="flex flex-wrap items-center justify-between gap-1.5 mb-1">
-                      <div className="flex items-center gap-1.5 min-w-0">
-                        <h3 className="retro text-xs sm:text-sm truncate text-foreground">
-                          {criatura.apodo || criatura.nombre}
-                        </h3>
-                        {esLider && (
+                    {/* Identidad táctica y estado */}
+                    <div className="flex-1 min-w-0 space-y-1.5">
+                      <div className="flex flex-wrap items-center justify-between gap-1 mb-0.5">
+                        <div className="flex items-center gap-1.5 min-w-0">
+                          <h3 className="retro text-[10px] sm:text-xs leading-tight text-foreground break-words">
+                            {criatura.apodo || criatura.nombre}
+                          </h3>
+                          {esLider && (
+                            <Badge
+                              variant="outline"
+                              className="rounded-none border-2 border-black shadow-[2px_2px_0_0_#000] bg-amber-500/20 text-amber-300 retro text-[7px] sm:text-[8px] py-0 px-1 flex items-center gap-1 shrink-0"
+                            >
+                              <Crown className="size-2 text-amber-400" />
+                              <span>LÍDER</span>
+                            </Badge>
+                          )}
+                        </div>
+
+                        {/* Semáforo de estado de 3 niveles con iconos Lucide y estilo retro-brutalist */}
+                        {esPlena && (
                           <Badge
                             variant="outline"
-                            className="rounded-none border-amber-500/80 bg-amber-500/20 text-amber-300 retro text-[8px] py-0 px-1 flex items-center gap-1 shrink-0"
+                            className="rounded-none border-2 border-black shadow-[2px_2px_0_0_#000] bg-emerald-500/20 text-emerald-300 retro text-[7px] sm:text-[8px] py-0 px-1.5 flex items-center gap-1 shrink-0"
                           >
-                            <Crown className="size-2.5 text-amber-400" />
-                            <span>LÍDER</span>
+                            <ShieldCheck className="size-2.5 text-emerald-400" />
+                            <span>PLENA VITALIDAD</span>
+                          </Badge>
+                        )}
+                        {esHerida && (
+                          <Badge
+                            variant="outline"
+                            className="rounded-none border-2 border-black shadow-[2px_2px_0_0_#000] bg-amber-500/20 text-amber-300 retro text-[7px] sm:text-[8px] py-0 px-1.5 flex items-center gap-1 shrink-0"
+                          >
+                            <HeartPulse className="size-2.5 text-amber-400" />
+                            <span>HERIDA</span>
+                          </Badge>
+                        )}
+                        {esDebilitada && (
+                          <Badge
+                            variant="outline"
+                            className="rounded-none border-2 border-black shadow-[2px_2px_0_0_#000] bg-red-500/25 text-red-300 retro text-[7px] sm:text-[8px] py-0 px-1.5 flex items-center gap-1 shrink-0"
+                          >
+                            <AlertCircle className="size-2.5 text-red-400" />
+                            <span>DEBILITADA / CAÍDA</span>
                           </Badge>
                         )}
                       </div>
 
-                      {/* Semáforo de estado de 3 niveles con iconos Lucide */}
-                      {esPlena && (
-                        <Badge
-                          variant="outline"
-                          className="rounded-none border-emerald-500/60 bg-emerald-500/15 text-emerald-300 text-[9px] py-0 px-1.5 flex items-center gap-1 shrink-0 font-mono"
-                        >
-                          <ShieldCheck className="size-2.5" />
-                          <span>PLENA VITALIDAD</span>
-                        </Badge>
-                      )}
-                      {esHerida && (
-                        <Badge
-                          variant="outline"
-                          className="rounded-none border-amber-500/60 bg-amber-500/15 text-amber-300 text-[9px] py-0 px-1.5 flex items-center gap-1 shrink-0 font-mono"
-                        >
-                          <HeartPulse className="size-2.5" />
-                          <span>HERIDA</span>
-                        </Badge>
-                      )}
-                      {esDebilitada && (
-                        <Badge
-                          variant="outline"
-                          className="rounded-none border-red-500/70 bg-red-500/20 text-red-300 text-[9px] py-0 px-1.5 flex items-center gap-1 shrink-0 font-mono"
-                        >
-                          <AlertCircle className="size-2.5" />
-                          <span>DEBILITADA / CAÍDA</span>
-                        </Badge>
-                      )}
-                    </div>
-
-                    <div className="flex items-center gap-2 text-[11px] text-muted-foreground font-mono mb-2">
-                      <span>Nv. {criatura.nivel}</span>
-                      <span>•</span>
-                      <span>Posición #{criatura.orden}</span>
-                      {criatura.apodo && criatura.apodo !== criatura.nombre && (
-                        <>
-                          <span>•</span>
-                          <span className="italic truncate">
-                            {criatura.nombre}
-                          </span>
-                        </>
-                      )}
-                    </div>
-
-                    {/* Barra de vitalidad interactiva con porcentaje */}
-                    <div className="space-y-1">
-                      <div className="flex items-center justify-between text-[11px] font-mono">
-                        <span className="text-muted-foreground">
-                          Vitalidad:
-                        </span>
-                        <span
-                          className={cn(
-                            "font-bold",
-                            esDebilitada && "text-red-400",
-                            esHerida && "text-amber-400",
-                            esPlena && "text-emerald-400",
-                          )}
-                        >
-                          {criatura.hpActual} / {criatura.hpMaximo} HP (
-                          {porcentajeHp}%)
-                        </span>
+                      <div className="flex flex-wrap items-center gap-1.5 retro text-[7px] sm:text-[8px] text-muted-foreground leading-relaxed break-words">
+                        <span>Nv. {criatura.nivel}</span>
+                        <span>•</span>
+                        <span>Posición #{criatura.orden}</span>
+                        {criatura.apodo && criatura.apodo !== criatura.nombre && (
+                          <>
+                            <span>•</span>
+                            <span className="italic break-words">
+                              ({criatura.nombre})
+                            </span>
+                          </>
+                        )}
                       </div>
-                      <HealthBar
-                        value={porcentajeHp}
-                        variant="retro"
-                        className="h-3 rounded-none"
-                      />
+
+                      {/* Barra de vitalidad interactiva con porcentaje */}
+                      <div className="space-y-1 pt-0.5">
+                        <div className="flex items-center justify-between retro text-[7px] sm:text-[8px] gap-1 flex-wrap">
+                          <span className="text-muted-foreground">
+                            Vitalidad:
+                          </span>
+                          <span
+                            className={cn(
+                              "font-bold",
+                              esDebilitada && "text-red-400",
+                              esHerida && "text-amber-400",
+                              esPlena && "text-emerald-400",
+                            )}
+                          >
+                            {criatura.hpActual} / {criatura.hpMaximo} HP (
+                            {porcentajeHp}%)
+                          </span>
+                        </div>
+                        <HealthBar
+                          value={porcentajeHp}
+                          variant="retro"
+                          className="h-3 rounded-none border border-black"
+                        />
+                      </div>
                     </div>
                   </div>
-                </div>
-              </Card>
-            );
-          })}
-        </div>
+                </Card>
+              );
+            })}
+          </div>
+        )}
       </div>
     </div>
   );

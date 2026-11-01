@@ -87,6 +87,10 @@ export interface ConexionUbicacion {
   nivelSugerido: string;
   estaBloqueada: boolean;
   requisito: string | null;
+  progresoActual?: number;
+  progresoObjetivo?: number;
+  cumpleRequisito?: boolean;
+  detalleProgreso?: string | null;
 }
 
 export interface UbicacionActual {
@@ -168,6 +172,7 @@ export interface RespuestaExploracion {
   progresoZona?: number;
   encuentro?: EncuentroDetalle;
   recompensa?: RecompensaExploracion | null;
+  zonasRecienDesbloqueadas?: string[];
 }
 
 export interface CriaturaCombateRival {
@@ -295,6 +300,7 @@ export interface RespuestaAtacar {
     rival: EstadoActivo[];
   };
   mensajes?: string[];
+  zonasRecienDesbloqueadas?: string[];
 }
 
 export interface PeticionCapturar {
@@ -329,6 +335,7 @@ export interface RespuestaCapturar {
     rival: EstadoActivo[];
   };
   mensajes?: string[];
+  zonasRecienDesbloqueadas?: string[];
 }
 
 export interface PeticionHuir {
@@ -507,8 +514,13 @@ export interface RespuestaRestaurar {
 
 export interface ZonaProgreso {
   zonaId: string;
+  nombre?: string;
   desbloqueada: boolean;
   requisito?: string;
+  progresoActual?: number;
+  progresoObjetivo?: number;
+  cumpleRequisito?: boolean;
+  detalleProgreso?: string;
 }
 
 export interface RespuestaDesbloqueos {
@@ -524,6 +536,14 @@ export interface RespuestaVerificarZona {
   desbloqueada: boolean;
   mensaje: string;
 }
+
+export type RarezaEspecie = "COMUN" | "FRECUENTE" | "RARA" | "ESPECIAL" | "LEGENDARIA";
+export type CriterioOrdenCatalogo =
+  | "ZONA_ASC"
+  | "BST_DESC"
+  | "BST_ASC"
+  | "CAPTURA_ASC"
+  | "RAREZA_DESC";
 
 export type ArquetipoEspecie = "TANQUE" | "ATACANTE" | "VELOZ" | "EQUILIBRADO";
 export type CategoriaHistorial = "COMBATE" | "CAPTURA" | "EXPLORACION" | "TIENDA" | "CURACION";
@@ -546,6 +566,9 @@ export interface EspecieCatalogo {
   arquetipo?: ArquetipoEspecie;
   movimientos?: MovimientoEspecie[];
   zona?: { id: string; nombre: string } | null;
+  presupuestoTotal?: number;
+  pesoAparicion?: number;
+  rareza?: RarezaEspecie;
 }
 
 export interface RespuestaEspecies {

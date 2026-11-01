@@ -8,6 +8,9 @@ import {
   TRADUCCION_TIPOS_ESPECIE,
   TRADUCCION_ELEMENTOS,
   calcularArquetipoCriatura,
+  calcularPresupuestoCriatura,
+  resolverRarezaEspecie,
+  ordenarEspeciesCatalogo,
   filtrarEspeciesCatalogo,
   resolverCategoriaEvento,
   formatearFechaAmigable,
@@ -247,6 +250,16 @@ test('Auditoría estática de código: PantallaCatalogo erradica N+1, usa sprite
   assert.ok(codigo.includes('LEGENDARIO'), 'Debe desplegar badge de LEGENDARIO');
   assert.ok(!codigo.includes('.slice(0, 3)'), 'No debe recortar movimientos con slice(0, 3), debe mostrar los 4 slots');
   assert.ok(codigo.includes('M{numSlot}'), 'Debe identificar los slots M1..M4');
+
+  // 6. Subfase 10m: Jerarquía BST y selector de ordenamiento
+  assert.ok(
+    codigo.includes('Ordenar especies del catálogo'),
+    'Debe contener el selector accesible "Ordenar especies del catálogo"',
+  );
+  assert.ok(
+    codigo.includes('BST:'),
+    'Debe contener el indicador de presupuesto base BST en tarjeta y modal',
+  );
 });
 
 test('Auditoría estática de código: PantallaCombate gestiona 4 slots con Furia bloqueada y hardening', () => {
@@ -315,4 +328,319 @@ test('Regla R1: Cero emojis unicode en PantallaCatalogo, PantallaHistorial y Pag
       );
     }
   }
+});
+
+
+test('Hardening, Ergonomía y Estética Retro-Brutalist: PantallaCatalogo cuenta con marcos 8bitcn, sombras sólidas, tipografía retro integral y confinamiento sin overflow', () => {
+  const rutaCatalogo = join(__dirname, '../src/paginas/PantallaCatalogo.tsx');
+  const codigo = readFileSync(rutaCatalogo, 'utf-8');
+
+  // 1. Confinamiento de pantalla contra overflow horizontal
+  assert.ok(
+    codigo.includes('overflow-x-hidden'),
+    'PantallaCatalogo debe confinar el contenedor raíz con overflow-x-hidden',
+  );
+  assert.ok(
+    codigo.includes('w-full max-w-5xl mx-auto px-2 sm:px-4'),
+    'PantallaCatalogo debe utilizar márgenes y relleno responsivo contenido',
+  );
+
+  // 2. Marcos 8bitcn brutalistas y sombras ortogonales sólidas
+  assert.ok(
+    codigo.includes('border-2 border-black') && codigo.includes('shadow-[4px_4px_0_0_#000]'),
+    'PantallaCatalogo debe implementar marcos gruesos negros border-2 border-black y sombras sólidas shadow-[4px_4px_0_0_#000]',
+  );
+  assert.ok(
+    codigo.includes('shadow-[2px_2px_0_0_#000]'),
+    'PantallaCatalogo debe incorporar sombras ortogonales táctiles shadow-[2px_2px_0_0_#000] en botones y badges',
+  );
+
+  // 3. Separación de botones de acción
+  assert.ok(
+    codigo.includes('gap-4 sm:gap-5 flex-wrap'),
+    'Los botones de cabecera deben contar con separación desahogada gap-2.5 sm:gap-3',
+  );
+  assert.ok(
+    codigo.includes('gap-3 sm:gap-3.5 flex-wrap'),
+    'Los filtros de arquetipo deben disponer de separación holgada gap-2 sm:gap-2.5 flex-wrap',
+  );
+
+  // 4. Modal con borde brutalista sellado
+  assert.ok(
+    codigo.includes('border-4 border-black') && codigo.includes('shadow-[8px_8px_0_0_#000]'),
+    'El modal táctico de inspección debe estar sellado con border-4 border-black y sombra shadow-[8px_8px_0_0_#000]',
+  );
+
+  // 5. Tipografía retro 100% integral
+  assert.ok(
+    codigo.includes('retro text-lg sm:text-xl font-bold text-primary'),
+    'El título principal debe utilizar tipografía retro Press Start 2P',
+  );
+  assert.ok(
+    codigo.includes('Atributos Base (Escala 100)'),
+    'El modal debe incluir la escala comparativa de atributos base',
+  );
+  assert.ok(
+    codigo.includes('INSPECCIONAR FICHA'),
+    'La tarjeta debe presentar el botón de acción INSPECCIONAR FICHA',
+  );
+});
+
+
+test('Hardening, Ergonomía y Estética Retro-Brutalist: PaginaCreditos cuenta con marcos 8bitcn, sombras sólidas, tipografía retro integral y botones táctiles separados', () => {
+  const rutaCreditos = join(__dirname, '../src/paginas/PaginaCreditos.tsx');
+  const codigo = readFileSync(rutaCreditos, 'utf-8');
+
+  // 1. Confinamiento contra desbordamiento horizontal en móvil
+  assert.ok(
+    codigo.includes('overflow-x-hidden') && codigo.includes('max-w-5xl mx-auto px-2 sm:px-4'),
+    'PaginaCreditos debe confinar el contenedor raíz con overflow-x-hidden y márgenes adaptativos',
+  );
+
+  // 2. Marco retro-brutalist ceremonial en la cabecera (Salón de la Fama)
+  assert.ok(
+    codigo.includes('border-4 border-black') && codigo.includes('shadow-[6px_6px_0_0_#000]'),
+    'La cabecera ceremonial debe utilizar marco retro-brutalist border-4 border-black y sombra shadow-[6px_6px_0_0_#000]',
+  );
+
+  // 3. Separación holgada y táctil en los botones de acción
+  assert.ok(
+    codigo.includes('gap-5 sm:gap-4 flex-wrap'),
+    'Los botones de cabecera deben contar con separación holgada gap-3 sm:gap-4 flex-wrap',
+  );
+  assert.ok(
+    codigo.includes('border-2 border-black shadow-[2px_2px_0_0_#000]') &&
+      codigo.includes('active:translate-y-0.5 active:shadow-none'),
+    'Los botones de acción deben poseer relieve retro-brutalist con feedback táctil activo',
+  );
+
+  // 4. Eliminación de clases truncate rígidas en nombres de criaturas
+  assert.ok(
+    !codigo.includes('truncate'),
+    'No debe contener clases truncate rígidas que corten nombres de criaturas en móviles',
+  );
+
+  // 5. Cajas de licencias con scroll vertical interno y relieve hundido
+  assert.ok(
+    codigo.includes('max-h-48 overflow-y-auto overflow-x-hidden') &&
+      codigo.includes('shadow-[inset_2px_2px_0_0_rgba(0,0,0,0.6)]'),
+    'Las cajas de licencia deben contar con scroll vertical contenido y relieve hundido retro',
+  );
+
+  // 6. Hardening y prevención de pulsaciones superpuestas
+  assert.ok(
+    codigo.includes('if (celebrando) return;') && codigo.includes('aria-busy={celebrando}'),
+    'Debe evitar pulsaciones superpuestas de fanfarria con guarda y aria-busy',
+  );
+
+  // 7. Especies verdaderas existentes en el catálogo canónico (sin especies obsoletas o inexistentes)
+  assert.ok(
+    codigo.includes('lobo-estepario') &&
+      codigo.includes('golem-granito') &&
+      codigo.includes('quimera-tricefala') &&
+      codigo.includes('remorhaz-glaciar'),
+    'Debe incluir especies verdaderas del compendio canónico (Lobo Estepario, Golem Granito, Quimera Tricéfala, Remorhaz Glaciar)',
+  );
+  assert.ok(
+    !codigo.includes('"grifo"') && !codigo.includes('"hidra-de-las-marismas"'),
+    'No debe incluir criaturas inexistentes en el catálogo canónico como grifo o hidra-de-las-marismas',
+  );
+});
+
+
+test('Hardening, Ergonomía y Estética Retro-Brutalist: PantallaHistorial cuenta con marcos 8bitcn, sombras sólidas, tipografía retro integral y confinamiento sin overflow', () => {
+  const rutaHistorial = join(__dirname, '../src/paginas/PantallaHistorial.tsx');
+  const codigo = readFileSync(rutaHistorial, 'utf-8');
+
+  // 1. Confinamiento de pantalla contra overflow horizontal y diseño adaptativo
+  assert.ok(
+    codigo.includes('overflow-x-hidden'),
+    'PantallaHistorial debe confinar el contenedor raíz con overflow-x-hidden',
+  );
+  assert.ok(
+    codigo.includes('w-full max-w-5xl mx-auto px-2 sm:px-4'),
+    'PantallaHistorial debe utilizar márgenes y relleno responsivo contenido',
+  );
+
+  // 2. Erradicación de truncate destructivo
+  assert.ok(
+    !codigo.includes('truncate'),
+    'PantallaHistorial no debe contener clases truncate que corten texto en móviles',
+  );
+  assert.ok(
+    codigo.includes('break-words') && codigo.includes('break-all'),
+    'PantallaHistorial debe utilizar ajuste flexible de texto con break-words y break-all',
+  );
+
+  // 3. Marcos negros 8bitcn brutalistas y sombras sólidas ortogonales
+  assert.ok(
+    codigo.includes('border-2 border-black') && codigo.includes('shadow-[4px_4px_0_0_#000]'),
+    'PantallaHistorial debe implementar marcos negros border-2 border-black y sombras sólidas shadow-[4px_4px_0_0_#000]',
+  );
+  assert.ok(
+    codigo.includes('border-4 border-black') && codigo.includes('shadow-[6px_6px_0_0_#000]'),
+    'La cabecera o tarjeta de estado vacío debe usar marco grueso border-4 border-black y sombra shadow-[6px_6px_0_0_#000]',
+  );
+  assert.ok(
+    codigo.includes('shadow-[2px_2px_0_0_#000]'),
+    'PantallaHistorial debe incluir sombras ortogonales shadow-[2px_2px_0_0_#000] en botones, inputs y sellos de tiempo',
+  );
+
+  // 4. Separación ergonómica y táctil de botones de acción
+  assert.ok(
+    (codigo.includes('grid-cols-1 sm:grid-cols-2') || codigo.includes('gap-3 sm:gap-4') || codigo.includes('gap-4 sm:gap-5')) &&
+      codigo.includes('sm:w-auto'),
+    'Los botones de cabecera deben contar con separación desahogada y cuadrícula adaptativa',
+  );
+  assert.ok(
+    codigo.includes('grid grid-cols-2') || codigo.includes('gap-2.5 sm:gap-3'),
+    'La botonera de filtros rápidos debe organizarse en una rejilla simétrica con separación uniforme',
+  );
+
+  // 5. Tipografía retro 100% integral
+  assert.ok(
+    codigo.includes('BITÁCORA DE EXPEDICIONES') && codigo.includes('retro'),
+    'El título principal debe utilizar tipografía retro Press Start 2P',
+  );
+  assert.ok(
+    codigo.includes('retro text-[8px] sm:text-[9px]') || codigo.includes('retro text-[9px] sm:text-[10px]'),
+    'Las descripciones y etiquetas deben utilizar tipografía retro escalada',
+  );
+
+  // 6. Higiene de código: erradicación de duplicación de import/export de catalogo-historial
+  const coincidenciasImport = codigo.match(/from ["']@\/lib\/catalogo-historial["']/g);
+  assert.strictEqual(
+    coincidenciasImport?.length,
+    1,
+    'No debe existir importación duplicada de catalogo-historial',
+  );
+
+  // 7. Barra de búsqueda: placeholder conciso que previene truncamiento en pantallas estrechas
+  assert.ok(
+    codigo.includes('placeholder="Buscar crónica..."'),
+    'La barra de búsqueda debe utilizar placeholder conciso "Buscar crónica..." para prevenir truncamiento en móviles',
+  );
+});
+
+test('Subfase 10m: calcularPresupuestoCriatura calcula fielmente el BST sumando atributos base o respetando precalculado', () => {
+  const criaturaSinPresupuesto = {
+    hpBase: 40,
+    ataqueBase: 45,
+    defensaBase: 35,
+    velocidadBase: 40,
+  };
+  assert.strictEqual(calcularPresupuestoCriatura(criaturaSinPresupuesto), 160);
+
+  const criaturaConPresupuesto = {
+    presupuestoTotal: 380,
+    hpBase: 95,
+    ataqueBase: 100,
+    defensaBase: 95,
+    velocidadBase: 90,
+  };
+  assert.strictEqual(calcularPresupuestoCriatura(criaturaConPresupuesto), 380);
+});
+
+test('Subfase 10m: resolverRarezaEspecie clasifica con precisión las 5 rarezas canónicas y sus etiquetas', () => {
+  const legendaria = resolverRarezaEspecie({ esLegendaria: true });
+  assert.strictEqual(legendaria.codigo, 'LEGENDARIA');
+  assert.strictEqual(legendaria.etiqueta, 'LEGENDARIA (5%)');
+  assert.strictEqual(legendaria.peso, 5);
+
+  const especial = resolverRarezaEspecie({ esEspecial: true });
+  assert.strictEqual(especial.codigo, 'ESPECIAL');
+  assert.strictEqual(especial.etiqueta, 'ESPECIAL (5%)');
+  assert.strictEqual(especial.peso, 5);
+
+  const rara = resolverRarezaEspecie({ pesoAparicion: 10 });
+  assert.strictEqual(rara.codigo, 'RARA');
+  assert.strictEqual(rara.etiqueta, 'RARA (10%)');
+  assert.strictEqual(rara.peso, 10);
+
+  const frecuente = resolverRarezaEspecie({ pesoAparicion: 15 });
+  assert.strictEqual(frecuente.codigo, 'FRECUENTE');
+  assert.strictEqual(frecuente.etiqueta, 'FRECUENTE (15%)');
+  assert.strictEqual(frecuente.peso, 15);
+
+  const comun = resolverRarezaEspecie({ pesoAparicion: 35 });
+  assert.strictEqual(comun.codigo, 'COMUN');
+  assert.strictEqual(comun.etiqueta, 'COMÚN (35%)');
+  assert.strictEqual(comun.peso, 35);
+});
+
+test('Subfase 10m: ordenarEspeciesCatalogo ordena fielmente por BST, Captura y Rareza', () => {
+  const muestra: EspecieCatalogo[] = [
+    {
+      slug: 'comun-debil',
+      nombre: 'Común Débil',
+      tipo: 'beast',
+      challengeRating: 0.125,
+      hpBase: 40,
+      ataqueBase: 40,
+      defensaBase: 40,
+      velocidadBase: 40,
+      tasaCaptura: 0.70,
+      presupuestoTotal: 160,
+      pesoAparicion: 35,
+      rareza: 'COMUN',
+      esEspecial: false,
+      esLegendaria: false,
+    },
+    {
+      slug: 'titan-legendario',
+      nombre: 'Titán Legendario',
+      tipo: 'monstrosity',
+      challengeRating: 10,
+      hpBase: 95,
+      ataqueBase: 100,
+      defensaBase: 95,
+      velocidadBase: 90,
+      tasaCaptura: 0.15,
+      presupuestoTotal: 380,
+      pesoAparicion: 5,
+      rareza: 'LEGENDARIA',
+      esEspecial: false,
+      esLegendaria: true,
+    },
+    {
+      slug: 'veterano-raro',
+      nombre: 'Veterano Raro',
+      tipo: 'undead',
+      challengeRating: 3,
+      hpBase: 65,
+      ataqueBase: 70,
+      defensaBase: 65,
+      velocidadBase: 60,
+      tasaCaptura: 0.45,
+      presupuestoTotal: 260,
+      pesoAparicion: 10,
+      rareza: 'RARA',
+      esEspecial: false,
+      esLegendaria: false,
+    },
+  ];
+
+  // 1. BST descendente
+  const porBstDesc = ordenarEspeciesCatalogo(muestra, 'BST_DESC');
+  assert.strictEqual(porBstDesc[0].slug, 'titan-legendario');
+  assert.strictEqual(porBstDesc[1].slug, 'veterano-raro');
+  assert.strictEqual(porBstDesc[2].slug, 'comun-debil');
+
+  // 2. BST ascendente
+  const porBstAsc = ordenarEspeciesCatalogo(muestra, 'BST_ASC');
+  assert.strictEqual(porBstAsc[0].slug, 'comun-debil');
+  assert.strictEqual(porBstAsc[1].slug, 'veterano-raro');
+  assert.strictEqual(porBstAsc[2].slug, 'titan-legendario');
+
+  // 3. Captura ascendente (más difícil primero = menor tasa de captura)
+  const porCaptura = ordenarEspeciesCatalogo(muestra, 'CAPTURA_ASC');
+  assert.strictEqual(porCaptura[0].slug, 'titan-legendario');
+  assert.strictEqual(porCaptura[1].slug, 'veterano-raro');
+  assert.strictEqual(porCaptura[2].slug, 'comun-debil');
+
+  // 4. Rareza descendente
+  const porRareza = ordenarEspeciesCatalogo(muestra, 'RAREZA_DESC');
+  assert.strictEqual(porRareza[0].slug, 'titan-legendario');
+  assert.strictEqual(porRareza[1].slug, 'veterano-raro');
+  assert.strictEqual(porRareza[2].slug, 'comun-debil');
 });

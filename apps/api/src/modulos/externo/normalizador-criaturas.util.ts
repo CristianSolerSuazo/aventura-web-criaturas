@@ -65,7 +65,9 @@ export function extraerVelocidadMaxima(speedAll: Record<string, unknown>): numbe
   return max > 0 ? max : 30;
 }
 
-import { BESTIARIO } from './bestiario-canonico';
+import { BESTIARIO, calcularPresupuestoEspecie, calcularTasaCapturaPorPresupuesto } from './bestiario-canonico';
+
+export { calcularPresupuestoEspecie, calcularTasaCapturaPorPresupuesto };
 
 /**
  * Diccionario canónico de las 30 especies derivado directamente del bestiario soberano

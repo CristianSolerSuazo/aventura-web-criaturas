@@ -3,7 +3,11 @@ import type {
   ArquetipoEspecie,
   EventoHistorial,
   CategoriaHistorial,
+  RarezaEspecie,
+  CriterioOrdenCatalogo,
 } from "../api/ApiJuego";
+
+export type { CriterioOrdenCatalogo, RarezaEspecie };
 
 /**
  * Mapeo canónico en español de los 6 tipos biológicos del SRD 5.2 (Open5e).
@@ -33,6 +37,123 @@ export const TRADUCCION_ELEMENTOS: Record<string, { nombre: string; clase: strin
 /**
  * Determina el arquetipo táctico de una especie basándose en sus atributos o valor precalculado.
  */
+/**
+ * Calcula el presupuesto total de atributos (BST) de una especie o criatura.
+ */
+export function calcularPresupuestoCriatura(esp: {
+  presupuestoTotal?: number;
+  hpBase: number;
+  ataqueBase: number;
+  defensaBase: number;
+  velocidadBase: number;
+}): number {
+  return (
+    esp.presupuestoTotal ??
+    esp.hpBase + esp.ataqueBase + esp.defensaBase + esp.velocidadBase
+  );
+}
+
+/**
+ * Resuelve la rareza y el peso canónico de una especie para insignias y ordenamiento.
+ */
+export function resolverRarezaEspecie(esp: {
+  rareza?: RarezaEspecie;
+  esLegendaria?: boolean;
+  esEspecial?: boolean;
+  pesoAparicion?: number;
+}): { codigo: RarezaEspecie; etiqueta: string; peso: number } {
+  let codigo: RarezaEspecie = "COMUN";
+  if (esp.rareza) {
+    codigo = esp.rareza;
+  } else if (esp.esLegendaria) {
+    codigo = "LEGENDARIA";
+  } else if (esp.esEspecial || (esp.pesoAparicion !== undefined && esp.pesoAparicion <= 5)) {
+    codigo = "ESPECIAL";
+  } else if (esp.pesoAparicion !== undefined && esp.pesoAparicion <= 10) {
+    codigo = "RARA";
+  } else if (esp.pesoAparicion !== undefined && esp.pesoAparicion <= 15) {
+    codigo = "FRECUENTE";
+  }
+
+  switch (codigo) {
+    case "LEGENDARIA":
+      return { codigo, etiqueta: "LEGENDARIA (5%)", peso: 5 };
+    case "ESPECIAL":
+      return { codigo, etiqueta: "ESPECIAL (5%)", peso: 5 };
+    case "RARA":
+      return { codigo, etiqueta: "RARA (10%)", peso: 10 };
+    case "FRECUENTE":
+      return { codigo, etiqueta: "FRECUENTE (15%)", peso: 15 };
+    case "COMUN":
+    default:
+      return { codigo: "COMUN", etiqueta: "COMÚN (35%)", peso: 35 };
+  }
+}
+
+const PESO_ORDEN_RAREZA: Record<RarezaEspecie, number> = {
+  LEGENDARIA: 5,
+  ESPECIAL: 4,
+  RARA: 3,
+  FRECUENTE: 2,
+  COMUN: 1,
+};
+
+/**
+ * Ordena inmutablemente la lista de especies del catálogo según el criterio seleccionado.
+ */
+export function ordenarEspeciesCatalogo(
+  especies: EspecieCatalogo[],
+  criterio: CriterioOrdenCatalogo,
+): EspecieCatalogo[] {
+  const copia = [...especies];
+
+  switch (criterio) {
+    case "BST_DESC":
+      return copia.sort((a, b) => {
+        const bstDiff = calcularPresupuestoCriatura(b) - calcularPresupuestoCriatura(a);
+        if (bstDiff !== 0) return bstDiff;
+        return a.nombre.localeCompare(b.nombre, "es");
+      });
+
+    case "BST_ASC":
+      return copia.sort((a, b) => {
+        const bstDiff = calcularPresupuestoCriatura(a) - calcularPresupuestoCriatura(b);
+        if (bstDiff !== 0) return bstDiff;
+        return a.nombre.localeCompare(b.nombre, "es");
+      });
+
+    case "CAPTURA_ASC":
+      return copia.sort((a, b) => {
+        const diffCaptura = a.tasaCaptura - b.tasaCaptura;
+        if (diffCaptura !== 0) return diffCaptura;
+        const bstDiff = calcularPresupuestoCriatura(b) - calcularPresupuestoCriatura(a);
+        if (bstDiff !== 0) return bstDiff;
+        return a.nombre.localeCompare(b.nombre, "es");
+      });
+
+    case "RAREZA_DESC":
+      return copia.sort((a, b) => {
+        const rarezaA = PESO_ORDEN_RAREZA[resolverRarezaEspecie(a).codigo];
+        const rarezaB = PESO_ORDEN_RAREZA[resolverRarezaEspecie(b).codigo];
+        if (rarezaB !== rarezaA) return rarezaB - rarezaA;
+        const bstDiff = calcularPresupuestoCriatura(b) - calcularPresupuestoCriatura(a);
+        if (bstDiff !== 0) return bstDiff;
+        return a.nombre.localeCompare(b.nombre, "es");
+      });
+
+    case "ZONA_ASC":
+    default:
+      return copia.sort((a, b) => {
+        const zonaA = a.zona?.id ?? "ZZZ";
+        const zonaB = b.zona?.id ?? "ZZZ";
+        if (zonaA !== zonaB) return zonaA.localeCompare(zonaB, "es");
+        const bstDiff = calcularPresupuestoCriatura(a) - calcularPresupuestoCriatura(b);
+        if (bstDiff !== 0) return bstDiff;
+        return a.nombre.localeCompare(b.nombre, "es");
+      });
+  }
+}
+
 export function calcularArquetipoCriatura(especie: {
   hpBase?: number;
   ataqueBase?: number;
@@ -254,6 +375,7 @@ export interface GrupoZona {
  */
 export function agruparEspeciesPorZona(
   especies: EspecieCatalogo[] = [],
+  criterioOrden?: CriterioOrdenCatalogo,
 ): GrupoZona[] {
   const mapa = new Map<string, { zonaNombre: string; especies: EspecieCatalogo[] }>();
   const sinZona: EspecieCatalogo[] = [];
@@ -272,18 +394,26 @@ export function agruparEspeciesPorZona(
 
   const grupos: GrupoZona[] = Array.from(mapa.entries())
     .sort(([a], [b]) => a.localeCompare(b, "es"))
-    .map(([zonaId, datos]) => ({
-      zonaId,
-      zonaNombre: datos.zonaNombre,
-      especies: datos.especies,
-      legendarias: datos.especies.filter((e) => Boolean(e.esLegendaria)).length,
-    }));
+    .map(([zonaId, datos]) => {
+      const especiesOrdenadas = criterioOrden
+        ? ordenarEspeciesCatalogo(datos.especies, criterioOrden)
+        : datos.especies;
+      return {
+        zonaId,
+        zonaNombre: datos.zonaNombre,
+        especies: especiesOrdenadas,
+        legendarias: datos.especies.filter((e) => Boolean(e.esLegendaria)).length,
+      };
+    });
 
   if (sinZona.length > 0) {
+    const sinZonaOrdenadas = criterioOrden
+      ? ordenarEspeciesCatalogo(sinZona, criterioOrden)
+      : sinZona;
     grupos.push({
       zonaId: "SIN-ZONA",
       zonaNombre: "Sin zona asignada",
-      especies: sinZona,
+      especies: sinZonaOrdenadas,
       legendarias: sinZona.filter((e) => Boolean(e.esLegendaria)).length,
     });
   }
