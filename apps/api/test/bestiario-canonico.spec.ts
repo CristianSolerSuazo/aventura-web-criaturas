@@ -166,19 +166,19 @@ describe('Bestiario Canónico, Jerarquía de Atributos y Tablas de Aparición (S
     );
 
     const BANDAS_NO_ESPECIAL: Record<string, [number, number]> = {
-      'ZON-01': [160, 200],
-      'ZON-02': [176, 220],
-      'ZON-03': [196, 245],
-      'ZON-04': [216, 270],
-      'ZON-05': [236, 295],
-      'ZON-06': [260, 325],
+      'ZON-01': [150, 261],
+      'ZON-02': [159, 268],
+      'ZON-03': [168, 275],
+      'ZON-04': [177, 282],
+      'ZON-05': [186, 289],
+      'ZON-06': [192, 296],
     };
 
     const BANDAS_ESPECIAL: Record<string, [number, number]> = {
-      'ZON-01': [210, 210],
-      'ZON-02': [230, 230],
-      'ZON-03': [256, 256],
-      'ZON-04': [282, 282],
+      'ZON-01': [315, 315],
+      'ZON-02': [325, 325],
+      'ZON-03': [335, 335],
+      'ZON-04': [345, 345],
     };
 
     for (const esp of BESTIARIO) {
@@ -198,9 +198,9 @@ describe('Bestiario Canónico, Jerarquía de Atributos y Tablas de Aparición (S
       assert.ok(zona, `Zona no asignada para ${esp.slug}`);
 
       if (esp.slug === 'behir-abismo') {
-        assert.strictEqual(presupuesto, 355, 'Behir debe tener presupuesto exacto 355');
+        assert.strictEqual(presupuesto, 360, 'Behir debe tener presupuesto exacto 360');
       } else if (esp.slug === 'remorhaz-glaciar') {
-        assert.strictEqual(presupuesto, 380, 'Remorhaz debe tener presupuesto exacto 380');
+        assert.strictEqual(presupuesto, 375, 'Remorhaz debe tener presupuesto exacto 375');
       } else if (esp.esEspecial) {
         const [minEsp, maxEsp] = BANDAS_ESPECIAL[zona];
         assert.ok(
@@ -217,7 +217,7 @@ describe('Bestiario Canónico, Jerarquía de Atributos y Tablas de Aparición (S
     }
   });
 
-  it('6. Monotonía y Jerarquía Táctica: J-1 a J-4 y progresión de apex', () => {
+  it('6. Monotonía y Jerarquía Táctica: J-1 a J-5 y fin definitivo de anomalía en Golem Granito', () => {
     const mapaAparicion = new Map<string, string>(
       TABLAS_APARICION.map((a) => [a.especieSlug, a.zonaId]),
     );
@@ -276,14 +276,63 @@ describe('Bestiario Canónico, Jerarquía de Atributos y Tablas de Aparición (S
       }
     }
 
-    // Presupuestos apex crecen monotónicamente a lo largo de las zonas
+    // Invariante J-3: Jerarquía Global Estricta por Rareza sin solapamientos
+    const bstComunes: number[] = [];
+    const bstFrecuentes: number[] = [];
+    const bstRaras: number[] = [];
+    const bstEspeciales: number[] = [];
+    const bstLegendarias: number[] = [];
+
+    for (const esp of BESTIARIO) {
+      const bst = calcularPresupuesto(esp);
+      const aparicion = TABLAS_APARICION.find((a) => a.especieSlug === esp.slug)!;
+      if (esp.esLegendaria) {
+        bstLegendarias.push(bst);
+      } else if (esp.esEspecial) {
+        bstEspeciales.push(bst);
+      } else if (aparicion.peso === 10) {
+        bstRaras.push(bst);
+      } else if (aparicion.peso === 15) {
+        bstFrecuentes.push(bst);
+      } else {
+        bstComunes.push(bst);
+      }
+    }
+
+    const maxComun = Math.max(...bstComunes);
+    const minFrecuente = Math.min(...bstFrecuentes);
+    const maxFrecuente = Math.max(...bstFrecuentes);
+    const minRara = Math.min(...bstRaras);
+    const maxRara = Math.max(...bstRaras);
+    const minEspecial = Math.min(...bstEspeciales);
+    const maxEspecial = Math.max(...bstEspeciales);
+    const minLegendaria = Math.min(...bstLegendarias);
+
+    assert.ok(
+      maxComun < minFrecuente,
+      `J-3 violado: max(COMUN)=${maxComun} debe ser menor que min(FRECUENTE)=${minFrecuente}`,
+    );
+    assert.ok(
+      maxFrecuente < minRara,
+      `J-3 violado: max(FRECUENTE)=${maxFrecuente} debe ser menor que min(RARA)=${minRara}`,
+    );
+    assert.ok(
+      maxRara < minEspecial,
+      `J-3 violado: max(RARA)=${maxRara} debe ser menor que min(ESPECIAL)=${minEspecial}`,
+    );
+    assert.ok(
+      maxEspecial < minLegendaria,
+      `J-3 violado: max(ESPECIAL)=${maxEspecial} debe ser menor que min(LEGENDARIA)=${minLegendaria}`,
+    );
+
+    // Progresión de Apex Regionales y Ápice Absoluto
     const ordenApex = [
-      'oso-fresno',           // Z1: 210
-      'mantarraya-espectral', // Z2: 230
-      'mantis-sombria',       // Z3: 256
-      'golem-granito',        // Z4: 282
-      'behir-abismo',         // Z5: 355
-      'remorhaz-glaciar',     // Z6: 380
+      'oso-fresno',           // Z1: 315
+      'mantarraya-espectral', // Z2: 325
+      'mantis-sombria',       // Z3: 335
+      'golem-granito',        // Z4: 345
+      'behir-abismo',         // Z5: 360
+      'remorhaz-glaciar',     // Z6: 375
     ];
 
     const presupuestosApex = ordenApex.map((slug) => {
@@ -298,18 +347,47 @@ describe('Bestiario Canónico, Jerarquía de Atributos y Tablas de Aparición (S
       );
     }
 
-    // Invariante J-3: Supremacía Legendaria
-    const presBehir = calcularPresupuesto(BESTIARIO.find((e) => e.slug === 'behir-abismo')!);
-    const presRemorhaz = calcularPresupuesto(BESTIARIO.find((e) => e.slug === 'remorhaz-glaciar')!);
+    // Invariante J-5: Validación de Bandas de Captura y Blindaje de Golem Granito
+    const golem = BESTIARIO.find((e) => e.slug === 'golem-granito')!;
+    const bstGolem = calcularPresupuesto(golem);
+    const tasaGolem = calcularTasaCapturaPorPresupuesto(bstGolem);
+    assert.strictEqual(bstGolem, 345, 'Golem Granito debe tener BST exactamente 345');
+    assert.strictEqual(tasaGolem, 0.20, 'Golem Granito debe tener tasa de captura soberana de 0.20 (20%), fin del 83%');
+
     for (const esp of BESTIARIO) {
-      if (esp.slug !== 'behir-abismo' && esp.slug !== 'remorhaz-glaciar') {
-        const pres = calcularPresupuesto(esp);
-        assert.ok(pres < presBehir, `${esp.slug} (${pres}) no debe superar o igualar a Behir (${presBehir})`);
-        assert.ok(pres < presRemorhaz, `${esp.slug} (${pres}) no debe superar o igualar a Remorhaz (${presRemorhaz})`);
+      const bst = calcularPresupuesto(esp);
+      const tasa = calcularTasaCapturaPorPresupuesto(bst);
+      const aparicion = TABLAS_APARICION.find((a) => a.especieSlug === esp.slug)!;
+
+      if (esp.esLegendaria) {
+        assert.ok(
+          tasa >= 0.10 && tasa <= 0.15,
+          `Legendaria ${esp.slug} fuera de banda [0.10, 0.15]: ${tasa}`,
+        );
+      } else if (esp.esEspecial) {
+        assert.ok(
+          tasa >= 0.20 && tasa <= 0.30,
+          `Especial ${esp.slug} fuera de banda [0.20, 0.30]: ${tasa}`,
+        );
+      } else if (aparicion.peso === 10) {
+        assert.ok(
+          tasa >= 0.35 && tasa <= 0.48,
+          `Rara ${esp.slug} fuera de banda [0.35, 0.48]: ${tasa}`,
+        );
+      } else if (aparicion.peso === 15) {
+        assert.ok(
+          tasa >= 0.50 && tasa <= 0.65,
+          `Frecuente ${esp.slug} fuera de banda [0.50, 0.65]: ${tasa}`,
+        );
+      } else {
+        assert.ok(
+          tasa >= 0.70 && tasa <= 0.85,
+          `Común ${esp.slug} fuera de banda [0.70, 0.85]: ${tasa}`,
+        );
       }
     }
 
-    // Invariante J-3: Propiedad de anticorrelación estricta de captura: si BST(A) > BST(B) => tasaCaptura(A) <= tasaCaptura(B)
+    // Anticorrelación Estricta: si BST(A) > BST(B) => tasaCaptura(A) < tasaCaptura(B)
     for (let i = 0; i < BESTIARIO.length; i++) {
       for (let j = 0; j < BESTIARIO.length; j++) {
         const bstA = calcularPresupuesto(BESTIARIO[i]);
@@ -318,8 +396,8 @@ describe('Bestiario Canónico, Jerarquía de Atributos y Tablas de Aparición (S
         const tasaB = calcularTasaCapturaPorPresupuesto(bstB);
         if (bstA > bstB) {
           assert.ok(
-            tasaA <= tasaB,
-            `Anticorrelación violada: ${BESTIARIO[i].slug} (BST ${bstA}, tasa ${tasaA}) vs ${BESTIARIO[j].slug} (BST ${bstB}, tasa ${tasaB})`,
+            tasaA < tasaB,
+            `Anticorrelación estricta violada: ${BESTIARIO[i].slug} (BST ${bstA}, tasa ${tasaA}) vs ${BESTIARIO[j].slug} (BST ${bstB}, tasa ${tasaB})`,
           );
         }
       }

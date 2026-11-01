@@ -15,57 +15,57 @@ De las criaturas del compendio `srd-2024` de Open5e, se consagraron exactamente 
 
 ---
 
-## 2. Jerarquía de Presupuestos Tácticos (J-1 a J-4)
+## 2. Jerarquía de Presupuestos Tácticos y Bandas Disjuntas (J-1 a J-5)
 
 El presupuesto total de una criatura se define como la suma de sus 4 atributos base:
-$$\text{Presupuesto} = \text{hpBase} + \text{ataqueBase} + \text{defensaBase} + \text{velocidadBase}$$
-Cada atributo individual se acota estrictamente en el intervalo $[30, 100]$.
+$$\text{BST} = \text{hpBase} + \text{ataqueBase} + \text{defensaBase} + \text{velocidadBase}$$
+Cada atributo individual se acota estrictamente en el intervalo $[30, 100]$. Cada escalafón de rareza posee una banda exclusiva y global de BST y de tasa de captura base:
 
-| Nivel de Jerarquía | Zona | Presupuesto Base Común | Presupuesto Especial / Apex | Especie Cúspide |
-| --- | --- | --- | --- | --- |
-| **J-1: Aprendiz** | ZON-01 (Praderas) | $160 - 170$ | $210$ (Especial) | `oso-fresno` (CR 0.5, BST 210) |
-| **J-2: Aventurero** | ZON-02 (Marismas) | $190 - 200$ | $250$ (Especial) | `mantarraya-espectral` (CR 2, BST 250) |
-| **J-3: Explorador** | ZON-03 (Ciénaga) | $215 - 225$ | $290$ (Especial) | `mantis-sombria` (CR 3, BST 290) |
-| **J-4: Veterano** | ZON-04 (Ruinas) | $240 - 255$ | $330$ (Especial) | `golem-granito` (CR 5, BST 330) |
-| **J-5: Maestro** | ZON-05 (Picos Helados) | $290 - 305$ | $380$ (**Legendaria**) | `behir-abismo` (CR 11, BST 380) |
-| **J-6: Soberano** | ZON-06 (Volcán Fuego) | $315 - 330$ | $380$ (**Legendaria**) | `remorhaz-glaciar` (CR 11, BST 380) |
+| Escalafón de Rareza | Peso | Especies | Banda Global BST | Banda Tasa Captura Base | Separación Inmutable |
+| :--- | :---: | :---: | :---: | :---: | :--- |
+| **`COMUN`** | 35 % (2/zona) | 12 | **$[150,\; 195]$** | **$0.70 - 0.85$** (70 % – 85 %) | $\max(\text{COMUN}) = 195 < 210 = \min(\text{FRECUENTE})$ |
+| **`FRECUENTE`** | 15 % (1/zona) | 6 | **$[210,\; 245]$** | **$0.53 - 0.65$** (53 % – 65 %) | $\max(\text{FRECUENTE}) = 245 < 261 = \min(\text{RARA})$ |
+| **`RARA`** | 10 % (1/zona) | 6 | **$[261,\; 296]$** | **$0.36 - 0.48$** (36 % – 48 %) | $\max(\text{RARA}) = 296 < 315 = \min(\text{ESPECIAL})$ |
+| **`ESPECIAL`** | 5 % (`Z1..Z4`) | 4 | **$[315,\; 345]$** | **$0.20 - 0.30$** (20 % – 30 %) | $\max(\text{ESPECIAL}) = 345 < 360 = \min(\text{LEGENDARIA})$ |
+| **`LEGENDARIA`** | 5 % (`Z5..Z6`) | 2 | **$[360,\; 375]$** | **$0.10 - 0.15$** (10 % – 15 %) | Ápice absoluto ($\text{BST} \ge 360$) |
 
 ---
 
 ## 3. Planilla Definitiva del Bestiario Canónico (30 Criaturas)
 
 | # | Zona | Nombre en español | `slug` | `keyExterna` | Tipo | Afinidad | CR | HP | ATQ | DEF | VEL | Total (BST) | Captura | Rareza |
-| -: | --- | --- | --- | --- | --- | --- | -: | -: | -: | -: | -: | -: | -: | --- |
-| 1 | ZON-01 | Ciervo Lunar | `ciervo-lunar` | `srd-2024_deer` | `beast` | `luz` | 0.25 | 35 | 30 | 35 | 60 | **160** | 0.70 | Común (35%) |
-| 2 | ZON-01 | Víbora Rocosa | `vibora-rocosa` | `srd-2024_poisonous-snake` | `beast` | `natura` | 0.125 | 32 | 45 | 33 | 55 | **165** | 0.69 | Común (35%) |
-| 3 | ZON-01 | Lobo Estepario | `lobo-estepario` | `srd-2024_wolf` | `beast` | `fisico` | 0.25 | 38 | 44 | 38 | 50 | **170** | 0.68 | Frecuente (15%) |
-| 4 | ZON-01 | Halcón Ceniza | `halcon-ceniza` | `srd-2024_hawk` | `beast` | `fuego` | 0.25 | 34 | 43 | 35 | 68 | **180** | 0.65 | Raro (10%) |
-| 5 | ZON-01 | Oso Fresno | `oso-fresno` | `srd-2024_black-bear` | `beast` | `fisico` | 0.5 | 58 | 54 | 52 | 46 | **210** | 0.58 | **Especial (5%)** |
-| 6 | ZON-02 | Cangrejo Abismal | `cangrejo-abismal` | `srd-2024_crab` | `monstrosity` | `agua` | 0.25 | 42 | 40 | 68 | 40 | **190** | 0.63 | Común (35%) |
-| 7 | ZON-02 | Anguila Penumbra | `anguila-penumbra` | `srd-2024_giant-eel` | `beast` | `sombra` | 0.5 | 45 | 50 | 45 | 60 | **200** | 0.60 | Común (35%) |
-| 8 | ZON-02 | Quelonio Lacustre | `quelonio-lacustre` | `srd-2024_plesiosaurus` | `beast` | `agua` | 1 | 60 | 48 | 62 | 40 | **210** | 0.58 | Frecuente (15%) |
-| 9 | ZON-02 | Tiburón Arrecife | `tiburon-arrecife` | `srd-2024_reef-shark` | `beast` | `agua` | 1 | 52 | 62 | 46 | 65 | **225** | 0.54 | Raro (10%) |
-| 10 | ZON-02 | Mantarraya Espectral | `mantarraya-espectral` | `srd-2024_giant-sea-horse` | `monstrosity` | `sombra` | 2 | 65 | 60 | 55 | 70 | **250** | 0.48 | **Especial (5%)** |
-| 11 | ZON-03 | Jabalí Espinoso | `jabali-espinoso` | `srd-2024_boar` | `beast` | `fisico` | 0.5 | 56 | 55 | 54 | 50 | **215** | 0.56 | Común (35%) |
-| 12 | ZON-03 | Araña Gigante | `arana-gigante` | `srd-2024_giant-spider` | `beast` | `natura` | 1 | 52 | 60 | 48 | 65 | **225** | 0.54 | Común (35%) |
-| 13 | ZON-03 | Basilisco | `basilisco` | `srd-2024_basilisk` | `monstrosity` | `natura` | 3 | 65 | 66 | 70 | 44 | **245** | 0.49 | Frecuente (15%) |
-| 14 | ZON-03 | Treant Anciano | `treant-anciano` | `srd-2024_awakened-tree` | `plant` | `natura` | 2 | 75 | 68 | 77 | 40 | **260** | 0.45 | Raro (10%) |
-| 15 | ZON-03 | Mantis Sombría | `mantis-sombria` | `srd-2024_cockatrice` | `monstrosity` | `sombra` | 3 | 66 | 78 | 66 | 80 | **290** | 0.38 | **Especial (5%)** |
-| 16 | ZON-04 | Esqueleto Guerrero | `esqueleto-guerrero` | `srd-2024_skeleton` | `undead` | `sombra` | 1 | 55 | 65 | 65 | 55 | **240** | 0.50 | Común (35%) |
-| 17 | ZON-04 | Gárgola | `gargola` | `srd-2024_gargoyle` | `elemental` | `fisico` | 2 | 62 | 60 | 78 | 55 | **255** | 0.46 | Común (35%) |
-| 18 | ZON-04 | Espectro Ceniza | `espectro-ceniza` | `srd-2024_specter` | `undead` | `sombra` | 2 | 60 | 75 | 55 | 80 | **270** | 0.43 | Frecuente (15%) |
-| 19 | ZON-04 | Escorpión Obsidiana | `escorpion-obsidiana` | `srd-2024_giant-scorpion` | `monstrosity` | `fuego` | 3 | 70 | 75 | 75 | 65 | **285** | 0.39 | Raro (10%) |
-| 20 | ZON-04 | Golem Granito | `golem-granito` | `srd-2024_animated-armor` | `construct` | `fisico` | 5 | 88 | 82 | 95 | 65 | **330** | 0.28 | **Especial (5%)** |
-| 21 | ZON-05 | Salamandra Magma | `salamandra-magma` | `srd-2024_fire-snake` | `elemental` | `fuego` | 4 | 70 | 76 | 72 | 72 | **290** | 0.38 | Común (35%) |
-| 22 | ZON-05 | Elemental Fuego | `elemental-fuego` | `srd-2024_fire-elemental` | `elemental` | `fuego` | 5 | 74 | 82 | 68 | 81 | **305** | 0.34 | Común (35%) |
-| 23 | ZON-05 | Minotauro Ceniza | `minotauro-ceniza` | `srd-2024_minotaur` | `monstrosity` | `fuego` | 3 | 82 | 80 | 76 | 82 | **320** | 0.30 | Frecuente (15%) |
-| 24 | ZON-05 | Pesadilla Infernal | `pesadilla-infernal` | `srd-2024_nightmare` | `monstrosity` | `fuego` | 3 | 80 | 85 | 80 | 95 | **340** | 0.25 | Raro (10%) |
-| 25 | ZON-05 | Behir del Abismo | `behir-abismo` | `srd-2024_behir` | `monstrosity` | `sombra` | 11 | 95 | 100 | 95 | 90 | **380** | 0.15 | **Legendaria (5%)** |
-| 26 | ZON-06 | Horror Acorazado | `horror-acorazado` | `srd-2024_helmed-horror` | `construct` | `sombra` | 4 | 78 | 75 | 95 | 67 | **315** | 0.31 | Común (35%) |
-| 27 | ZON-06 | Sombra Escarchada | `sombra-escarchada` | `srd-2024_shadow` | `undead` | `sombra` | 0.5 | 70 | 85 | 80 | 95 | **330** | 0.28 | Común (35%) |
-| 28 | ZON-06 | Quimera Glacial | `quimera-glacial` | `srd-2024_chimera` | `monstrosity` | `agua` | 6 | 85 | 88 | 85 | 92 | **350** | 0.23 | Frecuente (15%) |
-| 29 | ZON-06 | Mamut Lanudo | `mamut-lanudo` | `srd-2024_mammoth` | `beast` | `agua` | 6 | 98 | 94 | 92 | 86 | **370** | 0.18 | Raro (10%) |
-| 30 | ZON-06 | Remorhaz del Glaciar | `remorhaz-glaciar` | `srd-2024_remorhaz` | `monstrosity` | `agua` | 11 | 95 | 100 | 95 | 90 | **380** | 0.15 | **Legendaria (5%)** |
+| -: | --- | --- | --- | --- | --- | --- | -: | -: | -: | -: | -: | -: | -: | -: |
+| 1 | ZON-01 | Lobo Estepario | `lobo-estepario` | `srd-2024_wolf` | `beast` | `fisico` | 0.25 | 34 | 39 | 32 | 45 | **150** | **0.85** | COMUN (35%) |
+| 2 | ZON-01 | Víbora Rocosa | `vibora-rocosa` | `srd-2024_poisonous-snake` | `beast` | `natura` | 0.125 | 30 | 42 | 30 | 51 | **153** | **0.84** | COMUN (35%) |
+| 3 | ZON-01 | Ciervo Lunar | `ciervo-lunar` | `srd-2024_deer` | `beast` | `luz` | 0.25 | 46 | 44 | 45 | 75 | **210** | **0.65** | FRECUENTE (15%) |
+| 4 | ZON-01 | Halcón Ceniza | `halcon-ceniza` | `srd-2024_hawk` | `beast` | `fuego` | 0.25 | 54 | 66 | 51 | 90 | **261** | **0.48** | RARA (10%) |
+| 5 | ZON-01 | Oso Fresno | `oso-fresno` | `srd-2024_black-bear` | `beast` | `fisico` | 0.5 | 90 | 82 | 83 | 60 | **315** | **0.30** | **ESPECIAL (5%)** |
+| 6 | ZON-02 | Cangrejo Abismal | `cangrejo-abismal` | `srd-2024_crab` | `monstrosity` | `agua` | 0.25 | 36 | 35 | 56 | 32 | **159** | **0.82** | COMUN (35%) |
+| 7 | ZON-02 | Anguila Penumbra | `anguila-penumbra` | `srd-2024_giant-eel` | `beast` | `sombra` | 0.5 | 36 | 41 | 34 | 51 | **162** | **0.81** | COMUN (35%) |
+| 8 | ZON-02 | Quelonio Lacustre | `quelonio-lacustre` | `srd-2024_plesiosaurus` | `beast` | `agua` | 1 | 66 | 46 | 69 | 36 | **217** | **0.63** | FRECUENTE (15%) |
+| 9 | ZON-02 | Tiburón Arrecife | `tiburon-arrecife` | `srd-2024_reef-shark` | `beast` | `agua` | 1 | 64 | 79 | 56 | 69 | **268** | **0.46** | RARA (10%) |
+| 10 | ZON-02 | Mantarraya Espectral | `mantarraya-espectral` | `srd-2024_giant-sea-horse` | `monstrosity` | `sombra` | 2 | 80 | 79 | 76 | 90 | **325** | **0.27** | **ESPECIAL (5%)** |
+| 11 | ZON-03 | Araña Gigante | `arana-gigante` | `srd-2024_giant-spider` | `beast` | `natura` | 1 | 38 | 46 | 36 | 48 | **168** | **0.79** | COMUN (35%) |
+| 12 | ZON-03 | Jabalí Espinoso | `jabali-espinoso` | `srd-2024_boar` | `beast` | `fisico` | 0.5 | 45 | 44 | 43 | 39 | **171** | **0.78** | COMUN (35%) |
+| 13 | ZON-03 | Basilisco | `basilisco` | `srd-2024_basilisk` | `monstrosity` | `natura` | 3 | 60 | 59 | 66 | 39 | **224** | **0.60** | FRECUENTE (15%) |
+| 14 | ZON-03 | Treant Anciano | `treant-anciano` | `srd-2024_awakened-tree` | `plant` | `natura` | 2 | 84 | 68 | 81 | 42 | **275** | **0.43** | RARA (10%) |
+| 15 | ZON-03 | Mantis Sombría | `mantis-sombria` | `srd-2024_cockatrice` | `monstrosity` | `sombra` | 3 | 76 | 94 | 73 | 92 | **335** | **0.23** | **ESPECIAL (5%)** |
+| 16 | ZON-04 | Gárgola | `gargola` | `srd-2024_gargoyle` | `elemental` | `fisico` | 2 | 43 | 42 | 54 | 38 | **177** | **0.76** | COMUN (35%) |
+| 17 | ZON-04 | Esqueleto Guerrero | `esqueleto-guerrero` | `srd-2024_skeleton` | `undead` | `sombra` | 1 | 41 | 47 | 50 | 42 | **180** | **0.75** | COMUN (35%) |
+| 18 | ZON-04 | Escorpión Obsidiana | `escorpion-obsidiana` | `srd-2024_giant-scorpion` | `monstrosity` | `fuego` | 3 | 58 | 60 | 63 | 50 | **231** | **0.58** | FRECUENTE (15%) |
+| 19 | ZON-04 | Espectro Ceniza | `espectro-ceniza` | `srd-2024_specter` | `undead` | `sombra` | 2 | 64 | 79 | 56 | 83 | **282** | **0.41** | RARA (10%) |
+| 20 | ZON-04 | Golem Granito | `golem-granito` | `srd-2024_animated-armor` | `construct` | `fisico` | 5 | 94 | 86 | 98 | 67 | **345** | **0.20** | **ESPECIAL (5%)** |
+| 21 | ZON-05 | Elemental Fuego | `elemental-fuego` | `srd-2024_fire-elemental` | `elemental` | `fuego` | 5 | 44 | 51 | 41 | 50 | **186** | **0.73** | COMUN (35%) |
+| 22 | ZON-05 | Salamandra Magma | `salamandra-magma` | `srd-2024_fire-snake` | `elemental` | `fuego` | 4 | 45 | 51 | 46 | 47 | **189** | **0.72** | COMUN (35%) |
+| 23 | ZON-05 | Pesadilla | `pesadilla` | `srd-2024_nightmare` | `monstrosity` | `sombra` | 3 | 57 | 62 | 47 | 72 | **238** | **0.56** | FRECUENTE (15%) |
+| 24 | ZON-05 | Quimera Tricéfala | `quimera-tricefala` | `srd-2024_chimera` | `monstrosity` | `fuego` | 6 | 73 | 82 | 66 | 68 | **289** | **0.39** | RARA (10%) |
+| 25 | ZON-05 | Behir del Abismo | `behir-abismo` | `srd-2024_behir` | `monstrosity` | `sombra` | 11 | 94 | 96 | 89 | 81 | **360** | **0.15** | **LEGENDARIA (5%)** |
+| 26 | ZON-06 | Yeti | `yeti` | `srd-2024_yeti` | `monstrosity` | `agua` | 3 | 50 | 53 | 47 | 42 | **192** | **0.71** | COMUN (35%) |
+| 27 | ZON-06 | Lobo Invernal | `lobo-invernal` | `srd-2024_winter-wolf` | `monstrosity` | `agua` | 3 | 47 | 51 | 45 | 52 | **195** | **0.70** | COMUN (35%) |
+| 28 | ZON-06 | Elemental Agua | `elemental-agua` | `srd-2024_water-elemental` | `elemental` | `agua` | 5 | 68 | 58 | 67 | 52 | **245** | **0.53** | FRECUENTE (15%) |
+| 29 | ZON-06 | Tigre Dientes Sable | `tigre-dientes-sable` | `srd-2024_tiger` | `beast` | `fisico` | 2 | 72 | 84 | 62 | 78 | **296** | **0.36** | RARA (10%) |
+| 30 | ZON-06 | Remorhaz Glaciar | `remorhaz-glaciar` | `srd-2024_remorhaz` | `monstrosity` | `fuego` | 11 | 97 | 99 | 93 | 86 | **375** | **0.10** | **LEGENDARIA (5%)** |
+
 ---
 
 ## 4. Sets Tácticos de 4 Movimientos (M1..M4)

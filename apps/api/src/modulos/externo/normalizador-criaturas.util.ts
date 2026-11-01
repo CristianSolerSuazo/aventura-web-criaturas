@@ -28,6 +28,10 @@ export function calcularVelocidadBase(speedMax: number): number {
   return Math.round(30 + (70 * (speedMax - min)) / (max - min));
 }
 
+/**
+ * Tasa de captura calculada a partir del challenge_rating del SRD.
+ * simplificacion: este helper se conserva exclusivamente para compatibilidad con el test unitario del adaptador SRD (adaptador-criaturas-externas.spec.ts). Ninguna especie del juego utiliza challengeRating para su tasa de captura en tiempo de ejecución; todas emplean calcularTasaCapturaPorPresupuesto a partir de su BST soberano.
+ */
 export function calcularTasaCaptura(challengeRating: number): number {
   const valor = 0.90 - 0.07 * challengeRating;
   const redondeado = Number(valor.toFixed(2));

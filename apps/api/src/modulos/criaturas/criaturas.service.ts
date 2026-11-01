@@ -10,7 +10,6 @@ import {
 } from '../externo/bestiario-canonico';
 import {
   CATALOGO_ESPECIES_PROPENSO,
-  calcularTasaCaptura,
 } from '../externo/normalizador-criaturas.util';
 
 export type ArquetipoEspecie = 'TANQUE' | 'ATACANTE' | 'VELOZ' | 'EQUILIBRADO';
@@ -215,13 +214,26 @@ export class CriaturasService {
     }
 
     const especies: EspecieEnriquecidaDto[] = especiesDb.map((esp) => {
+      const canonica = BESTIARIO.find((b) => b.slug === esp.slug || b.idExterno === esp.idExterno);
       const aparicion = (esp as any).apariciones?.[0];
       const zona = aparicion?.zona
         ? { id: aparicion.zona.id, nombre: aparicion.zona.nombre }
         : null;
-      const presupuestoTotal = esp.hpBase + esp.ataqueBase + esp.defensaBase + esp.velocidadBase;
-      const pesoAparicion = aparicion?.peso ?? TABLAS_APARICION.find((a) => a.especieSlug === esp.slug)?.peso ?? (esp.esLegendaria || esp.esEspecial ? 5 : 35);
-      const rareza = resolverRarezaDesdeAparicion(pesoAparicion, esp.esEspecial, esp.esLegendaria);
+
+      const hpBase = canonica ? canonica.statsBase.hpBase : esp.hpBase;
+      const ataqueBase = canonica ? canonica.statsBase.ataqueBase : esp.ataqueBase;
+      const defensaBase = canonica ? canonica.statsBase.defensaBase : esp.defensaBase;
+      const velocidadBase = canonica ? canonica.statsBase.velocidadBase : esp.velocidadBase;
+      const presupuestoTotal = hpBase + ataqueBase + defensaBase + velocidadBase;
+      const tasaCaptura = canonica ? calcularTasaCapturaPorPresupuesto(presupuestoTotal) : esp.tasaCaptura;
+      const esEspecial = canonica ? canonica.esEspecial : esp.esEspecial;
+      const esLegendaria = canonica ? canonica.esLegendaria : esp.esLegendaria;
+
+      const pesoAparicion =
+        aparicion?.peso ??
+        TABLAS_APARICION.find((a) => a.especieSlug === esp.slug)?.peso ??
+        (esLegendaria || esEspecial ? 5 : 35);
+      const rareza = resolverRarezaDesdeAparicion(pesoAparicion, esEspecial, esLegendaria);
 
       return {
         slug: esp.slug,
@@ -230,16 +242,16 @@ export class CriaturasService {
         tipo: esp.tipo,
         elemento: esp.elemento,
         challengeRating: esp.challengeRating,
-        hpBase: esp.hpBase,
-        ataqueBase: esp.ataqueBase,
-        defensaBase: esp.defensaBase,
-        velocidadBase: esp.velocidadBase,
-        tasaCaptura: esp.tasaCaptura,
-        esEspecial: esp.esEspecial,
-        esLegendaria: esp.esLegendaria,
+        hpBase,
+        ataqueBase,
+        defensaBase,
+        velocidadBase,
+        tasaCaptura,
+        esEspecial,
+        esLegendaria,
         descripcion:
           esp.descripcion || CATALOGO_ESPECIES_PROPENSO[esp.idExterno]?.descripcion || '',
-        arquetipo: determinarArquetipoEspecie(esp),
+        arquetipo: determinarArquetipoEspecie({ hpBase, ataqueBase, defensaBase, velocidadBase }),
         movimientos: esp.movimientos.map((m) => ({
           nombre: m.nombre,
           nombreOriginal: m.nombreOriginal,
@@ -253,6 +265,20 @@ export class CriaturasService {
         pesoAparicion,
         rareza,
       };
+    });
+
+    especies.sort((a, b) => {
+      const zonaA = a.zona?.id ?? '';
+      const zonaB = b.zona?.id ?? '';
+      if (zonaA !== zonaB) {
+        return zonaA.localeCompare(zonaB);
+      }
+      const bstA = a.presupuestoTotal ?? 0;
+      const bstB = b.presupuestoTotal ?? 0;
+      if (bstA !== bstB) {
+        return bstA - bstB;
+      }
+      return a.nombre.localeCompare(b.nombre, 'es');
     });
 
     return {
@@ -295,13 +321,26 @@ export class CriaturasService {
       });
     }
 
+    const canonica = BESTIARIO.find((b) => b.slug === esp.slug || b.idExterno === esp.idExterno);
     const aparicion = (esp as any).apariciones?.[0];
     const zona = aparicion?.zona
       ? { id: aparicion.zona.id, nombre: aparicion.zona.nombre }
       : null;
-    const presupuestoTotal = esp.hpBase + esp.ataqueBase + esp.defensaBase + esp.velocidadBase;
-    const pesoAparicion = aparicion?.peso ?? TABLAS_APARICION.find((a) => a.especieSlug === esp.slug)?.peso ?? (esp.esLegendaria || esp.esEspecial ? 5 : 35);
-    const rareza = resolverRarezaDesdeAparicion(pesoAparicion, esp.esEspecial, esp.esLegendaria);
+
+    const hpBase = canonica ? canonica.statsBase.hpBase : esp.hpBase;
+    const ataqueBase = canonica ? canonica.statsBase.ataqueBase : esp.ataqueBase;
+    const defensaBase = canonica ? canonica.statsBase.defensaBase : esp.defensaBase;
+    const velocidadBase = canonica ? canonica.statsBase.velocidadBase : esp.velocidadBase;
+    const presupuestoTotal = hpBase + ataqueBase + defensaBase + velocidadBase;
+    const tasaCaptura = canonica ? calcularTasaCapturaPorPresupuesto(presupuestoTotal) : esp.tasaCaptura;
+    const esEspecial = canonica ? canonica.esEspecial : esp.esEspecial;
+    const esLegendaria = canonica ? canonica.esLegendaria : esp.esLegendaria;
+
+    const pesoAparicion =
+      aparicion?.peso ??
+      TABLAS_APARICION.find((a) => a.especieSlug === esp.slug)?.peso ??
+      (esLegendaria || esEspecial ? 5 : 35);
+    const rareza = resolverRarezaDesdeAparicion(pesoAparicion, esEspecial, esLegendaria);
 
     return {
       slug: esp.slug,
@@ -310,16 +349,16 @@ export class CriaturasService {
       tipo: esp.tipo,
       elemento: esp.elemento,
       challengeRating: esp.challengeRating,
-      hpBase: esp.hpBase,
-      ataqueBase: esp.ataqueBase,
-      defensaBase: esp.defensaBase,
-      velocidadBase: esp.velocidadBase,
-      tasaCaptura: esp.tasaCaptura,
-      esEspecial: esp.esEspecial,
-      esLegendaria: esp.esLegendaria,
+      hpBase,
+      ataqueBase,
+      defensaBase,
+      velocidadBase,
+      tasaCaptura,
+      esEspecial,
+      esLegendaria,
       descripcion:
         esp.descripcion || CATALOGO_ESPECIES_PROPENSO[esp.idExterno]?.descripcion || '',
-      arquetipo: determinarArquetipoEspecie(esp),
+      arquetipo: determinarArquetipoEspecie({ hpBase, ataqueBase, defensaBase, velocidadBase }),
       movimientos: esp.movimientos.map((m) => ({
         nombre: m.nombre,
         nombreOriginal: m.nombreOriginal,
