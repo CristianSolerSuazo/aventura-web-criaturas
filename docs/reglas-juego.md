@@ -30,12 +30,16 @@ $$\text{promedioAtaque} = \text{damage\_die\_count} \times \left(\frac{\text{lad
 - $\text{damage\_die\_type}$: Cadena que especifica el dado (ej. `"D6"` $\rightarrow 6$ lados, `"D8"` $\rightarrow 8$ lados, `"D10"` $\rightarrow 10$ lados).
 - $\text{damage\_bonus}$: Si el campo es `null`, se evalúa como $0$.
 
-### 1.3 Tasa de captura base de la especie
-La susceptibilidad intrínseca de una especie a ser capturada se calcula directamente desde su índice de desafío ($\text{challenge\_rating}$ / CR):
+### 1.3 Tasa de captura base de la especie (Subfase 10m)
+La susceptibilidad intrínseca de una especie a ser capturada se calcula de forma soberana a partir de su presupuesto total de atributos base (BST), asegurando una estricta relación monótona y anticorrelacionada entre el poder de la criatura y la dificultad de su domesticación:
 
-$$\text{tasaCaptura} = \text{clamp}(0.10, 0.90, 0.90 - 0.07 \times \text{challenge\_rating})$$
+$\text{tasaCaptura} = \text{clamp}\left(0.10, 0.85, 1.10 - \frac{\text{BST}}{400}\right)$
 
-Donde $\text{clamp}(a, b, x) = \max(a, \min(b, x))$. Una criatura con $\text{CR} = 0$ posee $\text{tasaCaptura} = 0.90$, mientras que una criatura poderosa con $\text{CR} \ge 11.4$ alcanza el suelo de $0.10$.
+Donde $\text{clamp}(a, b, x) = \max(a, \min(b, x))$:
+- **Criaturas de menor BST:** Con $\text{BST} = 160$ (ej. `ciervo-lunar`), $\text{tasaCaptura} = 1.10 - 0.40 = 0.70$ (70%).
+- **Criaturas intermedias:** Con $\text{BST} = 260$ (ej. `treant-anciano`), $\text{tasaCaptura} = 1.10 - 0.65 = 0.45$ (45%).
+- **Criaturas apex y Legendarias:** Con $\text{BST} = 380$ (ej. `behir-abismo` o `remorhaz-glaciar`), $\text{tasaCaptura} = 1.10 - 0.95 = 0.15$ (15%).
+- **Límites de diseño:** El intervalo está acotado estrictamente entre $0.10$ (10%, suelo mínimo) y $0.85$ (85%, techo máximo).
 
 ### 1.4 Caso borde obligatorio: División entre cero ($\text{maximo} = \text{minimo}$)
 Si en una muestra o subconjunto de criaturas el valor máximo y el valor mínimo de una estadística son idénticos ($\text{maximo} = \text{minimo}$), para evitar una indeterminación matemática por división entre cero, se establece por regla de diseño:
@@ -150,6 +154,23 @@ Determina el grado de reconocimiento cartográfico de una zona salvaje por parte
   2. El incremento de $+20\,\%$ de la zona se acredita y persiste en la base de datos exclusivamente cuando el encuentro es resuelto favorablemente (al derrotar a la bestia en `CombateService` o al capturarla en `CapturaService`). Si el jugador huye o es derrotado, la senda retiene su progreso previo.
   3. El progreso es administrado y validado íntegramente en el servidor en la columna `zona_desbloqueada.progreso`. Al alcanzar $100\,\%$, el cliente despliega la insignia de "100% Cartografiada / Explorada".
 
+#### Matriz Canónica de Desbloqueo Territorial (Subfase 10m)
+Para acceder a zonas avanzadas y asentamientos fronterizos, el servidor evalúa de forma autoritativa (`ProgresoService`) los siguientes requisitos sobre el grafo del mundo:
+
+| Ubicación | Nombre de Ubicación | Tipo | Requisito de Cartografía | Requisito de Nivel del Equipo |
+| :--- | :--- | :--- | :--- | :--- |
+| `LOC-01` | Villa Serena | Asentamiento | Inicial (100% por defecto) | Ninguno |
+| `ZON-01` | Praderas del Amanecer | Zona Salvaje | Inicial (Accesible) | Nivel 1 |
+| `ZON-02` | Marismas Sombrías | Zona Salvaje | Inicial (Accesible) | Nivel 1 |
+| `LOC-02` | Bastión de la Cumbre | Asentamiento | `ZON-01` con progreso 100% | Ninguno |
+| `ZON-03` | Ciénaga Tenebrosa | Zona Salvaje | `ZON-02` con progreso 100% | Nivel 1 |
+| `ZON-04` | Ruinas Olvidadas | Zona Salvaje | `ZON-03` con progreso 100% | Al menos 1 criatura con nivel $\ge 5$ |
+| `LOC-03` | Puesto Fronterizo del Río | Asentamiento | `ZON-04` con progreso 100% | Ninguno |
+| `ZON-05` | Picos Helados | Zona Salvaje | `ZON-04` con progreso 100% | Al menos 3 criaturas en equipo con nivel $\ge 5$ |
+| `ZON-06` | Volcán de Fuego Profundo | Zona Salvaje | `ZON-05` con progreso 100% | Al menos 1 criatura con nivel $\ge 10$ |
+
+*Nota operativa:* Las condiciones son evaluadas de forma idempotente tanto proactivamente (tras exploración que alcanza 100%, victorias de combate o capturas) como a demanda mediante el endpoint `POST /progreso/verificar-zona`.
+
 ### 2.8 Desbloqueo del movimiento insignia M4 (Subfase 10k)
 - Toda especie cuenta con 4 movimientos en los slots $1..4$. El slot 4 corresponde a la técnica insignia o movimiento de Furia.
 - **Condición de activación:** La criatura aliada requiere $\text{resonancia} = 100$ para habilitar el slot 4. Cualquier intento de ejecución con resonancia menor es rechazado en servidor con `BadRequestException(MOVIMIENTO_BLOQUEADO)`.
@@ -248,9 +269,9 @@ Para garantizar que ninguna criatura temprana opaque a los desafíos de zonas av
 
 | ID | Invariante | Regla Matemática / Lógica Operativa | Cumplimiento Verificado |
 | --- | --- | --- | --- |
-| **J-1** | Jerarquía de Aprendiz a Aventurero | Todo presupuesto común de Zona 1 ($166 - 178$) es estrictamente menor que los presupuestos comunes de Zona 2 ($200 - 232$). | Verificado en código (`bestiario-canonico.ts`) |
+| **J-1** | Jerarquía de Aprendiz a Aventurero | Todo presupuesto común de Zona 1 ($160 - 170$) es estrictamente menor que los presupuestos comunes de Zona 2 ($190 - 200$). | Verificado en código (`bestiario-canonico.ts`) |
 | **J-2** | Supremacía de Rarezas Superiores | Toda criatura común de una jerarquía regional posee un presupuesto total inferior a las criaturas especiales o legendarias de jerarquías iguales o superiores. | Verificado en código y pruebas unitarias |
-| **J-3** | Monotonía Estricta Apex y Legendarias | Los presupuestos de criaturas especiales y legendarias crecen estrictamente por zona bioma: $210 < 270 < 280 < 320 < 355 < 380$. Las dos Legendarias (`behir-abismo`: 355, `remorhaz-glaciar`: 380) superan a todas las demás criaturas del compendio. | Verificado en matriz canónica y BD |
+| **J-3** | Monotonía Estricta Apex y Legendarias | Los presupuestos de criaturas especiales y legendarias crecen monótonamente por bioma: $210 < 250 < 290 < 330 < 380 = 380$. Las dos Legendarias (`behir-abismo`: 380, `remorhaz-glaciar`: 380) coronan el techo máximo del compendio. | Verificado en matriz canónica y BD |
 | **J-4** | Acotamiento de Atributos Base | Cada estadística individual ($\text{hpBase}, \text{ataqueBase}, \text{defensaBase}, \text{velocidadBase}$) se ubica estrictamente dentro del intervalo $[30, 100]$. | Verificado en 30 especies del bestiario |
 
 ---

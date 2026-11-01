@@ -193,14 +193,26 @@ Este documento define la especificación técnica de la API REST que comunica el
         "nombre": "Praderas del Amanecer",
         "nivelSugerido": "1-3",
         "estaBloqueada": false,
-        "requisito": null
+        "desbloqueada": true,
+        "puedeDesbloquear": false,
+        "cumpleRequisito": true,
+        "requisito": null,
+        "detalleProgreso": null,
+        "progresoActual": 100,
+        "progresoObjetivo": 100
       },
       {
-        "ubicacionDestinoId": "ZON-02",
-        "nombre": "Riberas del Lago Espejo",
-        "nivelSugerido": "2-4",
-        "estaBloqueada": false,
-        "requisito": null
+        "ubicacionDestinoId": "LOC-02",
+        "nombre": "Bastión de la Cumbre",
+        "nivelSugerido": "Rango libre",
+        "estaBloqueada": true,
+        "desbloqueada": false,
+        "puedeDesbloquear": true,
+        "cumpleRequisito": true,
+        "requisito": "Requiere explorar Praderas del Amanecer al 100%",
+        "detalleProgreso": "Requiere cartografiar ZON-01 al 100%",
+        "progresoActual": 100,
+        "progresoObjetivo": 100
       }
     ]
   }
