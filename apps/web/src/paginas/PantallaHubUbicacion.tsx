@@ -23,6 +23,7 @@ import {
 import { Button } from "@/components/ui/8bit/button";
 import { Badge } from "@/components/ui/8bit/badge";
 import { Skeleton } from "@/components/ui/8bit/skeleton";
+import { Progress } from "@/components/ui/8bit/progress";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -62,6 +63,32 @@ export function PantallaHubUbicacion() {
   const [personaje, setPersonaje] = useState<PersonajeActivo | null>(null);
   const [cargando, setCargando] = useState(true);
   const [viajando, setViajando] = useState(false);
+  const [desbloqueandoId, setDesbloqueandoId] = useState<string | null>(null);
+
+  const handleDesbloquearRuta = async (zonaId: string) => {
+    if (desbloqueandoId || viajando) return;
+    try {
+      setDesbloqueandoId(zonaId);
+      reproducirSonido("click", 0.4);
+      const res = await api.verificarZona({ zonaId });
+      if (res.desbloqueada) {
+        reproducirSonido("confirmar", 0.6);
+        toast.success(res.mensaje);
+        const nuevaUbicacion = await api.obtenerUbicacionActual();
+        setUbicacion(nuevaUbicacion);
+      }
+    } catch (error) {
+      reproducirSonido("error", 0.5);
+      if (error instanceof ErrorApi) {
+        toast.error(error.message);
+      } else {
+        toast.error("No fue posible desbloquear la senda.");
+      }
+    } finally {
+      setDesbloqueandoId(null);
+    }
+  };
+
 
   useEffect(() => {
     let cancelado = false;
@@ -426,14 +453,26 @@ export function PantallaHubUbicacion() {
                     </span>
 
                     {conexion.estaBloqueada ? (
-                      <Badge
-                        variant="outline"
-                        font="retro"
-                        className="bg-red-950/90 text-red-400 border-2 border-black shadow-[2px_2px_0_0_#000] gap-1 text-[8px] sm:text-[9px] py-1 px-2 shrink-0"
-                      >
-                        <Lock className="size-3 text-red-400" />
-                        <span>BLOQUEADA</span>
-                      </Badge>
+                      <div className="flex flex-col items-end gap-1 shrink-0">
+                        <Badge
+                          variant="outline"
+                          font="retro"
+                          className="bg-red-950/90 text-red-400 border-2 border-black shadow-[2px_2px_0_0_#000] gap-1 text-[8px] sm:text-[9px] py-1 px-2"
+                        >
+                          <Lock className="size-3 text-red-400" />
+                          <span>BLOQUEADA</span>
+                        </Badge>
+                        {conexion.cumpleRequisito && (
+                          <Badge
+                            variant="outline"
+                            font="retro"
+                            className="bg-amber-950/90 text-amber-300 border-2 border-black shadow-[2px_2px_0_0_#000] gap-1 text-[7px] sm:text-[8px] py-0.5 px-1.5"
+                          >
+                            <Sparkles className="size-2.5 text-amber-300" />
+                            <span>LISTA PARA DESBLOQUEAR</span>
+                          </Badge>
+                        )}
+                      </div>
                     ) : (
                       <Badge
                         variant="outline"
@@ -452,6 +491,31 @@ export function PantallaHubUbicacion() {
                       Nivel sugerido: {conexion.nivelSugerido ?? "Rango libre"}
                     </span>
                   </div>
+
+                  {conexion.estaBloqueada && (
+                    <div className="border-2 border-black bg-black/50 p-2.5 space-y-1.5 mt-1">
+                      <div className="flex items-center justify-between text-[8px] sm:text-[9px] retro">
+                        <span className="flex items-center gap-1 text-slate-300">
+                          {conexion.cumpleRequisito ? (
+                            <Sparkles className="size-3 text-amber-400 shrink-0" />
+                          ) : (
+                            <Lock className="size-3 text-red-400 shrink-0" />
+                          )}
+                          <span className="font-bold">PROGRESO DE DESBLOQUEO</span>
+                        </span>
+                        <span className={conexion.cumpleRequisito ? "text-amber-400 font-bold" : "text-slate-300"}>
+                          {conexion.progresoActual ?? 0}% / {conexion.progresoObjetivo ?? 100}%
+                        </span>
+                      </div>
+                      <Progress
+                        value={conexion.progresoActual ?? 0}
+                        className="h-2 rounded-none border border-black"
+                      />
+                      <p className="retro text-[8px] sm:text-[9px] text-slate-300 leading-relaxed">
+                        {conexion.detalleProgreso ?? conexion.requisito}
+                      </p>
+                    </div>
+                  )}
                 </div>
 
                 <div className="border-t-2 border-black pt-3 mt-3">
@@ -462,7 +526,7 @@ export function PantallaHubUbicacion() {
                           variant="outline"
                           size="sm"
                           font="retro"
-                          disabled={viajando}
+                          disabled={viajando || Boolean(desbloqueandoId)}
                           onClick={() => reproducirSonido("click", 0.3)}
                           className={cn(
                             "w-full text-[10px] text-red-400 border-2 border-black shadow-[2px_2px_0_0_#000] hover:bg-red-500/10 active:translate-y-0.5 gap-1.5 cursor-pointer",
@@ -496,20 +560,56 @@ export function PantallaHubUbicacion() {
                               <Compass className="size-3 text-[#14d1e8] shrink-0" />
                               <span>Nivel sugerido: {conexion.nivelSugerido ?? "Rango libre"}</span>
                             </div>
+                            <div className="pt-1.5 space-y-1 border-t border-black/40">
+                              <div className="flex items-center justify-between text-[8px] sm:text-[9px] retro">
+                                <span className="text-slate-300">ESTADO DEL REQUISITO</span>
+                                <span className={conexion.cumpleRequisito ? "text-amber-400 font-bold" : "text-slate-300"}>
+                                  {conexion.progresoActual ?? 0}% / {conexion.progresoObjetivo ?? 100}%
+                                </span>
+                              </div>
+                              <Progress
+                                value={conexion.progresoActual ?? 0}
+                                className="h-2 rounded-none border border-black"
+                              />
+                            </div>
                           </div>
 
                           <AlertDialogDescription className="w-full retro text-[9px] sm:text-[10px] leading-relaxed text-slate-200 text-left">
-                            {conexion.requisito ??
+                            {conexion.detalleProgreso ?? conexion.requisito ??
                               "Esta senda requiere mayor experiencia o cumplir misiones previas con el gremio."}
                           </AlertDialogDescription>
                         </AlertDialogHeader>
                         <AlertDialogFooter className="flex flex-col-reverse sm:flex-row sm:justify-end gap-3 sm:gap-4 w-full mt-4 !m-0 !p-0 !bg-transparent !border-0 pt-4 border-t-2 border-black/60">
-                          <AlertDialogAction
+                          <AlertDialogCancel
                             onClick={() => reproducirSonido("click", 0.3)}
                             className="retro !bg-[#1a2332] hover:!bg-[#232d3f] !text-slate-200 border-2 border-black shadow-[2px_2px_0_0_#000] active:translate-y-0.5 active:shadow-none text-[10px] py-2.5 px-5 cursor-pointer w-full sm:w-auto text-center"
                           >
-                            COMPRENDIDO
-                          </AlertDialogAction>
+                            CERRAR
+                          </AlertDialogCancel>
+                          <Button
+                            onClick={() => handleDesbloquearRuta(conexion.ubicacionDestinoId)}
+                            disabled={Boolean(desbloqueandoId) || viajando || conexion.cumpleRequisito === false}
+                            aria-busy={desbloqueandoId === conexion.ubicacionDestinoId}
+                            font="retro"
+                            className={cn(
+                              "text-[10px] py-2.5 px-4 font-bold border-2 border-black shadow-[2px_2px_0_0_#000] active:translate-y-0.5 cursor-pointer w-full sm:w-auto gap-1.5",
+                              conexion.cumpleRequisito
+                                ? "bg-amber-400 hover:bg-amber-300 text-slate-950"
+                                : "bg-slate-800 text-slate-500 cursor-not-allowed opacity-60"
+                            )}
+                          >
+                            {desbloqueandoId === conexion.ubicacionDestinoId ? (
+                              <>
+                                <Loader2 className="size-3.5 animate-spin" />
+                                <span>VERIFICANDO...</span>
+                              </>
+                            ) : (
+                              <>
+                                <Sparkles className="size-3.5" />
+                                <span>DESBLOQUEAR SENDA</span>
+                              </>
+                            )}
+                          </Button>
                         </AlertDialogFooter>
                       </AlertDialogContent>
                     </AlertDialog>
