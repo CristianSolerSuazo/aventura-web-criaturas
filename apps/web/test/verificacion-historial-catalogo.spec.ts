@@ -568,79 +568,128 @@ test('Subfase 10m: resolverRarezaEspecie clasifica con precisión las 5 rarezas 
   assert.strictEqual(comun.peso, 35);
 });
 
-test('Subfase 10m: ordenarEspeciesCatalogo ordena fielmente por BST, Captura y Rareza', () => {
+test('Subfase 10m: ordenarEspeciesCatalogo ordena fielmente por BST, Captura, Rareza y Alfabético', () => {
   const muestra: EspecieCatalogo[] = [
     {
-      slug: 'comun-debil',
-      nombre: 'Común Débil',
+      slug: 'lobo-estepario',
+      nombre: 'Lobo Estepario',
       tipo: 'beast',
-      challengeRating: 0.125,
-      hpBase: 40,
-      ataqueBase: 40,
-      defensaBase: 40,
-      velocidadBase: 40,
-      tasaCaptura: 0.70,
-      presupuestoTotal: 160,
+      challengeRating: 0.25,
+      hpBase: 34,
+      ataqueBase: 39,
+      defensaBase: 32,
+      velocidadBase: 45,
+      tasaCaptura: 0.85,
+      presupuestoTotal: 150,
       pesoAparicion: 35,
       rareza: 'COMUN',
       esEspecial: false,
       esLegendaria: false,
     },
     {
-      slug: 'titan-legendario',
-      nombre: 'Titán Legendario',
-      tipo: 'monstrosity',
-      challengeRating: 10,
-      hpBase: 95,
-      ataqueBase: 100,
-      defensaBase: 95,
-      velocidadBase: 90,
-      tasaCaptura: 0.15,
-      presupuestoTotal: 380,
-      pesoAparicion: 5,
-      rareza: 'LEGENDARIA',
+      slug: 'ciervo-lunar',
+      nombre: 'Ciervo Lunar',
+      tipo: 'beast',
+      challengeRating: 0.5,
+      hpBase: 46,
+      ataqueBase: 44,
+      defensaBase: 45,
+      velocidadBase: 75,
+      tasaCaptura: 0.65,
+      presupuestoTotal: 210,
+      pesoAparicion: 15,
+      rareza: 'FRECUENTE',
       esEspecial: false,
-      esLegendaria: true,
+      esLegendaria: false,
     },
     {
-      slug: 'veterano-raro',
-      nombre: 'Veterano Raro',
-      tipo: 'undead',
-      challengeRating: 3,
-      hpBase: 65,
-      ataqueBase: 70,
-      defensaBase: 65,
-      velocidadBase: 60,
-      tasaCaptura: 0.45,
-      presupuestoTotal: 260,
+      slug: 'halcon-ceniza',
+      nombre: 'Halcón Ceniza',
+      tipo: 'beast',
+      challengeRating: 1.0,
+      hpBase: 54,
+      ataqueBase: 66,
+      defensaBase: 51,
+      velocidadBase: 90,
+      tasaCaptura: 0.48,
+      presupuestoTotal: 261,
       pesoAparicion: 10,
       rareza: 'RARA',
       esEspecial: false,
       esLegendaria: false,
     },
+    {
+      slug: 'golem-granito',
+      nombre: 'Golem Granito',
+      tipo: 'construct',
+      challengeRating: 1.0,
+      hpBase: 94,
+      ataqueBase: 86,
+      defensaBase: 98,
+      velocidadBase: 67,
+      tasaCaptura: 0.20, // Soberana erradicando 0.83
+      presupuestoTotal: 345,
+      pesoAparicion: 5,
+      rareza: 'ESPECIAL',
+      esEspecial: true,
+      esLegendaria: false,
+    },
+    {
+      slug: 'remorhaz-glaciar',
+      nombre: 'Remorhaz Glaciar',
+      tipo: 'monstrosity',
+      challengeRating: 11,
+      hpBase: 97,
+      ataqueBase: 99,
+      defensaBase: 93,
+      velocidadBase: 86,
+      tasaCaptura: 0.10,
+      presupuestoTotal: 375,
+      pesoAparicion: 5,
+      rareza: 'LEGENDARIA',
+      esEspecial: false,
+      esLegendaria: true,
+    },
   ];
+
+  // Verificación soberana explícita de Golem Granito
+  const golem = muestra.find((e) => e.slug === 'golem-granito')!;
+  assert.strictEqual(golem.presupuestoTotal, 345);
+  assert.strictEqual(golem.tasaCaptura, 0.20);
+  assert.strictEqual(golem.rareza, 'ESPECIAL');
 
   // 1. BST descendente
   const porBstDesc = ordenarEspeciesCatalogo(muestra, 'BST_DESC');
-  assert.strictEqual(porBstDesc[0].slug, 'titan-legendario');
-  assert.strictEqual(porBstDesc[1].slug, 'veterano-raro');
-  assert.strictEqual(porBstDesc[2].slug, 'comun-debil');
+  assert.deepStrictEqual(
+    porBstDesc.map((e) => e.slug),
+    ['remorhaz-glaciar', 'golem-granito', 'halcon-ceniza', 'ciervo-lunar', 'lobo-estepario'],
+  );
 
   // 2. BST ascendente
   const porBstAsc = ordenarEspeciesCatalogo(muestra, 'BST_ASC');
-  assert.strictEqual(porBstAsc[0].slug, 'comun-debil');
-  assert.strictEqual(porBstAsc[1].slug, 'veterano-raro');
-  assert.strictEqual(porBstAsc[2].slug, 'titan-legendario');
+  assert.deepStrictEqual(
+    porBstAsc.map((e) => e.slug),
+    ['lobo-estepario', 'ciervo-lunar', 'halcon-ceniza', 'golem-granito', 'remorhaz-glaciar'],
+  );
 
-  // 3. Captura ascendente (más difícil primero = menor tasa de captura)
+  // 3. Captura ascendente (más difícil primero = menor tasa)
   const porCaptura = ordenarEspeciesCatalogo(muestra, 'CAPTURA_ASC');
-  assert.strictEqual(porCaptura[0].slug, 'titan-legendario');
-  assert.strictEqual(porCaptura[1].slug, 'veterano-raro');
-  assert.strictEqual(porCaptura[2].slug, 'comun-debil');
+  assert.deepStrictEqual(
+    porCaptura.map((e) => e.slug),
+    ['remorhaz-glaciar', 'golem-granito', 'halcon-ceniza', 'ciervo-lunar', 'lobo-estepario'],
+  );
 
-  // 4. Rareza descendente
+  // 4. Rareza descendente (LEGENDARIA > ESPECIAL > RARA > FRECUENTE > COMUN)
   const porRareza = ordenarEspeciesCatalogo(muestra, 'RAREZA_DESC');
-  assert.strictEqual(porRareza[0].slug, 'titan-legendario');
-  assert.strictEqual(porRareza[1].slug, 'veterano-raro');
-  assert.strictEqual(porRareza[2].slug, 'comun-debil');
+  assert.deepStrictEqual(
+    porRareza.map((e) => e.slug),
+    ['remorhaz-glaciar', 'golem-granito', 'halcon-ceniza', 'ciervo-lunar', 'lobo-estepario'],
+  );
+
+  // 5. Alfabético NOMBRE_ASC (A-Z)
+  const porNombre = ordenarEspeciesCatalogo(muestra, 'NOMBRE_ASC');
+  assert.deepStrictEqual(
+    porNombre.map((e) => e.nombre),
+    ['Ciervo Lunar', 'Golem Granito', 'Halcón Ceniza', 'Lobo Estepario', 'Remorhaz Glaciar'],
+  );
 });
