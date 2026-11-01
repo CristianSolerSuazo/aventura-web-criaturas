@@ -119,15 +119,15 @@ export function PantallaCrearPersonaje() {
   );
 
   return (
-    <div className="relative min-h-[calc(100vh-10rem)] w-full flex flex-col items-center justify-center py-6 sm:py-10 px-3 sm:px-6">
+    <div className="relative min-h-[calc(100vh-10rem)] w-full flex flex-col items-center justify-center py-6 sm:py-10 px-2 sm:px-4 overflow-x-hidden">
       <div className="w-full max-w-4xl mx-auto">
-        <Card className="shadow-2xl border-4 bg-card/95 backdrop-blur-xs">
+        <Card className="w-full rounded-none border-4 border-black shadow-[6px_6px_0_0_#000] bg-card/95 backdrop-blur-xs">
           <CardHeader className="text-center space-y-2 pb-4 pt-6 px-4 sm:px-6">
-            {/* Cabecera con Insignia retro y Escape Hatch accesible */}
-            <div className="flex flex-wrap items-center justify-between gap-2 mb-1">
+            {/* Cabecera con Insignia retro-brutalist y Escape Hatch accesible */}
+            <div className="flex flex-wrap items-center justify-between gap-3 sm:gap-4 mb-2">
               <Badge
                 variant="outline"
-                className="retro text-[10px] tracking-wider text-primary border-primary/80 bg-primary/10 px-2.5 py-1 inline-flex items-center gap-1.5"
+                className="retro text-[9px] sm:text-[10px] tracking-wider text-primary border-2 border-black shadow-[2px_2px_0_0_#000] bg-primary/15 px-2.5 py-1 rounded-none inline-flex items-center gap-1.5"
               >
                 <Sparkles className="size-3 text-primary shrink-0" aria-hidden="true" />
                 <span>COMPAÑERO INICIAL</span>
@@ -144,7 +144,7 @@ export function PantallaCrearPersonaje() {
                   navigate("/ingreso");
                 }}
                 className={cn(
-                  "retro text-[9px] sm:text-[10px] tracking-wider flex items-center gap-1.5 h-8 px-2.5 cursor-pointer text-muted-foreground hover:text-foreground transition-opacity",
+                  "retro text-[8px] sm:text-[9px] tracking-wider flex items-center gap-1.5 h-8 px-2.5 rounded-none border-2 border-black shadow-[2px_2px_0_0_#000] bg-card hover:bg-muted/80 text-muted-foreground hover:text-foreground cursor-pointer transition-colors active:translate-y-0.5 active:shadow-[1px_1px_0_0_#000]",
                   enviando && "pointer-events-none opacity-50"
                 )}
                 title="Cerrar sesión y volver al portal de ingreso"
@@ -154,18 +154,18 @@ export function PantallaCrearPersonaje() {
               </Button>
             </div>
 
-            <CardTitle className="retro text-base sm:text-lg text-primary tracking-wide leading-relaxed">
+            <CardTitle className="retro text-sm sm:text-base md:text-lg text-primary tracking-wide leading-relaxed">
               Crea tu Explorador
             </CardTitle>
 
-            <CardDescription className="retro text-[10px] sm:text-[11px] text-muted-foreground leading-relaxed max-w-md mx-auto">
+            <CardDescription className="retro text-[9px] sm:text-[10px] text-muted-foreground leading-relaxed max-w-md mx-auto">
               Define la identidad de tu aventurero y elige a tu primera criatura
               compañera para iniciar la senda en Villa Serena.
             </CardDescription>
 
-            {/* Separador ornamental retro */}
+            {/* Separador ornamental retro pixelado de alto contraste */}
             <div
-              className="w-full h-1 bg-gradient-to-r from-transparent via-border to-transparent mt-2"
+              className="w-full h-1 bg-gradient-to-r from-transparent via-black to-transparent dark:via-primary/50 mt-2"
               aria-hidden="true"
             />
           </CardHeader>
@@ -175,18 +175,18 @@ export function PantallaCrearPersonaje() {
             noValidate
             aria-busy={enviando}
           >
-            <CardContent className="space-y-6 pt-2 px-4 sm:px-6">
-              {/* Campo: Nombre del explorador con estética retro 8bitcn */}
+            <CardContent className="space-y-6 sm:space-y-8 pt-2 px-4 sm:px-6">
+              {/* Campo: Nombre del explorador con estética retro-brutalist 8bitcn */}
               <div className="space-y-1.5 max-w-md mx-auto">
                 <div className="flex items-center justify-between">
                   <Label
                     htmlFor="nombre"
-                    className="retro text-[10px] sm:text-xs font-semibold text-foreground/90 uppercase tracking-wider flex items-center gap-1.5"
+                    className="retro text-[9px] sm:text-[10px] font-semibold text-foreground/90 uppercase tracking-wider flex items-center gap-1.5"
                   >
                     <User className="size-3.5 text-primary/80 shrink-0" aria-hidden="true" />
                     <span>Nombre del explorador</span>
                   </Label>
-                  <span className="retro text-[9px] text-muted-foreground/80">
+                  <span className="retro text-[9px] sm:text-[10px] text-muted-foreground/80 uppercase tracking-wider">
                     Mín. 3 car.
                   </span>
                 </div>
@@ -199,7 +199,7 @@ export function PantallaCrearPersonaje() {
                   aria-describedby={
                     errors.nombre ? "error-nombre-pj" : "guia-nombre-pj"
                   }
-                  className="retro text-[10px] sm:text-xs placeholder:text-[9px] sm:placeholder:text-[10px] h-10 px-3 bg-background/60 focus-visible:bg-background transition-colors tracking-wide"
+                  className="retro text-[10px] sm:text-xs placeholder:text-[9px] sm:placeholder:text-[10px] h-10 px-3 rounded-none border-2 border-black shadow-[2px_2px_0_0_#000] bg-background/80 focus:shadow-[3px_3px_0_0_#000] focus:border-primary transition-colors tracking-wide"
                   {...register("nombre")}
                 />
                 <p id="guia-nombre-pj" className="sr-only">
@@ -222,11 +222,11 @@ export function PantallaCrearPersonaje() {
                 <div className="text-center space-y-1.5">
                   <div className="flex items-center justify-center gap-1.5">
                     <Sparkles className="size-3.5 text-primary/80 shrink-0" aria-hidden="true" />
-                    <Label className="retro text-xs sm:text-sm text-foreground uppercase tracking-wide">
+                    <Label className="retro text-[10px] sm:text-xs text-foreground uppercase tracking-wide">
                       Selecciona tu criatura inicial
                     </Label>
                   </div>
-                  <p className="retro text-[10px] sm:text-[11px] text-muted-foreground max-w-lg mx-auto leading-relaxed">
+                  <p className="retro text-[9px] sm:text-[10px] text-muted-foreground max-w-lg mx-auto leading-relaxed">
                     Esta criatura será tu primer aliado en los combates y
                     expediciones por Aethelgard.
                   </p>
@@ -257,7 +257,7 @@ export function PantallaCrearPersonaje() {
                           reproducirSonido("seleccionar", 0.35);
                         }}
                         className={cn(
-                          "group text-left transition-all cursor-pointer p-0 rounded-none focus:outline-hidden focus-visible:ring-2 focus-visible:ring-primary w-full",
+                          "group text-left transition-all cursor-pointer p-0 rounded-none focus:outline-hidden focus-visible:ring-2 focus-visible:ring-primary w-full active:translate-y-0.5 active:shadow-[2px_2px_0_0_#000]",
                           seleccionada
                             ? "scale-[1.02]"
                             : "opacity-90 hover:opacity-100 hover:scale-[1.01]",
@@ -267,41 +267,41 @@ export function PantallaCrearPersonaje() {
                       >
                         <Card
                           className={cn(
-                            "h-full transition-all p-0 relative border-2",
+                            "h-full transition-all p-0 relative rounded-none border-2 sm:border-3",
                             seleccionada
                               ? "border-primary bg-primary/10 shadow-[6px_6px_0_0_#000]"
                               : "border-black shadow-[4px_4px_0_0_#000] bg-card hover:border-primary/50"
                           )}
                         >
                           <CardHeader className="p-3 pb-2 space-y-1.5">
-                            <div className="flex items-center justify-between gap-1">
-                              <CardTitle className="retro text-[11px] sm:text-xs font-bold text-foreground truncate">
+                            <div className="flex items-center justify-between gap-1.5">
+                              <CardTitle className="retro text-[10px] sm:text-[11px] font-bold text-foreground break-words">
                                 {criatura.nombre}
                               </CardTitle>
                               {seleccionada ? (
                                 <Badge
                                   variant="default"
-                                  className="retro text-[8px] sm:text-[9px] px-1.5 py-0.5 bg-primary text-primary-foreground border-primary"
+                                  className="retro text-[8px] sm:text-[9px] px-1.5 py-0.5 rounded-none border border-black bg-primary text-primary-foreground shadow-[1px_1px_0_0_#000]"
                                 >
                                   ELEGIDO
                                 </Badge>
                               ) : (
                                 <Badge
                                   variant="outline"
-                                  className="retro text-[8px] sm:text-[9px] px-1.5 py-0.5 border-border/80 text-muted-foreground"
+                                  className="retro text-[8px] sm:text-[9px] px-1.5 py-0.5 rounded-none border-2 border-black/80 bg-background/80 text-muted-foreground shadow-[1px_1px_0_0_#000]"
                                 >
                                   {criatura.tipo}
                                 </Badge>
                               )}
                             </div>
-                            <p className="retro text-[9px] sm:text-[10px] text-primary tracking-wide">
+                            <p className="retro text-[9px] sm:text-[10px] text-primary tracking-wide font-medium">
                               {criatura.arquetipo}
                             </p>
                           </CardHeader>
 
                           <CardContent className="p-3 pt-0 space-y-3">
                             {/* Visualizador pixelado del sprite con fallback SVG */}
-                            <div className="relative w-full h-28 bg-muted/20 border-2 border-black flex items-center justify-center p-2 overflow-hidden shadow-[inset_2px_2px_0_0_rgba(0,0,0,0.6)]">
+                            <div className="relative w-full h-28 bg-muted/30 border-2 border-black flex items-center justify-center p-2 overflow-hidden shadow-[inset_2px_2px_0_0_#000]">
                               <img
                                 src={obtenerImagenCriatura(criatura.slug)}
                                 alt={`Sprite de ${criatura.nombre}`}
@@ -318,27 +318,27 @@ export function PantallaCrearPersonaje() {
                               />
                             </div>
 
-                            <p className="retro text-[9px] sm:text-[10px] text-muted-foreground line-clamp-2 leading-relaxed min-h-[2.5rem]">
+                            <p className="retro text-[8px] sm:text-[9px] text-muted-foreground line-clamp-3 leading-relaxed min-h-[2.75rem]">
                               {criatura.descripcion}
                             </p>
 
                             {/* Desglose de Atributos Base 8-Bit (HP, ATQ, DEF, VEL) */}
-                            <div className="space-y-1.5 pt-2 border-t border-border/60">
+                            <div className="space-y-1.5 pt-2 border-t border-black/30">
                               {/* HP Base */}
                               <div className="space-y-0.5">
-                                <div className="flex items-center justify-between text-[9px] font-bold">
-                                  <span className="retro text-[9px] font-bold text-muted-foreground flex items-center gap-1">
+                                <div className="flex items-center justify-between">
+                                  <span className="retro text-[8px] sm:text-[9px] font-bold text-muted-foreground flex items-center gap-1">
                                     <Heart
                                       className="size-3 text-emerald-400 shrink-0"
                                       aria-hidden="true"
                                     />
                                     <span>HP</span>
                                   </span>
-                                  <span className="retro text-[9px] font-bold text-emerald-400">
+                                  <span className="retro text-[8px] sm:text-[9px] font-bold text-emerald-400">
                                     {criatura.hpBase}
                                   </span>
                                 </div>
-                                <div className="w-full bg-black/50 h-2 overflow-hidden border border-black p-[1px] shadow-[inset_1px_1px_0_0_#000]">
+                                <div className="w-full bg-black/70 h-2 overflow-hidden border border-black p-[1px] shadow-[inset_1px_1px_0_0_#000]">
                                   <div
                                     className="bg-emerald-500 h-full transition-all duration-300"
                                     style={{
@@ -353,19 +353,19 @@ export function PantallaCrearPersonaje() {
 
                               {/* Ataque Base */}
                               <div className="space-y-0.5">
-                                <div className="flex items-center justify-between text-[9px] font-bold">
-                                  <span className="retro text-[9px] font-bold text-muted-foreground flex items-center gap-1">
+                                <div className="flex items-center justify-between">
+                                  <span className="retro text-[8px] sm:text-[9px] font-bold text-muted-foreground flex items-center gap-1">
                                     <Swords
                                       className="size-3 text-amber-400 shrink-0"
                                       aria-hidden="true"
                                     />
                                     <span>ATQ</span>
                                   </span>
-                                  <span className="retro text-[9px] font-bold text-amber-400">
+                                  <span className="retro text-[8px] sm:text-[9px] font-bold text-amber-400">
                                     {criatura.ataqueBase}
                                   </span>
                                 </div>
-                                <div className="w-full bg-black/50 h-2 overflow-hidden border border-black p-[1px] shadow-[inset_1px_1px_0_0_#000]">
+                                <div className="w-full bg-black/70 h-2 overflow-hidden border border-black p-[1px] shadow-[inset_1px_1px_0_0_#000]">
                                   <div
                                     className="bg-amber-500 h-full transition-all duration-300"
                                     style={{
@@ -382,19 +382,19 @@ export function PantallaCrearPersonaje() {
 
                               {/* Defensa Base */}
                               <div className="space-y-0.5">
-                                <div className="flex items-center justify-between text-[9px] font-bold">
-                                  <span className="retro text-[9px] font-bold text-muted-foreground flex items-center gap-1">
+                                <div className="flex items-center justify-between">
+                                  <span className="retro text-[8px] sm:text-[9px] font-bold text-muted-foreground flex items-center gap-1">
                                     <Shield
                                       className="size-3 text-blue-400 shrink-0"
                                       aria-hidden="true"
                                     />
                                     <span>DEF</span>
                                   </span>
-                                  <span className="retro text-[9px] font-bold text-blue-400">
+                                  <span className="retro text-[8px] sm:text-[9px] font-bold text-blue-400">
                                     {criatura.defensaBase}
                                   </span>
                                 </div>
-                                <div className="w-full bg-black/50 h-2 overflow-hidden border border-black p-[1px] shadow-[inset_1px_1px_0_0_#000]">
+                                <div className="w-full bg-black/70 h-2 overflow-hidden border border-black p-[1px] shadow-[inset_1px_1px_0_0_#000]">
                                   <div
                                     className="bg-blue-500 h-full transition-all duration-300"
                                     style={{
@@ -411,19 +411,19 @@ export function PantallaCrearPersonaje() {
 
                               {/* Velocidad Base */}
                               <div className="space-y-0.5">
-                                <div className="flex items-center justify-between text-[9px] font-bold">
-                                  <span className="retro text-[9px] font-bold text-muted-foreground flex items-center gap-1">
+                                <div className="flex items-center justify-between">
+                                  <span className="retro text-[8px] sm:text-[9px] font-bold text-muted-foreground flex items-center gap-1">
                                     <Zap
                                       className="size-3 text-cyan-400 shrink-0"
                                       aria-hidden="true"
                                     />
                                     <span>VEL</span>
                                   </span>
-                                  <span className="retro text-[9px] font-bold text-cyan-400">
+                                  <span className="retro text-[8px] sm:text-[9px] font-bold text-cyan-400">
                                     {criatura.velocidadBase}
                                   </span>
                                 </div>
-                                <div className="w-full bg-black/50 h-2 overflow-hidden border border-black p-[1px] shadow-[inset_1px_1px_0_0_#000]">
+                                <div className="w-full bg-black/70 h-2 overflow-hidden border border-black p-[1px] shadow-[inset_1px_1px_0_0_#000]">
                                   <div
                                     className="bg-cyan-400 h-full transition-all duration-300"
                                     style={{
@@ -447,9 +447,9 @@ export function PantallaCrearPersonaje() {
               </div>
             </CardContent>
 
-            <CardFooter className="flex flex-col sm:flex-row items-center justify-between gap-4 pt-6 px-4 sm:px-6 border-t border-border/80">
+            <CardFooter className="flex flex-col sm:flex-row items-center justify-between gap-4 sm:gap-6 w-full text-center sm:text-left pt-6 pb-6 px-4 sm:px-6 border-t border-black/40">
               <div className="flex flex-col gap-1.5 text-center sm:text-left">
-                <div className="retro text-[9px] sm:text-[10px] text-muted-foreground">
+                <div className="retro text-[8px] sm:text-[9px] text-muted-foreground">
                   <span className="font-semibold text-foreground">
                     Compañero seleccionado:
                   </span>{" "}
@@ -467,7 +467,7 @@ export function PantallaCrearPersonaje() {
                     navigate("/ingreso");
                   }}
                   className={cn(
-                    "retro text-[9px] sm:text-[10px] text-muted-foreground hover:text-primary transition-colors underline underline-offset-2 flex items-center justify-center sm:justify-start gap-1 cursor-pointer",
+                    "retro text-[8px] sm:text-[9px] text-muted-foreground hover:text-primary transition-colors underline underline-offset-2 flex items-center justify-center sm:justify-start gap-1.5 cursor-pointer",
                     enviando && "pointer-events-none opacity-50"
                   )}
                 >
@@ -478,13 +478,13 @@ export function PantallaCrearPersonaje() {
 
               <Button
                 type="submit"
-                className="w-full sm:w-auto px-6 sm:px-8 py-5 flex items-center justify-center gap-2 cursor-pointer transition-all"
+                className="w-full sm:w-auto px-6 sm:px-8 py-3.5 h-12 sm:h-14 rounded-none border-4 border-black shadow-[4px_4px_0_0_#000] bg-primary text-primary-foreground active:translate-y-0.5 active:shadow-[2px_2px_0_0_#000] flex items-center justify-center gap-2 cursor-pointer transition-all disabled:opacity-50 disabled:cursor-not-allowed"
                 disabled={enviando}
                 aria-busy={enviando}
               >
                 {enviando ? (
                   <>
-                    <Spinner className="size-4 mr-2" />
+                    <Spinner className="size-4 shrink-0 text-primary-foreground mr-2" />
                     <span className="retro text-[10px] sm:text-xs tracking-wider">
                       INICIANDO AVENTURA...
                     </span>
