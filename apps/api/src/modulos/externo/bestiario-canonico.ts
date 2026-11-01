@@ -46,7 +46,7 @@ export function calcularPresupuestoEspecie(stats: StatsBaseCanonicas): number {
 }
 
 export function calcularTasaCapturaPorPresupuesto(presupuesto: number): number {
-  const valor = Math.round((1.10 - presupuesto / 400) * 100) / 100;
+  const valor = Math.round((1.35 - presupuesto / 300) * 100) / 100;
   return Math.max(0.10, Math.min(0.85, valor));
 }
 
@@ -61,7 +61,7 @@ export const BESTIARIO: EspecieCanonica[] = [
     esEspecial: false,
     esLegendaria: false,
     descripcion: 'Cazador en manada ágil y coordinado que recorre las praderas abiertas de Aethelgard.',
-    statsBase: { hpBase: 35, ataqueBase: 41, defensaBase: 35, velocidadBase: 49 }, // Presupuesto = 160, // Presupuesto = 172
+    statsBase: { hpBase: 34, ataqueBase: 39, defensaBase: 32, velocidadBase: 45 }, // Presupuesto = 150
     movimientos: [
       { nombre: 'Mordisco', nombreOriginal: 'Bite', tipoAccion: 'Ataque melé', poder: 12, slot: 1, efecto: null },
       { nombre: 'Acometida Ágil', nombreOriginal: 'Agile Pounce', tipoAccion: 'Ataque melé', poder: 14, slot: 2, efecto: 'VEL_UP' },
@@ -78,7 +78,7 @@ export const BESTIARIO: EspecieCanonica[] = [
     esEspecial: false,
     esLegendaria: false,
     descripcion: 'Sierpe venenosa camuflada entre las rocas calizas del amanecer.',
-    statsBase: { hpBase: 30, ataqueBase: 45, defensaBase: 30, velocidadBase: 55 }, // Presupuesto = 160, // Presupuesto = 170
+    statsBase: { hpBase: 30, ataqueBase: 42, defensaBase: 30, velocidadBase: 51 }, // Presupuesto = 153
     movimientos: [
       { nombre: 'Picotazo', nombreOriginal: 'Peck Strike', tipoAccion: 'Ataque melé', poder: 11, slot: 1, efecto: null },
       { nombre: 'Mordedura Tóxica', nombreOriginal: 'Toxic Bite', tipoAccion: 'Ataque melé', poder: 14, slot: 2, efecto: 'VENENO' },
@@ -95,7 +95,7 @@ export const BESTIARIO: EspecieCanonica[] = [
     esEspecial: false,
     esLegendaria: false,
     descripcion: 'Herbívoro esquivo imbuido por la luz astral que ilumina las sendas nocturnas.',
-    statsBase: { hpBase: 40, ataqueBase: 39, defensaBase: 40, velocidadBase: 69 }, // Presupuesto = 188, // Presupuesto = 166
+    statsBase: { hpBase: 46, ataqueBase: 44, defensaBase: 45, velocidadBase: 75 }, // Presupuesto = 210
     movimientos: [
       { nombre: 'Cornada', nombreOriginal: 'Horn Attack', tipoAccion: 'Ataque melé', poder: 11, slot: 1, efecto: null },
       { nombre: 'Pisada Luminosa', nombreOriginal: 'Luminous Stomp', tipoAccion: 'Ataque melé', poder: 13, slot: 2, efecto: 'LUZ' },
@@ -112,7 +112,7 @@ export const BESTIARIO: EspecieCanonica[] = [
     esEspecial: false,
     esLegendaria: false,
     descripcion: 'Rapaz de plumas incandescentes que vigila los horizontes cálidos desde el cielo.',
-    statsBase: { hpBase: 38, ataqueBase: 47, defensaBase: 38, velocidadBase: 77 }, // Presupuesto = 200, // Presupuesto = 178
+    statsBase: { hpBase: 54, ataqueBase: 66, defensaBase: 51, velocidadBase: 90 }, // Presupuesto = 261
     movimientos: [
       { nombre: 'Picotazo Aéreo', nombreOriginal: 'Aerial Peck', tipoAccion: 'Ataque melé', poder: 12, slot: 1, efecto: null },
       { nombre: 'Zarpazo Flamígero', nombreOriginal: 'Flaming Talon', tipoAccion: 'Ataque melé', poder: 15, slot: 2, efecto: 'QUEMADURA' },
@@ -129,7 +129,7 @@ export const BESTIARIO: EspecieCanonica[] = [
     esEspecial: true,
     esLegendaria: false,
     descripcion: 'Imponente plantígrado guardián de los bosques de fresno y claros de hierba.',
-    statsBase: { hpBase: 58, ataqueBase: 54, defensaBase: 52, velocidadBase: 46 }, // Presupuesto = 210, // Presupuesto = 210
+    statsBase: { hpBase: 90, ataqueBase: 82, defensaBase: 83, velocidadBase: 60 }, // Presupuesto = 315
     movimientos: [
       { nombre: 'Zarpazo', nombreOriginal: 'Claw Strike', tipoAccion: 'Ataque melé', poder: 14, slot: 1, efecto: null },
       { nombre: 'Dentellada Fuerte', nombreOriginal: 'Heavy Bite', tipoAccion: 'Ataque melé', poder: 18, slot: 2, efecto: 'ATQ_DOWN' },
@@ -148,7 +148,7 @@ export const BESTIARIO: EspecieCanonica[] = [
     esEspecial: false,
     esLegendaria: false,
     descripcion: 'Crustáceo blindado adaptado a las presiones fangosas y aguas turbias.',
-    statsBase: { hpBase: 39, ataqueBase: 37, defensaBase: 63, velocidadBase: 37 }, // Presupuesto = 176, // Presupuesto = 200
+    statsBase: { hpBase: 36, ataqueBase: 35, defensaBase: 56, velocidadBase: 32 }, // Presupuesto = 159
     movimientos: [
       { nombre: 'Pinzazo', nombreOriginal: 'Pincer Strike', tipoAccion: 'Ataque melé', poder: 12, slot: 1, efecto: null },
       { nombre: 'Tenaza Quebradora', nombreOriginal: 'Breaker Claws', tipoAccion: 'Ataque melé', poder: 16, slot: 2, efecto: 'DEF_DOWN' },
@@ -165,7 +165,7 @@ export const BESTIARIO: EspecieCanonica[] = [
     esEspecial: false,
     esLegendaria: false,
     descripcion: 'Depredador serpentino que se desliza entre sombras acuáticas descargando energía oscura.',
-    statsBase: { hpBase: 39, ataqueBase: 44, defensaBase: 38, velocidadBase: 55 }, // Presupuesto = 176, // Presupuesto = 206
+    statsBase: { hpBase: 36, ataqueBase: 41, defensaBase: 34, velocidadBase: 51 }, // Presupuesto = 162
     movimientos: [
       { nombre: 'Latigazo', nombreOriginal: 'Whip Lash', tipoAccion: 'Ataque melé', poder: 13, slot: 1, efecto: null },
       { nombre: 'Descarga Umbría', nombreOriginal: 'Umbral Jolt', tipoAccion: 'Ataque a distancia', poder: 16, slot: 2, efecto: 'PARALISIS' },
@@ -182,7 +182,7 @@ export const BESTIARIO: EspecieCanonica[] = [
     esEspecial: false,
     esLegendaria: false,
     descripcion: 'Reptil de cuello estilizado y caparazón robusto que nada con serenidad en aguas lacustres.',
-    statsBase: { hpBase: 60, ataqueBase: 45, defensaBase: 64, velocidadBase: 37 }, // Presupuesto = 206, // Presupuesto = 220
+    statsBase: { hpBase: 66, ataqueBase: 46, defensaBase: 69, velocidadBase: 36 }, // Presupuesto = 217
     movimientos: [
       { nombre: 'Mordisco Lacustre', nombreOriginal: 'Lake Bite', tipoAccion: 'Ataque melé', poder: 13, slot: 1, efecto: null },
       { nombre: 'Caparazón Acuático', nombreOriginal: 'Aqua Shell', tipoAccion: 'Estado', poder: 11, slot: 2, efecto: 'BASTION' },
@@ -199,7 +199,7 @@ export const BESTIARIO: EspecieCanonica[] = [
     esEspecial: false,
     esLegendaria: false,
     descripcion: 'Cazador incansable con olfato agudo y mandíbulas serradas adaptadas al arrecife.',
-    statsBase: { hpBase: 51, ataqueBase: 61, defensaBase: 46, velocidadBase: 62 }, // Presupuesto = 220, // Presupuesto = 232
+    statsBase: { hpBase: 64, ataqueBase: 79, defensaBase: 56, velocidadBase: 69 }, // Presupuesto = 268
     movimientos: [
       { nombre: 'Dentellada Arrecife', nombreOriginal: 'Reef Bite', tipoAccion: 'Ataque melé', poder: 15, slot: 1, efecto: null },
       { nombre: 'Caza Frenética', nombreOriginal: 'Frenzied Hunt', tipoAccion: 'Estado', poder: 18, slot: 2, efecto: 'ATQ_UP' },
@@ -216,7 +216,7 @@ export const BESTIARIO: EspecieCanonica[] = [
     esEspecial: true,
     esLegendaria: false,
     descripcion: 'Ser abisal etéreo cuyas alas acuáticas proyectan nieblas de perdición y terror.',
-    statsBase: { hpBase: 58, ataqueBase: 56, defensaBase: 51, velocidadBase: 65 }, // Presupuesto = 230, // Presupuesto = 270
+    statsBase: { hpBase: 80, ataqueBase: 79, defensaBase: 76, velocidadBase: 90 }, // Presupuesto = 325
     movimientos: [
       { nombre: 'Aguijonazo', nombreOriginal: 'Ghostly Sting', tipoAccion: 'Ataque melé', poder: 16, slot: 1, efecto: null },
       { nombre: 'Vuelo Abisal', nombreOriginal: 'Abyssal Glide', tipoAccion: 'Ataque melé', poder: 19, slot: 2, efecto: 'CONFUSION' },
@@ -235,7 +235,7 @@ export const BESTIARIO: EspecieCanonica[] = [
     esEspecial: false,
     esLegendaria: false,
     descripcion: 'Depredador arácnido que teje trampas invisibles entre el follaje espeso.',
-    statsBase: { hpBase: 45, ataqueBase: 54, defensaBase: 42, velocidadBase: 55 }, // Presupuesto = 196, // Presupuesto = 226
+    statsBase: { hpBase: 38, ataqueBase: 46, defensaBase: 36, velocidadBase: 48 }, // Presupuesto = 168
     movimientos: [
       { nombre: 'Picadura Venenosa', nombreOriginal: 'Poison Bite', tipoAccion: 'Ataque melé', poder: 14, slot: 1, efecto: 'VENENO' },
       { nombre: 'Disparo de Telaraña', nombreOriginal: 'Web Shot', tipoAccion: 'Ataque a distancia', poder: 15, slot: 2, efecto: 'ENREDO' },
@@ -252,7 +252,7 @@ export const BESTIARIO: EspecieCanonica[] = [
     esEspecial: false,
     esLegendaria: false,
     descripcion: 'Fiera de colmillos prominentes y lomo armado de púas que embiste sin titubeos.',
-    statsBase: { hpBase: 52, ataqueBase: 50, defensaBase: 48, velocidadBase: 46 }, // Presupuesto = 196, // Presupuesto = 220
+    statsBase: { hpBase: 45, ataqueBase: 44, defensaBase: 43, velocidadBase: 39 }, // Presupuesto = 171
     movimientos: [
       { nombre: 'Cornada Espinosa', nombreOriginal: 'Barbed Gore', tipoAccion: 'Ataque melé', poder: 14, slot: 1, efecto: null },
       { nombre: 'Carga Feroz', nombreOriginal: 'Ferocious Charge', tipoAccion: 'Ataque melé', poder: 17, slot: 2, efecto: 'EMPUJE' },
@@ -269,7 +269,7 @@ export const BESTIARIO: EspecieCanonica[] = [
     esEspecial: false,
     esLegendaria: false,
     descripcion: 'Reptil de mirada fatal cuya saliva densa y ojos fosforescentes petrifican la carne.',
-    statsBase: { hpBase: 61, ataqueBase: 63, defensaBase: 67, velocidadBase: 39 }, // Presupuesto = 230, // Presupuesto = 248
+    statsBase: { hpBase: 60, ataqueBase: 59, defensaBase: 66, velocidadBase: 39 }, // Presupuesto = 224
     movimientos: [
       { nombre: 'Mordedura Petrificante', nombreOriginal: 'Petrifying Bite', tipoAccion: 'Ataque melé', poder: 16, slot: 1, efecto: 'PETRIFICACION_LEVE' },
       { nombre: 'Cola Látigo', nombreOriginal: 'Tail Whip', tipoAccion: 'Ataque melé', poder: 18, slot: 2, efecto: 'DEF_DOWN' },
@@ -286,7 +286,7 @@ export const BESTIARIO: EspecieCanonica[] = [
     esEspecial: false,
     esLegendaria: false,
     descripcion: 'Árbol colosal despertado por la savia primordial con raíces profundas y ramas como mazas.',
-    statsBase: { hpBase: 75, ataqueBase: 65, defensaBase: 71, velocidadBase: 34 }, // Presupuesto = 245, // Presupuesto = 256
+    statsBase: { hpBase: 84, ataqueBase: 68, defensaBase: 81, velocidadBase: 42 }, // Presupuesto = 275
     movimientos: [
       { nombre: 'Tajo de Rama', nombreOriginal: 'Branch Sweep', tipoAccion: 'Ataque melé', poder: 15, slot: 1, efecto: null },
       { nombre: 'Arraigo Boscoso', nombreOriginal: 'Forest Rooting', tipoAccion: 'Estado', poder: 14, slot: 2, efecto: 'REGENERACION' },
@@ -303,7 +303,7 @@ export const BESTIARIO: EspecieCanonica[] = [
     esEspecial: true,
     esLegendaria: false,
     descripcion: 'Insectoide letal de reflejos fulgurantes cuyas cuchillas cortan el aire en penumbra.',
-    statsBase: { hpBase: 59, ataqueBase: 71, defensaBase: 53, velocidadBase: 73 }, // Presupuesto = 256, // Presupuesto = 280
+    statsBase: { hpBase: 76, ataqueBase: 94, defensaBase: 73, velocidadBase: 92 }, // Presupuesto = 335
     movimientos: [
       { nombre: 'Cuchillada Ágil', nombreOriginal: 'Agile Slash', tipoAccion: 'Ataque melé', poder: 17, slot: 1, efecto: null },
       { nombre: 'Golpe Quirúrgico', nombreOriginal: 'Surgical Strike', tipoAccion: 'Ataque melé', poder: 20, slot: 2, efecto: 'CRITICO' },
@@ -322,7 +322,7 @@ export const BESTIARIO: EspecieCanonica[] = [
     esEspecial: false,
     esLegendaria: false,
     descripcion: 'Escultura viviente de granito alado que vigila cornisas y riscos escarpados.',
-    statsBase: { hpBase: 52, ataqueBase: 50, defensaBase: 66, velocidadBase: 48 }, // Presupuesto = 216, // Presupuesto = 268
+    statsBase: { hpBase: 43, ataqueBase: 42, defensaBase: 54, velocidadBase: 38 }, // Presupuesto = 177
     movimientos: [
       { nombre: 'Garra de Granito', nombreOriginal: 'Granite Claw', tipoAccion: 'Ataque melé', poder: 16, slot: 1, efecto: null },
       { nombre: 'Picado de Piedra', nombreOriginal: 'Stone Dive', tipoAccion: 'Ataque melé', poder: 19, slot: 2, efecto: 'DEF_DOWN' },
@@ -339,7 +339,7 @@ export const BESTIARIO: EspecieCanonica[] = [
     esEspecial: false,
     esLegendaria: false,
     descripcion: 'Antiguo combatiente alzado por nigromancia que blande su espada mellada sin descanso.',
-    statsBase: { hpBase: 49, ataqueBase: 56, defensaBase: 60, velocidadBase: 51 }, // Presupuesto = 216, // Presupuesto = 246
+    statsBase: { hpBase: 41, ataqueBase: 47, defensaBase: 50, velocidadBase: 42 }, // Presupuesto = 180
     movimientos: [
       { nombre: 'Tajo de Espada', nombreOriginal: 'Sword Slash', tipoAccion: 'Ataque melé', poder: 15, slot: 1, efecto: null },
       { nombre: 'Disparo Óseo', nombreOriginal: 'Bone Shot', tipoAccion: 'Ataque a distancia', poder: 17, slot: 2, efecto: 'DISTANCIA' },
@@ -356,7 +356,7 @@ export const BESTIARIO: EspecieCanonica[] = [
     esEspecial: false,
     esLegendaria: false,
     descripcion: 'Arácnido acorazado con caparazón de roca volcánica y aguijón cargado de fuego líquido.',
-    statsBase: { hpBase: 62, ataqueBase: 67, defensaBase: 69, velocidadBase: 56 }, // Presupuesto = 254, // Presupuesto = 280
+    statsBase: { hpBase: 58, ataqueBase: 60, defensaBase: 63, velocidadBase: 50 }, // Presupuesto = 231
     movimientos: [
       { nombre: 'Pinza Ígnea', nombreOriginal: 'Fiery Pincer', tipoAccion: 'Ataque melé', poder: 17, slot: 1, efecto: 'QUEMADURA' },
       { nombre: 'Cola de Obsidiana', nombreOriginal: 'Obsidian Tail', tipoAccion: 'Ataque melé', poder: 21, slot: 2, efecto: 'VENENO' },
@@ -373,7 +373,7 @@ export const BESTIARIO: EspecieCanonica[] = [
     esEspecial: false,
     esLegendaria: false,
     descripcion: 'Aparición espectral surgida de hogueras extintas que drena el calor vital de sus víctimas.',
-    statsBase: { hpBase: 59, ataqueBase: 75, defensaBase: 55, velocidadBase: 81 }, // Presupuesto = 270, // Presupuesto = 274
+    statsBase: { hpBase: 64, ataqueBase: 79, defensaBase: 56, velocidadBase: 83 }, // Presupuesto = 282
     movimientos: [
       { nombre: 'Toque Gélido', nombreOriginal: 'Chilling Touch', tipoAccion: 'Ataque melé', poder: 16, slot: 1, efecto: 'ENFRIAMIENTO' },
       { nombre: 'Alarido Cenizo', nombreOriginal: 'Ash Shrike', tipoAccion: 'Estado', poder: 18, slot: 2, efecto: 'TERROR' },
@@ -390,7 +390,7 @@ export const BESTIARIO: EspecieCanonica[] = [
     esEspecial: true,
     esLegendaria: false,
     descripcion: 'Constructo rúnico forjado en roca viva dotado de blindaje impenetrable y fuerza aplastante.',
-    statsBase: { hpBase: 76, ataqueBase: 71, defensaBase: 80, velocidadBase: 55 }, // Presupuesto = 282, // Presupuesto = 320
+    statsBase: { hpBase: 94, ataqueBase: 86, defensaBase: 98, velocidadBase: 67 }, // Presupuesto = 345
     movimientos: [
       { nombre: 'Puñetazo de Granito', nombreOriginal: 'Granite Punch', tipoAccion: 'Ataque melé', poder: 18, slot: 1, efecto: null },
       { nombre: 'Furia de Piedra', nombreOriginal: 'Stone Fury', tipoAccion: 'Ataque melé', poder: 22, slot: 2, efecto: 'STUN' },
@@ -409,7 +409,7 @@ export const BESTIARIO: EspecieCanonica[] = [
     esEspecial: false,
     esLegendaria: false,
     descripcion: 'Columna ígnea danzante que calcina la piedra de los abismos subterráneos.',
-    statsBase: { hpBase: 57, ataqueBase: 64, defensaBase: 52, velocidadBase: 63 }, // Presupuesto = 236, // Presupuesto = 308
+    statsBase: { hpBase: 44, ataqueBase: 51, defensaBase: 41, velocidadBase: 50 }, // Presupuesto = 186
     movimientos: [
       { nombre: 'Toque Flamígero', nombreOriginal: 'Flaming Touch', tipoAccion: 'Ataque melé', poder: 17, slot: 1, efecto: 'QUEMADURA' },
       { nombre: 'Llama Viva', nombreOriginal: 'Living Flame', tipoAccion: 'Ataque a distancia', poder: 20, slot: 2, efecto: 'IGNICION' },
@@ -426,7 +426,7 @@ export const BESTIARIO: EspecieCanonica[] = [
     esEspecial: false,
     esLegendaria: false,
     descripcion: 'Reptil elemental nacido en pozos de lava que nada en roca fundida con naturalidad.',
-    statsBase: { hpBase: 56, ataqueBase: 63, defensaBase: 58, velocidadBase: 59 }, // Presupuesto = 236, // Presupuesto = 302
+    statsBase: { hpBase: 45, ataqueBase: 51, defensaBase: 46, velocidadBase: 47 }, // Presupuesto = 189
     movimientos: [
       { nombre: 'Mordisco Magmático', nombreOriginal: 'Magma Bite', tipoAccion: 'Ataque melé', poder: 17, slot: 1, efecto: null },
       { nombre: 'Coletazo Candente', nombreOriginal: 'Searing Tail', tipoAccion: 'Ataque melé', poder: 19, slot: 2, efecto: 'QUEMADURA' },
@@ -443,7 +443,7 @@ export const BESTIARIO: EspecieCanonica[] = [
     esEspecial: false,
     esLegendaria: false,
     descripcion: 'Corcel tenebroso con crin de llamas sulfurosas y cascos que prenden el abismo a su paso.',
-    statsBase: { hpBase: 67, ataqueBase: 72, defensaBase: 61, velocidadBase: 77 }, // Presupuesto = 277, // Presupuesto = 316
+    statsBase: { hpBase: 57, ataqueBase: 62, defensaBase: 47, velocidadBase: 72 }, // Presupuesto = 238
     movimientos: [
       { nombre: 'Casco Ardiente', nombreOriginal: 'Burning Hoof', tipoAccion: 'Ataque melé', poder: 18, slot: 1, efecto: null },
       { nombre: 'Ráfaga Etérea', nombreOriginal: 'Ethereal Gust', tipoAccion: 'Ataque a distancia', poder: 21, slot: 2, efecto: 'CONFUSION' },
@@ -460,7 +460,7 @@ export const BESTIARIO: EspecieCanonica[] = [
     esEspecial: false,
     esLegendaria: false,
     descripcion: 'Bestia legendaria con cabezas de león, cabra y dragón que asola cuevas y riscos.',
-    statsBase: { hpBase: 75, ataqueBase: 80, defensaBase: 69, velocidadBase: 71 }, // Presupuesto = 295, // Presupuesto = 324
+    statsBase: { hpBase: 73, ataqueBase: 82, defensaBase: 66, velocidadBase: 68 }, // Presupuesto = 289
     movimientos: [
       { nombre: 'Mordisco Dracónico', nombreOriginal: 'Dragon Bite', tipoAccion: 'Ataque melé', poder: 19, slot: 1, efecto: 'QUEMADURA' },
       { nombre: 'Cornada Caprina', nombreOriginal: 'Goat Horn', tipoAccion: 'Ataque melé', poder: 21, slot: 2, efecto: 'EMPUJE' },
@@ -477,7 +477,7 @@ export const BESTIARIO: EspecieCanonica[] = [
     esEspecial: true,
     esLegendaria: true,
     descripcion: 'Monstruo serpentino legendario de doce patas que descarga arcos voltaicos y relámpagos umbríos.',
-    statsBase: { hpBase: 94, ataqueBase: 94, defensaBase: 88, velocidadBase: 79 }, // Presupuesto = 355, // Presupuesto = 355
+    statsBase: { hpBase: 94, ataqueBase: 96, defensaBase: 89, velocidadBase: 81 }, // Presupuesto = 360
     movimientos: [
       { nombre: 'Descarga Eléctrica', nombreOriginal: 'Electric Discharge', tipoAccion: 'Ataque a distancia', poder: 20, slot: 1, efecto: 'PARALISIS' },
       { nombre: 'Mordedura Titánica', nombreOriginal: 'Titanic Bite', tipoAccion: 'Ataque melé', poder: 24, slot: 2, efecto: 'CRITICO' },
@@ -496,7 +496,7 @@ export const BESTIARIO: EspecieCanonica[] = [
     esEspecial: false,
     esLegendaria: false,
     descripcion: 'Gigante peludo de las nieves eternas con garras heladas y rugido ensordecedor.',
-    statsBase: { hpBase: 66, ataqueBase: 71, defensaBase: 64, velocidadBase: 59 }, // Presupuesto = 260, // Presupuesto = 300
+    statsBase: { hpBase: 50, ataqueBase: 53, defensaBase: 47, velocidadBase: 42 }, // Presupuesto = 192
     movimientos: [
       { nombre: 'Garra Congelada', nombreOriginal: 'Frozen Claw', tipoAccion: 'Ataque melé', poder: 17, slot: 1, efecto: 'ENFRIAMIENTO' },
       { nombre: 'Bramido Polar', nombreOriginal: 'Polar Roar', tipoAccion: 'Estado', poder: 20, slot: 2, efecto: 'MIEDO' },
@@ -513,7 +513,7 @@ export const BESTIARIO: EspecieCanonica[] = [
     esEspecial: false,
     esLegendaria: false,
     descripcion: 'Depredador glacial con pelaje blanco y aliento gélido capaz de congelar a sus presas.',
-    statsBase: { hpBase: 62, ataqueBase: 68, defensaBase: 61, velocidadBase: 69 }, // Presupuesto = 260, // Presupuesto = 308
+    statsBase: { hpBase: 47, ataqueBase: 51, defensaBase: 45, velocidadBase: 52 }, // Presupuesto = 195
     movimientos: [
       { nombre: 'Mordisco Escarchado', nombreOriginal: 'Rime Bite', tipoAccion: 'Ataque melé', poder: 17, slot: 1, efecto: 'ENFRIAMIENTO' },
       { nombre: 'Aliento de Escarcha', nombreOriginal: 'Frost Breath', tipoAccion: 'Ataque a distancia', poder: 21, slot: 2, efecto: 'LENTITUD' },
@@ -530,7 +530,7 @@ export const BESTIARIO: EspecieCanonica[] = [
     esEspecial: false,
     esLegendaria: false,
     descripcion: 'Marea viviente de agua ártica que arrastra a sus oponentes con oleajes implacables.',
-    statsBase: { hpBase: 80, ataqueBase: 75, defensaBase: 81, velocidadBase: 69 }, // Presupuesto = 305, // Presupuesto = 318
+    statsBase: { hpBase: 68, ataqueBase: 58, defensaBase: 67, velocidadBase: 52 }, // Presupuesto = 245
     movimientos: [
       { nombre: 'Golpe Torrencial', nombreOriginal: 'Torrential Slam', tipoAccion: 'Ataque melé', poder: 18, slot: 1, efecto: null },
       { nombre: 'Corriente Helada', nombreOriginal: 'Frozen Stream', tipoAccion: 'Ataque a distancia', poder: 20, slot: 2, efecto: 'ENFRIAMIENTO' },
@@ -547,7 +547,7 @@ export const BESTIARIO: EspecieCanonica[] = [
     esEspecial: false,
     esLegendaria: false,
     descripcion: 'Gran felino prehistórico adaptado a la tundra con colmillos curvos capaces de partir hielo.',
-    statsBase: { hpBase: 80, ataqueBase: 87, defensaBase: 72, velocidadBase: 86 }, // Presupuesto = 325, // Presupuesto = 326
+    statsBase: { hpBase: 72, ataqueBase: 84, defensaBase: 62, velocidadBase: 78 }, // Presupuesto = 296
     movimientos: [
       { nombre: 'Zarpazo Ártico', nombreOriginal: 'Arctic Slash', tipoAccion: 'Ataque melé', poder: 18, slot: 1, efecto: null },
       { nombre: 'Colmillos Quebradores', nombreOriginal: 'Breaker Fangs', tipoAccion: 'Ataque melé', poder: 23, slot: 2, efecto: 'DEF_DOWN' },
@@ -564,7 +564,7 @@ export const BESTIARIO: EspecieCanonica[] = [
     esEspecial: true,
     esLegendaria: true,
     descripcion: 'Monstruo colosal de los glaciares eternos cuyo núcleo arde con calor infernal mientras camina sobre el hielo.',
-    statsBase: { hpBase: 98, ataqueBase: 98, defensaBase: 94, velocidadBase: 90 }, // Presupuesto = 380, // Presupuesto = 380
+    statsBase: { hpBase: 97, ataqueBase: 99, defensaBase: 93, velocidadBase: 86 }, // Presupuesto = 375
     movimientos: [
       { nombre: 'Mordedura Glacial', nombreOriginal: 'Glacial Bite', tipoAccion: 'Ataque melé', poder: 22, slot: 1, efecto: 'ENFRIAMIENTO' },
       { nombre: 'Vapor Hirviente', nombreOriginal: 'Scalding Steam', tipoAccion: 'Ataque a distancia', poder: 26, slot: 2, efecto: 'QUEMADURA' },
