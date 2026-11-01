@@ -8,6 +8,9 @@ import {
   TRADUCCION_TIPOS_ESPECIE,
   TRADUCCION_ELEMENTOS,
   calcularArquetipoCriatura,
+  calcularPresupuestoCriatura,
+  resolverRarezaEspecie,
+  ordenarEspeciesCatalogo,
   filtrarEspeciesCatalogo,
   resolverCategoriaEvento,
   formatearFechaAmigable,
@@ -247,6 +250,16 @@ test('Auditoría estática de código: PantallaCatalogo erradica N+1, usa sprite
   assert.ok(codigo.includes('LEGENDARIO'), 'Debe desplegar badge de LEGENDARIO');
   assert.ok(!codigo.includes('.slice(0, 3)'), 'No debe recortar movimientos con slice(0, 3), debe mostrar los 4 slots');
   assert.ok(codigo.includes('M{numSlot}'), 'Debe identificar los slots M1..M4');
+
+  // 6. Subfase 10m: Jerarquía BST y selector de ordenamiento
+  assert.ok(
+    codigo.includes('Ordenar especies del catálogo'),
+    'Debe contener el selector accesible "Ordenar especies del catálogo"',
+  );
+  assert.ok(
+    codigo.includes('BST:'),
+    'Debe contener el indicador de presupuesto base BST en tarjeta y modal',
+  );
 });
 
 test('Auditoría estática de código: PantallaCombate gestiona 4 slots con Furia bloqueada y hardening', () => {
@@ -507,4 +520,127 @@ test('Hardening, Ergonomía y Estética Retro-Brutalist: PantallaHistorial cuent
     codigo.includes('placeholder="Buscar crónica..."'),
     'La barra de búsqueda debe utilizar placeholder conciso "Buscar crónica..." para prevenir truncamiento en móviles',
   );
+});
+
+test('Subfase 10m: calcularPresupuestoCriatura calcula fielmente el BST sumando atributos base o respetando precalculado', () => {
+  const criaturaSinPresupuesto = {
+    hpBase: 40,
+    ataqueBase: 45,
+    defensaBase: 35,
+    velocidadBase: 40,
+  };
+  assert.strictEqual(calcularPresupuestoCriatura(criaturaSinPresupuesto), 160);
+
+  const criaturaConPresupuesto = {
+    presupuestoTotal: 380,
+    hpBase: 95,
+    ataqueBase: 100,
+    defensaBase: 95,
+    velocidadBase: 90,
+  };
+  assert.strictEqual(calcularPresupuestoCriatura(criaturaConPresupuesto), 380);
+});
+
+test('Subfase 10m: resolverRarezaEspecie clasifica con precisión las 5 rarezas canónicas y sus etiquetas', () => {
+  const legendaria = resolverRarezaEspecie({ esLegendaria: true });
+  assert.strictEqual(legendaria.codigo, 'LEGENDARIA');
+  assert.strictEqual(legendaria.etiqueta, 'LEGENDARIA (5%)');
+  assert.strictEqual(legendaria.peso, 5);
+
+  const especial = resolverRarezaEspecie({ esEspecial: true });
+  assert.strictEqual(especial.codigo, 'ESPECIAL');
+  assert.strictEqual(especial.etiqueta, 'ESPECIAL (5%)');
+  assert.strictEqual(especial.peso, 5);
+
+  const rara = resolverRarezaEspecie({ pesoAparicion: 10 });
+  assert.strictEqual(rara.codigo, 'RARA');
+  assert.strictEqual(rara.etiqueta, 'RARA (10%)');
+  assert.strictEqual(rara.peso, 10);
+
+  const frecuente = resolverRarezaEspecie({ pesoAparicion: 15 });
+  assert.strictEqual(frecuente.codigo, 'FRECUENTE');
+  assert.strictEqual(frecuente.etiqueta, 'FRECUENTE (15%)');
+  assert.strictEqual(frecuente.peso, 15);
+
+  const comun = resolverRarezaEspecie({ pesoAparicion: 35 });
+  assert.strictEqual(comun.codigo, 'COMUN');
+  assert.strictEqual(comun.etiqueta, 'COMÚN (35%)');
+  assert.strictEqual(comun.peso, 35);
+});
+
+test('Subfase 10m: ordenarEspeciesCatalogo ordena fielmente por BST, Captura y Rareza', () => {
+  const muestra: EspecieCatalogo[] = [
+    {
+      slug: 'comun-debil',
+      nombre: 'Común Débil',
+      tipo: 'beast',
+      challengeRating: 0.125,
+      hpBase: 40,
+      ataqueBase: 40,
+      defensaBase: 40,
+      velocidadBase: 40,
+      tasaCaptura: 0.70,
+      presupuestoTotal: 160,
+      pesoAparicion: 35,
+      rareza: 'COMUN',
+      esEspecial: false,
+      esLegendaria: false,
+    },
+    {
+      slug: 'titan-legendario',
+      nombre: 'Titán Legendario',
+      tipo: 'monstrosity',
+      challengeRating: 10,
+      hpBase: 95,
+      ataqueBase: 100,
+      defensaBase: 95,
+      velocidadBase: 90,
+      tasaCaptura: 0.15,
+      presupuestoTotal: 380,
+      pesoAparicion: 5,
+      rareza: 'LEGENDARIA',
+      esEspecial: false,
+      esLegendaria: true,
+    },
+    {
+      slug: 'veterano-raro',
+      nombre: 'Veterano Raro',
+      tipo: 'undead',
+      challengeRating: 3,
+      hpBase: 65,
+      ataqueBase: 70,
+      defensaBase: 65,
+      velocidadBase: 60,
+      tasaCaptura: 0.45,
+      presupuestoTotal: 260,
+      pesoAparicion: 10,
+      rareza: 'RARA',
+      esEspecial: false,
+      esLegendaria: false,
+    },
+  ];
+
+  // 1. BST descendente
+  const porBstDesc = ordenarEspeciesCatalogo(muestra, 'BST_DESC');
+  assert.strictEqual(porBstDesc[0].slug, 'titan-legendario');
+  assert.strictEqual(porBstDesc[1].slug, 'veterano-raro');
+  assert.strictEqual(porBstDesc[2].slug, 'comun-debil');
+
+  // 2. BST ascendente
+  const porBstAsc = ordenarEspeciesCatalogo(muestra, 'BST_ASC');
+  assert.strictEqual(porBstAsc[0].slug, 'comun-debil');
+  assert.strictEqual(porBstAsc[1].slug, 'veterano-raro');
+  assert.strictEqual(porBstAsc[2].slug, 'titan-legendario');
+
+  // 3. Captura ascendente (más difícil primero = menor tasa de captura)
+  const porCaptura = ordenarEspeciesCatalogo(muestra, 'CAPTURA_ASC');
+  assert.strictEqual(porCaptura[0].slug, 'titan-legendario');
+  assert.strictEqual(porCaptura[1].slug, 'veterano-raro');
+  assert.strictEqual(porCaptura[2].slug, 'comun-debil');
+
+  // 4. Rareza descendente
+  const porRareza = ordenarEspeciesCatalogo(muestra, 'RAREZA_DESC');
+  assert.strictEqual(porRareza[0].slug, 'titan-legendario');
+  assert.strictEqual(porRareza[1].slug, 'veterano-raro');
+  assert.strictEqual(porRareza[2].slug, 'comun-debil');
 });

@@ -240,3 +240,48 @@ test("Auditoría Impeccable: Erradicación de truncamientos, modales retro-bruta
     "El contenedor principal debe incluir overflow-x-hidden para móviles estrechos",
   );
 });
+
+test("Subfase 10m: Desbloqueo territorial en PantallaHubUbicacion incluye api.verificarZona, DESBLOQUEAR SENDA y barra de progreso", async () => {
+  const { readFileSync } = await import("node:fs");
+  const { join, dirname } = await import("node:path");
+  const { fileURLToPath } = await import("node:url");
+
+  const __dirname = dirname(fileURLToPath(import.meta.url));
+  const hubCodigo = readFileSync(join(__dirname, "../src/paginas/PantallaHubUbicacion.tsx"), "utf-8");
+
+  // 1. Integración con el motor de desbloqueo autoritativo
+  assert.ok(
+    hubCodigo.includes("api.verificarZona"),
+    "PantallaHubUbicacion debe invocar api.verificarZona para desbloquear sendas territoriales",
+  );
+
+  // 2. Botón táctil retro de desbloqueo y feedback de estado
+  assert.ok(
+    hubCodigo.includes("DESBLOQUEAR SENDA"),
+    "Debe existir el botón o acción retro 'DESBLOQUEAR SENDA'",
+  );
+  assert.ok(
+    hubCodigo.includes("LISTA PARA DESBLOQUEAR"),
+    "Debe desplegar la insignia 'LISTA PARA DESBLOQUEAR' cuando cumple requisitos",
+  );
+  assert.ok(
+    hubCodigo.includes("DESBLOQUEANDO..."),
+    "Debe mostrar estado retro 'DESBLOQUEANDO...' durante la mutación de desbloqueo",
+  );
+
+  // 3. Barra de progreso de cartografía territorial con 8bitcn
+  assert.ok(
+    hubCodigo.includes("<Progress"),
+    "Debe utilizar el componente Progress de 8bitcn para la cartografía territorial",
+  );
+
+  // 4. Hardening contra doble clic en desbloqueo
+  assert.ok(
+    hubCodigo.includes("desbloqueandoId"),
+    "Debe gestionar el estado desbloqueandoId para hardening de concurrencia",
+  );
+  assert.ok(
+    hubCodigo.includes("if (desbloqueandoId || viajando) return;"),
+    "handleDesbloquearRuta debe protegerse contra ejecuciones simultáneas",
+  );
+});

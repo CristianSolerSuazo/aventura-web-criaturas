@@ -601,7 +601,7 @@ export function PantallaHubUbicacion() {
                             {desbloqueandoId === conexion.ubicacionDestinoId ? (
                               <>
                                 <Loader2 className="size-3.5 animate-spin" />
-                                <span>VERIFICANDO...</span>
+                                <span>DESBLOQUEANDO...</span>
                               </>
                             ) : (
                               <>
