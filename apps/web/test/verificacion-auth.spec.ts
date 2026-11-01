@@ -209,3 +209,70 @@ test("Auditoría Impeccable: PantallaIngreso consolida estética retro-brutalist
     "Los enlaces del pie deben usar disposición adaptativa en columna/fila para móviles estrechos",
   );
 });
+
+test("Auditoría Impeccable: PantallaRegistro consolida estética retro-brutalist 8-bit, tipografía integral, micro-inspección y espaciado ergonómico", async () => {
+  const { readFileSync } = await import("node:fs");
+  const { join, dirname } = await import("node:path");
+  const { fileURLToPath } = await import("node:url");
+
+  const __dirname = dirname(fileURLToPath(import.meta.url));
+  const registroCodigo = readFileSync(join(__dirname, "../src/paginas/PantallaRegistro.tsx"), "utf-8");
+
+  // 1. Estética retro-brutalist 8-bit (8bitcn/ui)
+  assert.ok(
+    registroCodigo.includes("border-4 border-black"),
+    "La tarjeta principal y el botón deben usar marcos negros sólidos de 4px",
+  );
+  assert.ok(
+    registroCodigo.includes("shadow-[6px_6px_0_0_#000]"),
+    "La tarjeta principal debe proyectar sombra ortogonal sólida de 6px",
+  );
+  assert.ok(
+    registroCodigo.includes("shadow-[2px_2px_0_0_#000]"),
+    "Insignia, campos de entrada y panel de requisitos deben tener sombras ortogonales sólidas de 2px",
+  );
+  assert.ok(
+    registroCodigo.includes("shadow-[4px_4px_0_0_#000]"),
+    "El botón arcade principal debe tener sombra ortogonal de 4px",
+  );
+  assert.ok(
+    registroCodigo.includes("rounded-none"),
+    "Los componentes deben preservar esquinas ortogonales vivas estilo 8-bit",
+  );
+
+  // 2. Confinamiento móvil y erradicación de desbordamiento horizontal (360px-420px)
+  assert.ok(
+    registroCodigo.includes("overflow-x-hidden"),
+    "El contenedor principal debe confinar el ancho con overflow-x-hidden",
+  );
+  assert.ok(
+    registroCodigo.includes("pr-10 sm:pr-12"),
+    "El campo de contraseña debe tener margen interior derecho adecuado para evitar superposición con el botón de ojo",
+  );
+  assert.ok(
+    registroCodigo.includes("size-8"),
+    "El botón de visibilidad de contraseña debe tener área táctil ergonómica de 32px (size-8)",
+  );
+  assert.ok(
+    registroCodigo.includes("grid grid-cols-1 sm:grid-cols-3 gap-1.5 sm:gap-2"),
+    "El panel de criterios de contraseña debe fluir en cuadrícula adaptable de 1 a 3 columnas sin desbordamiento",
+  );
+
+  // 3. Ergonomía táctil y separación de controles
+  assert.ok(
+    registroCodigo.includes("space-y-4 sm:space-y-5"),
+    "Los campos de formulario deben contar con separación vertical holgada",
+  );
+  assert.ok(
+    registroCodigo.includes("h-12 sm:h-14"),
+    "El botón de acción principal debe disponer de altura táctil ergonómica de 48px-56px",
+  );
+  assert.ok(
+    registroCodigo.includes("border-black/40 gap-3 sm:gap-4"),
+    "El pie de navegación secundaria debe contar con divisor físico claro y espaciado generoso",
+  );
+  assert.ok(
+    registroCodigo.includes("flex-col sm:flex-row items-center justify-between"),
+    "Los enlaces del pie deben usar disposición adaptativa en columna/fila para móviles estrechos",
+  );
+});
