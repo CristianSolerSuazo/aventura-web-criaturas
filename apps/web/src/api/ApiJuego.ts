@@ -81,6 +81,54 @@ export interface PersonajeActivo {
   totalCriaturasAlmacen: number;
 }
 
+export interface EspecieHabitanteUbicacion {
+  slug?: string;
+  nombre: string;
+  tipo: string;
+  elemento?: string;
+  esEspecial: boolean;
+  esLegendaria?: boolean;
+  pesoAparicion?: number;
+}
+
+export interface RequisitoCartografiaUbicacion {
+  zonaId: string;
+  nombre: string;
+  completada: boolean;
+  progresoActual: number;
+}
+
+export interface RequisitoNivelEquipoUbicacion {
+  nivelRequerido: number;
+  cantidadCriaturas: number;
+  cantidadActual?: number;
+  nivelMaximoActual: number;
+  soloEquipo?: boolean;
+  cumplido: boolean;
+}
+
+export interface PoderEquipoExplorador {
+  nivelMaximoEquipo: number;
+  nivelPromedioEquipo: number;
+  nivelMaximoColeccion: number;
+  criaturasEquipoNv5?: number;
+  rangoDomador: string;
+}
+
+export interface NodoMapaTerritorial {
+  id: string;
+  nombre: string;
+  tipo: "LOCALIDAD" | "ZONA" | "ZONA_PELIGRO";
+  esSegura: boolean;
+  faunaNivelMinimo: number | null;
+  faunaNivelMaximo: number | null;
+  desbloqueada: boolean;
+  progreso: number;
+  esActual: boolean;
+  esAdyacente?: boolean;
+  conexionesIds: string[];
+}
+
 export interface ConexionUbicacion {
   ubicacionDestinoId: string;
   nombre: string;
@@ -91,20 +139,32 @@ export interface ConexionUbicacion {
   progresoObjetivo?: number;
   cumpleRequisito?: boolean;
   detalleProgreso?: string | null;
+  tipoDestino?: "LOCALIDAD" | "ZONA" | "ZONA_PELIGRO";
+  esSegura?: boolean;
+  faunaNivelMinimo?: number | null;
+  faunaNivelMaximo?: number | null;
+  especiesHabitantes?: EspecieHabitanteUbicacion[];
+  requisitoCartografia?: RequisitoCartografiaUbicacion | null;
+  requisitoNivelEquipo?: RequisitoNivelEquipoUbicacion | null;
 }
 
 export interface UbicacionActual {
   ubicacionId: string;
   nombre: string;
   slug?: string;
-  tipo: "LOCALIDAD" | "ZONA_PELIGRO";
+  tipo: "LOCALIDAD" | "ZONA" | "ZONA_PELIGRO";
   esSegura: boolean;
   descripcion: string;
   nivelMinimo?: number | null;
   nivelMaximo?: number | null;
+  faunaNivelMinimo?: number | null;
+  faunaNivelMaximo?: number | null;
+  especiesHabitantes?: EspecieHabitanteUbicacion[];
   nivelSugerido?: string | null;
   servicios: string[];
   progresoZona?: number;
+  poderEquipo?: PoderEquipoExplorador;
+  nodosMapa?: NodoMapaTerritorial[];
   conexiones: ConexionUbicacion[];
 }
 

@@ -20,7 +20,7 @@ Este documento es el enrutador ligero (~2 KB) para navegar el proyecto sin neces
 | **7** | Combate y captura (AV4) | ✅ Completada | `funcionalidad/fase-07-combate` | [FASE-07.md](file:///docs/workflows/FASE-07.md) | L374–L393 |
 | **8** | Integración Front↔API | ✅ Completada | `funcionalidad/fase-08-integracion` | [FASE-08.md](file:///docs/workflows/FASE-08.md) | L394–L410 |
 | **9** | Seguridad y cierre base | ✅ Completada | `pruebas/fase-09-seguridad` | [FASE-09.md](file:///docs/workflows/FASE-09.md) | L415–L431 |
-| **10** | Enriquecimiento UX y Combate Táctico | ✅ Completada (10a a 10m) | `funcionalidad/fase-10m-progreso-desbloqueo-jerarquia` | [10-progreso-desbloqueo-y-jerarquia-criaturas.md](file:///docs/workflows/fase-10/10-progreso-desbloqueo-y-jerarquia-criaturas.md) | L435–L525 |
+| **10** | Enriquecimiento UX y Combate Táctico | ✅ Completada (10a a 10n) | `funcionalidad/fase-10n-ux-orientacion-territorial` | [10-orientacion-territorial-mapa-y-ux-progresion.md](file:///docs/workflows/fase-10/10-orientacion-territorial-mapa-y-ux-progresion.md) | L435–L525 |
 | **11** | Extras: Gateway y UI (+5) | Pendiente | `configuracion/fase-11-extras` | `docs/workflows/FASE-11.md` | L483–L501 |
 | **12** | Entrega final (FIN) | Pendiente | `documentacion/fase-12-entrega` | `docs/workflows/FASE-12.md` | L502–L516 |
 | **13** | Multijugador (opcional) | Opcional | `funcionalidad/fase-13-presencia` | `docs/workflows/FASE-13.md` | L517–L530 |

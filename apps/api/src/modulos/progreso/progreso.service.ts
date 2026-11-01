@@ -115,6 +115,66 @@ export function calcularProgresoXp(
   };
 }
 
+export interface RequisitoCartografiaDto {
+  zonaId: string;
+  nombre: string;
+  completada: boolean;
+  progresoActual: number;
+}
+
+export interface RequisitoNivelEquipoDto {
+  nivelRequerido: number;
+  cantidadCriaturas: number;
+  cantidadActual: number;
+  nivelMaximoActual: number;
+  soloEquipo: boolean;
+  cumplido: boolean;
+}
+
+export interface PoderEquipoDto {
+  nivelMaximoEquipo: number;
+  nivelPromedioEquipo: number;
+  nivelMaximoColeccion: number;
+  criaturasEquipoNv5: number;
+  rangoDomador: string;
+}
+
+export function determinarRangoDomador(nivelMaximo: number): string {
+  if (nivelMaximo >= 10) return 'Maestro de la Cumbre';
+  if (nivelMaximo >= 8) return 'Custodio Umbrío';
+  if (nivelMaximo >= 5) return 'Domador de Riscos';
+  if (nivelMaximo >= 3) return 'Rastreador de Sendas';
+  return 'Recluta del Gremio';
+}
+
+// simplificacion: el poder del equipo y el rango de domador se derivan en tiempo de lectura a partir de las criaturas del personaje (máximo de colección y promedio/máximo del equipo activo) sin agregar columnas redundantes en la tabla personaje; suficiente para colecciones de hasta cientos de criaturas por jugador, luego si se introduce un sistema independiente de talentos de cuenta se añadirá una columna dedicada en Prisma.
+export function calcularPoderEquipoDesdeCriaturas(
+  criaturas: { nivel: number; enEquipo: boolean }[],
+): PoderEquipoDto {
+  const enEquipo = criaturas.filter((c) => c.enEquipo);
+  const nivelMaximoEquipo =
+    enEquipo.length > 0 ? Math.max(...enEquipo.map((c) => c.nivel)) : 1;
+  const sumaNiveles = enEquipo.reduce((acc, c) => acc + c.nivel, 0);
+  const nivelPromedioEquipo =
+    enEquipo.length > 0
+      ? Math.round((sumaNiveles / enEquipo.length) * 10) / 10
+      : 1;
+  const nivelMaximoColeccion =
+    criaturas.length > 0
+      ? Math.max(...criaturas.map((c) => c.nivel))
+      : nivelMaximoEquipo;
+  const criaturasEquipoNv5 = enEquipo.filter((c) => c.nivel >= 5).length;
+  const rangoDomador = determinarRangoDomador(nivelMaximoColeccion);
+
+  return {
+    nivelMaximoEquipo,
+    nivelPromedioEquipo,
+    nivelMaximoColeccion,
+    criaturasEquipoNv5,
+    rangoDomador,
+  };
+}
+
 export interface ReglaDesbloqueoTerritorial {
   zonaId: string;
   nombre: string;
@@ -344,9 +404,6 @@ export class ProgresoService {
   }
 
   /**
-   * Consulta el catálogo de zonas del mundo y su estado de desbloqueo para el personaje.
-   */
-  /**
    * Evalúa el cumplimiento y avance cuantitativo del requisito territorial de una zona.
    */
   async evaluarEstadoRequisitoZona(
@@ -359,6 +416,8 @@ export class ProgresoService {
     progresoObjetivo: number;
     requisito: string | null;
     detalleProgreso: string;
+    requisitoCartografia: RequisitoCartografiaDto | null;
+    requisitoNivelEquipo: RequisitoNivelEquipoDto | null;
   }> {
     const regla = REGLAS_DESBLOQUEO_TERRITORIAL[zonaId];
     if (!regla || regla.abiertaPorDefecto) {
@@ -368,6 +427,8 @@ export class ProgresoService {
         progresoObjetivo: 100,
         requisito: null,
         detalleProgreso: 'Acceso habilitado por defecto.',
+        requisitoCartografia: null,
+        requisitoNivelEquipo: null,
       };
     }
 
@@ -396,12 +457,20 @@ export class ProgresoService {
     if (!regla.minNivelCriatura && !regla.cantidadCriaturasEquipo) {
       const cumple = progresoPrevia >= 100;
       const progresoActual = Math.min(100, Math.max(0, progresoPrevia));
+      const requisitoCartografia: RequisitoCartografiaDto = {
+        zonaId: regla.zonaPreviaId!,
+        nombre: regla.nombreZonaPrevia ?? regla.zonaPreviaId!,
+        completada: cumple,
+        progresoActual,
+      };
       return {
         cumple,
         progresoActual,
         progresoObjetivo: 100,
         requisito: regla.requisito,
         detalleProgreso: `Cartografía ${regla.zonaPreviaId}: ${progresoActual}% / 100%`,
+        requisitoCartografia,
+        requisitoNivelEquipo: null,
       };
     }
 
@@ -409,13 +478,23 @@ export class ProgresoService {
     if (regla.minNivelCriatura) {
       const nivelMin = regla.minNivelCriatura;
       let cuentaCriaturasNivel = 0;
-      if (txOrPrisma.criatura?.count) {
+      let nivelMaximoActual = 1;
+
+      if (txOrPrisma.criatura?.findMany) {
+        const criaturas = await txOrPrisma.criatura.findMany({
+          where: { personajeId },
+          select: { nivel: true, enEquipo: true },
+        });
+        cuentaCriaturasNivel = criaturas.filter((c: any) => c.nivel >= nivelMin).length;
+        nivelMaximoActual = criaturas.length > 0 ? Math.max(...criaturas.map((c: any) => c.nivel)) : 1;
+      } else if (txOrPrisma.criatura?.count) {
         cuentaCriaturasNivel = await txOrPrisma.criatura.count({
           where: {
             personajeId,
             nivel: { gte: nivelMin },
           },
         });
+        nivelMaximoActual = cuentaCriaturasNivel >= 1 ? nivelMin : 1;
       }
 
       const cumpleCartografia = progresoPrevia >= 100;
@@ -426,12 +505,30 @@ export class ProgresoService {
       const avanceCriatura = cumpleCriatura ? 50 : 0;
       const progresoActual = Math.round(avanceCartografia + avanceCriatura);
 
+      const requisitoCartografia: RequisitoCartografiaDto = {
+        zonaId: regla.zonaPreviaId!,
+        nombre: regla.nombreZonaPrevia ?? regla.zonaPreviaId!,
+        completada: cumpleCartografia,
+        progresoActual: Math.min(100, Math.max(0, progresoPrevia)),
+      };
+
+      const requisitoNivelEquipo: RequisitoNivelEquipoDto = {
+        nivelRequerido: nivelMin,
+        cantidadCriaturas: 1,
+        cantidadActual: cuentaCriaturasNivel,
+        nivelMaximoActual,
+        soloEquipo: false,
+        cumplido: cumpleCriatura,
+      };
+
       return {
         cumple,
         progresoActual,
         progresoObjetivo: 100,
         requisito: regla.requisito,
         detalleProgreso: `Cartografía ${regla.zonaPreviaId}: ${progresoPrevia}% · Criaturas Nv.${nivelMin}+: ${cuentaCriaturasNivel}/1`,
+        requisitoCartografia,
+        requisitoNivelEquipo,
       };
     }
 
@@ -441,7 +538,22 @@ export class ProgresoService {
       const nivelReq = regla.minNivelCriaturaEquipo;
 
       let cuentaEquipoNivel = 0;
-      if (txOrPrisma.criatura?.count) {
+      let nivelMaximoActual = 1;
+
+      if (txOrPrisma.criatura?.findMany) {
+        const criaturas = await txOrPrisma.criatura.findMany({
+          where: { personajeId },
+          select: { nivel: true, enEquipo: true },
+        });
+        const enEquipo = criaturas.filter((c: any) => c.enEquipo);
+        cuentaEquipoNivel = enEquipo.filter((c: any) => c.nivel >= nivelReq).length;
+        nivelMaximoActual =
+          enEquipo.length > 0
+            ? Math.max(...enEquipo.map((c: any) => c.nivel))
+            : criaturas.length > 0
+              ? Math.max(...criaturas.map((c: any) => c.nivel))
+              : 1;
+      } else if (txOrPrisma.criatura?.count) {
         cuentaEquipoNivel = await txOrPrisma.criatura.count({
           where: {
             personajeId,
@@ -449,6 +561,7 @@ export class ProgresoService {
             nivel: { gte: nivelReq },
           },
         });
+        nivelMaximoActual = cuentaEquipoNivel >= cantidadReq ? nivelReq : 1;
       }
 
       // Si findUnique no está mockeado en la prueba unitaria previa, permitimos paso si cuentaEquipoNivel >= cantidadReq
@@ -461,12 +574,30 @@ export class ProgresoService {
       const avanceEquipo = (Math.min(cantidadReq, cuentaEquipoNivel) / cantidadReq) * 50;
       const progresoActual = Math.round(avanceCartografia + avanceEquipo);
 
+      const requisitoCartografia: RequisitoCartografiaDto = {
+        zonaId: regla.zonaPreviaId!,
+        nombre: regla.nombreZonaPrevia ?? regla.zonaPreviaId!,
+        completada: progresoPrevia >= 100,
+        progresoActual: Math.min(100, Math.max(0, progresoPrevia)),
+      };
+
+      const requisitoNivelEquipo: RequisitoNivelEquipoDto = {
+        nivelRequerido: nivelReq,
+        cantidadCriaturas: cantidadReq,
+        cantidadActual: cuentaEquipoNivel,
+        nivelMaximoActual,
+        soloEquipo: true,
+        cumplido: cumpleEquipo,
+      };
+
       return {
         cumple,
         progresoActual,
         progresoObjetivo: 100,
         requisito: regla.requisito,
         detalleProgreso: `Cartografía ${regla.zonaPreviaId}: ${progresoPrevia}% · Criaturas en equipo Nv.${nivelReq}+: ${cuentaEquipoNivel}/${cantidadReq}`,
+        requisitoCartografia,
+        requisitoNivelEquipo,
       };
     }
 
@@ -476,6 +607,8 @@ export class ProgresoService {
       progresoObjetivo: 100,
       requisito: regla.requisito,
       detalleProgreso: regla.requisito ?? '',
+      requisitoCartografia: null,
+      requisitoNivelEquipo: null,
     };
   }
 
@@ -527,6 +660,8 @@ export class ProgresoService {
             cumpleRequisito: true,
             requisito: regla?.requisito ?? null,
             detalleProgreso: 'Sendas exploradas y cartografiadas.',
+            requisitoCartografia: null,
+            requisitoNivelEquipo: null,
           };
         }
 
@@ -545,6 +680,8 @@ export class ProgresoService {
           cumpleRequisito: estadoReq.cumple,
           requisito: regla?.requisito ?? null,
           detalleProgreso: estadoReq.detalleProgreso,
+          requisitoCartografia: estadoReq.requisitoCartografia,
+          requisitoNivelEquipo: estadoReq.requisitoNivelEquipo,
         };
       }),
     );

@@ -1373,3 +1373,80 @@ Previo a esta subfase, se detectaron las siguientes debilidades estructurales y 
   - **123 de 123 pruebas aprobadas** (100% de éxito, 0 fallos).
   - Validación de los 5 invariantes matemáticos `J-1` a `J-5`, blindaje contra tasa obsoleta en Golem Granito y grafo territorial completo.
 - **Compilación de Producción (`pnpm --filter web build`):** 0 errores de tipado o empaquetado Vite.
+
+---
+
+## 20. Sub-Fase 10n: Orientación Territorial, Mapa Topológico y Claridad Semántica de Progresión
+
+### 20.1 Diagnóstico Inicial y Auditoría Impeccable
+1. **Ambigüedad Semántica Crítica en "Nivel sugerido":**
+   - La etiqueta `"Nivel sugerido: 1-3"` en `PantallaHubUbicacion` y `PantallaExploracion` mezclaba erróneamente dos conceptos de dominio incompatibles: el rango de fauna salvaje hostil de la zona (`Zona.nivelMinimo`–`Zona.nivelMaximo`) y el nivel de combate del explorador.
+   - En la base de datos de Prisma (`apps/api/prisma/schema.prisma`), el modelo `Personaje` carece legítimamente de columna de nivel; todo el progreso pertenece a `Criatura` (nivel, experiencia y atributos). La UI carecía de una representación visual de este poder real del equipo.
+2. **Ausencia de Previa de Hábitat y Ceguera de Encuentros:**
+   - Al contemplar los senderos disponibles desde el Hub, el jugador no tenía forma de conocer qué especies de criaturas habitan la zona de destino, obligándolo a navegar a ciegas o consultar externamente la documentación.
+3. **Checklist de Requisitos no Estructurado:**
+   - La senda hacia zonas avanzadas (`ZON-04`, `ZON-05`, `ZON-06`) mostraba una cadena de texto plana para los requisitos sin desglosar visualmente el avance en cartografía frente a la preparación de criaturas en el equipo activo.
+4. **Carencia de Mapa Topológico Territorial:**
+   - Los exploradores no contaban con una vista cartográfica general de los 9 nodos del mundo de Aethelgard (`LOC-01` a `LOC-03`, `ZON-01` a `ZON-06`), dificultando la planificación del viaje y la comprensión del avance global en el reino.
+
+---
+
+### 20.2 Mejoras Implementadas
+
+#### A. Identidad Retro y Claridad Semántica: Fauna Salvaje vs. Poder de Equipo
+- **Distinción Semántica Canónica:**
+  - **Fauna Salvaje:** Etiqueta explícita `Fauna Salvaje: Nivel X - Y` para zonas silvestres, y `Asentamiento Pacífico (Sin Fauna Hostil)` para localidades seguras (`LOC-01`, `LOC-02`, `LOC-03`).
+  - **Poder del Equipo y Rango de Domador:** Cálculo soberano en memoria de las métricas tácticas del personaje:
+    - `nivelMaximoEquipo`: Nivel más alto entre las criaturas asignadas al equipo activo (1 a 6).
+    - `nivelPromedioEquipo`: Promedio aritmético redondeado del equipo activo.
+    - `nivelMaximoColeccion`: Nivel más alto considerando todo el inventario (equipo + almacén).
+    - `rangoDomador`: Título oficial jerárquico (`Aspirante a Domador`, `Domador Novato`, `Explorador de Senderos`, `Veterano de Aethelgard`, `Maestro Domador de la Cumbre`).
+  - **Chip de Evaluación de Riesgo Táctico:** Clasificación comparativa en tiempo real entre el nivel máximo del equipo y la fauna de la senda:
+    - `RIESGO CONTROLADO` (Esmeralda): $\text{nivelMaximoEquipo} \ge \text{faunaNivelMaximo}$.
+    - `DESAFÍO EQUILIBRADO` (Cian): $\text{faunaNivelMinimo} \le \text{nivelMaximoEquipo} < \text{faunaNivelMaximo}$.
+    - `PELIGRO ELEVADO` (Ámbar/Rojo): $\text{nivelMaximoEquipo} < \text{faunaNivelMinimo}$.
+    - `ZONA SEGURA` (Esmeralda/Azul): Destino en asentamiento pacífico.
+
+#### B. Componentes Táctiles 8bitcn/ui y Ergonomía
+- **`BannerUbicacionActual.tsx`:**
+  - Encabezado con código territorial oficial (`[LOC-01]`, `[ZON-02]`), insignias temáticas Lucide SVG (`ShieldCheck` para asentamientos, `Skull` para zonas silvestres), y badge de fauna salvaje.
+  - Barra de cartografía empotrada (`<Progress />`) señalando el porcentaje de exploración o el estado de cartografía completa al 100 %.
+  - Panel táctico retro de 4 cajas: Nombre y Rango de Domador, Nivel Máximo y Promedio del Equipo, Saldo de Monedas (`<Coins />`), y Dotación de Criaturas (`X/6 en equipo · Y en almacén`).
+  - Píldoras de acceso rápido a servicios locales (`Curación`, `Almacén`, `Tienda`, `Historial`, `Exploración`).
+- **`TarjetaSenderoConexion.tsx`:**
+  - Cabecera con destino, tipo (`ASENTAMIENTO` con `ShieldCheck` o `ZONA SALVAJE` con `Swords`), y badge de estado de senda.
+  - Indicador semántico de nivel de fauna y chip táctico de riesgo.
+  - Previa de hábitat y fauna avistada con iconos elementales SVG (`Flame`, `Droplets`, `Leaf`, `Moon`, `Sun`, `Shield`) e insignias de especies legendarias (`Crown`) o especiales (`Sparkles`).
+  - Checklist táctico de desbloqueo con iconos SVG `CheckCircle2` (verde) y `XCircle` (rojo) discriminando claramente cartografía previa y nivel/cantidad de criaturas requeridas.
+  - Hardening anti-doble clic en botones `DESBLOQUEAR SENDA` y `VIAJAR A ESTA RUTA`.
+- **`MinimapaRedTerritorial.tsx`:**
+  - Visualización del grafo de los 9 nodos de Aethelgard distribuido en 5 escalones de progresión territorial:
+    - *Escalón 1 (Valle Inicial):* `[LOC-01] Villa Serena`.
+    - *Escalón 2 (Sendas Bajas):* `[ZON-01] Praderas del Amanecer` y `[ZON-02] Riberas del Lago Espejo`.
+    - *Escalón 3 (Frontera Media):* `[LOC-02] Puesto Fronterizo del Río` y `[ZON-03] Bosque Susurrante`.
+    - *Escalón 4 (Paso Escarpado):* `[ZON-04] Paso de los Riscos`.
+    - *Escalón 5 (Norte y Cumbre):* `[LOC-03] Bastión del Norte`, `[ZON-05] Cueva Umbría` y `[ZON-06] Pico de la Cumbre`.
+  - Señalética retro con marcadores `AQUÍ` (cian pulsante), `100%` (esmeralda), `EXPLORADA` (ámbar) y `SELLADA` (candado rojo). Diseño responsive sin desbordamiento horizontal (`overflow-x-hidden`).
+
+#### C. Integración Multimedia y Audio Retro
+- Respeto del motor centralizado Web Audio API: preservación de fanfarrias de clic, viaje y desbloqueo, con soporte de síntesis polifónica sin bloqueos de reproducción ni fugas de memoria.
+
+#### D. Reglas de Servidor y Contratos Enriquecidos
+- **Enriquecimiento de `GET /api/mundo/ubicacion-actual`:**
+  - Adición de `faunaNivelMinimo`, `faunaNivelMaximo`, `especiesHabitantes` (resueltas en memoria sin queries N+1 desde `TABLAS_APARICION` y `BESTIARIO`), y `poderEquipo` (calculado a partir de las criaturas del personaje).
+  - Adición de `nodosMapa` con el estado cartográfico de las 9 ubicaciones canónicas.
+  - Conexiones enriquecidas con objetos de checklist `requisitoCartografia` y `requisitoNivelEquipo` para consumo nativo en interfaces tácticas.
+- **Principio YAGNI y Arquitectura Soberana:**
+  - Cero migraciones SQL adicionales. El poder del equipo y el rango de domador se calculan de manera pura y determinista a partir de las criaturas asociadas al personaje.
+
+---
+
+### 20.3 Verificación de Calidad y Cero Regresiones
+- **Pruebas Automatizadas Backend (`pnpm --filter api test`):**
+  - **130 de 130 pruebas aprobadas** (100% de éxito, 41 suites, 0 fallos).
+  - Nueva suite dedicada `apps/api/test/mundo.spec.ts` validando la obtención de especies habitantes, cálculo de poder de equipo, rangos de domador y enriquecimiento de `obtenerUbicacionActual`.
+- **Pruebas Automatizadas Front-End (`pnpm --filter web test`):**
+  - **95 de 95 pruebas aprobadas** (100% de éxito, 0 fallos).
+  - Suite ampliada `apps/web/test/verificacion-hub-mundo.spec.ts` certificando helpers de fauna y riesgo, topología de 9 nodos, erradicación de emojis unicode (R1) e invariantes visuales de componentes 8bitcn/ui.
+- **Linter de Frontend (`pnpm --filter web lint`):** 0 errores oxlint sobre el monorepo.
+- **Compilación de Producción (`pnpm --filter web build`):** 0 errores de tipado TypeScript y empaquetado Vite (`tsc -b && vite build` completado exitosamente).

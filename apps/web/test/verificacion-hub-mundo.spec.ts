@@ -3,6 +3,10 @@ import assert from "node:assert/strict";
 import {
   SERVICIOS_HUB,
   estaServicioHabilitadoEnZona,
+  formatearRangoFauna,
+  evaluarRiesgoFauna,
+  TOPOLOGIA_AETHELGARD,
+  construirNodosMapaFallback,
 } from "../src/lib/servicios-hub.ts";
 import {
   obtenerImagenZona,
@@ -285,3 +289,146 @@ test("Subfase 10m: Desbloqueo territorial en PantallaHubUbicacion incluye api.ve
     "handleDesbloquearRuta debe protegerse contra ejecuciones simultáneas",
   );
 });
+
+test("Subfase 10n: formatearRangoFauna y evaluarRiesgoFauna distinguen asentamientos pacíficos y modulan riesgo táctico", () => {
+  // Asentamientos pacíficos
+  assert.strictEqual(
+    formatearRangoFauna(null, null, null, true),
+    "Asentamiento Pacífico (Sin Fauna Hostil)",
+  );
+  assert.strictEqual(
+    formatearRangoFauna(null, null, "Rango libre", true),
+    "Asentamiento Pacífico (Sin Fauna Hostil)",
+  );
+
+  // Zonas silvestres con fauna
+  assert.strictEqual(
+    formatearRangoFauna(1, 3, "1-3", false),
+    "Fauna Salvaje: Nivel 1 - 3",
+  );
+  assert.strictEqual(
+    formatearRangoFauna(5, 7, "5-7", false),
+    "Fauna Salvaje: Nivel 5 - 7",
+  );
+  assert.strictEqual(
+    formatearRangoFauna(null, null, "8-12", false),
+    "Fauna Salvaje: Nivel 8-12",
+  );
+
+  // Evaluación de riesgo táctico
+  const seguro = evaluarRiesgoFauna(5, null, null);
+  assert.strictEqual(seguro.codigo, "PACIFICO");
+  assert.strictEqual(seguro.etiqueta, "ZONA SEGURA");
+
+  const controlado = evaluarRiesgoFauna(7, 3, 5);
+  assert.strictEqual(controlado.codigo, "CONTROLADO");
+  assert.strictEqual(controlado.etiqueta, "RIESGO CONTROLADO");
+
+  const equilibrado = evaluarRiesgoFauna(4, 3, 5);
+  assert.strictEqual(equilibrado.codigo, "EQUILIBRADO");
+  assert.strictEqual(equilibrado.etiqueta, "DESAFÍO EQUILIBRADO");
+
+  const peligroso = evaluarRiesgoFauna(2, 3, 5);
+  assert.strictEqual(peligroso.codigo, "PELIGROSO");
+  assert.strictEqual(peligroso.etiqueta, "PELIGRO ELEVADO");
+});
+
+test("Subfase 10n: TOPOLOGIA_AETHELGARD y construirNodosMapaFallback cubren los 9 nodos canónicos de Aethelgard", () => {
+  assert.strictEqual(TOPOLOGIA_AETHELGARD.length, 9, "Deben existir exactamente 9 nodos canónicos");
+  const idsEsperados = [
+    "LOC-01",
+    "ZON-01",
+    "ZON-02",
+    "LOC-02",
+    "ZON-03",
+    "ZON-04",
+    "LOC-03",
+    "ZON-05",
+    "ZON-06",
+  ];
+
+  const idsPresentes = TOPOLOGIA_AETHELGARD.map((n) => n.id);
+  assert.deepStrictEqual(idsPresentes, idsEsperados);
+
+  // Fallback de nodos ante respuesta parcial de API
+  const ubicacionMock = {
+    ubicacionId: "LOC-02",
+    nombre: "Puesto Fronterizo del Río",
+    tipo: "LOCALIDAD" as const,
+    esSegura: true,
+    descripcion: "Cruce comercial ribereño.",
+    servicios: ["TIENDA", "ALMACEN", "CURACION"],
+    progresoZona: 100,
+    conexiones: [
+      {
+        ubicacionDestinoId: "ZON-04",
+        nombre: "Paso de los Riscos",
+        nivelSugerido: "5-7",
+        estaBloqueada: true,
+        requisito: "Requisitos pendientes",
+      },
+    ],
+  };
+
+  const nodos = construirNodosMapaFallback(ubicacionMock as any);
+  assert.strictEqual(nodos.length, 9);
+
+  const loc02 = nodos.find((n) => n.id === "LOC-02")!;
+  assert.ok(loc02);
+  assert.strictEqual(loc02.esActual, true);
+  assert.strictEqual(loc02.desbloqueada, true);
+
+  const zon04 = nodos.find((n) => n.id === "ZON-04")!;
+  assert.ok(zon04);
+  assert.strictEqual(zon04.esActual, false);
+  assert.strictEqual(zon04.esAdyacente, true);
+  assert.strictEqual(zon04.desbloqueada, false);
+});
+
+test("Subfase 10n: Cumplimiento de Regla R1 (cero emojis) e inspección de orientación territorial y hábitat", async () => {
+  const { readFileSync } = await import("node:fs");
+  const { join, dirname } = await import("node:path");
+  const { fileURLToPath } = await import("node:url");
+
+  const __dirname = dirname(fileURLToPath(import.meta.url));
+
+  const archivos = [
+    join(__dirname, "../src/paginas/PantallaHubUbicacion.tsx"),
+    join(__dirname, "../src/paginas/PantallaExploracion.tsx"),
+    join(__dirname, "../src/components/mundo/BannerUbicacionActual.tsx"),
+    join(__dirname, "../src/components/mundo/TarjetaSenderoConexion.tsx"),
+    join(__dirname, "../src/components/mundo/MinimapaRedTerritorial.tsx"),
+  ];
+
+  const regexEmoji = /\p{Extended_Pictographic}/u;
+
+  for (const archivo of archivos) {
+    const contenido = readFileSync(archivo, "utf-8");
+    const lineas = contenido.split("\n");
+
+    for (let i = 0; i < lineas.length; i++) {
+      const linea = lineas[i];
+      assert.strictEqual(
+        regexEmoji.test(linea),
+        false,
+        `Emoji unicode no permitido en línea ${i + 1} de ${archivo}: "${linea.trim()}"`,
+      );
+    }
+  }
+
+  // Verificación semántica en PantallaHubUbicacion
+  const hubCodigo = readFileSync(join(__dirname, "../src/paginas/PantallaHubUbicacion.tsx"), "utf-8");
+  assert.ok(hubCodigo.includes("BannerUbicacionActual"), "PantallaHubUbicacion debe renderizar BannerUbicacionActual");
+  assert.ok(hubCodigo.includes("MinimapaRedTerritorial"), "PantallaHubUbicacion debe renderizar MinimapaRedTerritorial");
+  assert.ok(hubCodigo.includes("formatearRangoFauna"), "PantallaHubUbicacion debe usar formatearRangoFauna");
+  assert.ok(hubCodigo.includes("requisitoCartografia"), "PantallaHubUbicacion debe contemplar requisitoCartografia");
+  assert.ok(hubCodigo.includes("requisitoNivelEquipo"), "PantallaHubUbicacion debe contemplar requisitoNivelEquipo");
+
+  // Verificación semántica en PantallaExploracion
+  const expCodigo = readFileSync(join(__dirname, "../src/paginas/PantallaExploracion.tsx"), "utf-8");
+  assert.ok(expCodigo.includes("FAUNA SALVAJE: NV."), "PantallaExploracion debe desplegar etiqueta clara 'FAUNA SALVAJE: NV.'");
+  assert.ok(expCodigo.includes("EQUIPO: NV."), "PantallaExploracion debe contrastar con 'EQUIPO: NV.'");
+  assert.ok(expCodigo.includes("especiesHabitantes"), "PantallaExploracion debe desplegar especiesHabitantes del hábitat");
+  assert.ok(expCodigo.includes("MinimapaRedTerritorial"), "PantallaExploracion debe integrar MinimapaRedTerritorial");
+});
+
