@@ -1315,50 +1315,61 @@ La auditoría de diseño heurístico y técnico realizada con la skill `impeccab
 
 ### 19.1 Diagnóstico Inicial y Auditoría Impeccable
 Previo a esta subfase, se detectaron las siguientes debilidades estructurales y de experiencia de usuario:
-1. **Desconexión Territorial y Desbloqueo Estático:** Todas las rutas del mundo figuraban o bien abiertas sin progresión o bloqueadas de forma estática sin un motor autoritativo de progresión por cartografía y nivel. No existía evaluación de cartografía al 100% ni de niveles de criatura en el servidor.
-2. **Jerarquía BST Dispersa y Arbitraria:** Los presupuestos totales de atributos base (BST) de las 30 criaturas presentaban inconsistencias con respecto a su rareza y tasa de captura. Especies comunes poseían a veces BST superior a especies raras, y las tasas de captura no seguían una curva matemática monótona anticorrelacionada.
-3. **Ausencia de Señalética Táctica en el Hub:** En la interfaz de rutas del Asentamiento (`PantallaHubUbicacion`), el aventurero no visualizaba el progreso cartográfico hacia el desbloqueo ni disponía de un botón retro para inspeccionar o desbloquear la senda al cumplir los requisitos.
-4. **Catálogo sin Indicadores de Poder ni Ordenamiento:** En `PantallaCatalogo`, las criaturas se desplegaban sin indicar su BST ni la rareza canónica con porcentaje de aparición, y no existía un control para ordenar las especies por poder, dificultad de captura o rareza.
+1. **Anomalía del 83 % de Captura en Golem Granito (Apex de `ZON-04`):**
+   - Acoplamiento al `challenge_rating = 1` externo de Open5e en `normalizador-criaturas.util.ts` (`0.90 - 0.07 * 1 = 0.83`), provocando que un Apex `ESPECIAL` de nivel 5–7 fuera más fácil de capturar que criaturas comunes.
+   - Lectura cruda desde la BD sin re-siembra ni blindaje autoritativo en `CriaturasService.obtenerEspecies()`.
+   - Pendiente plana insuficiente en la fórmula previa ($1.10 - \text{BST}/400$), asignando 40 %–58 % a criaturas Apex.
+2. **Ruptura de Jerarquía Rareza vs BST (Solapamientos entre zonas):**
+   - Especies de menor rareza en zonas altas superaban en BST a especies de rareza superior de zonas iniciales (ej. `gargola` con BST 216 vs `oso-fresno` con BST 210), contradiciendo el orden en `PantallaCatalogo.tsx`.
+3. **Bloqueo Permanente de Rutas y Ausencia de Señalética en el Hub:**
+   - Rutas territoriales intermedias (`LOC-02`, `ZON-03`, `ZON-04`, `LOC-03`) carecían de persistencia en `zona_desbloqueada` y feedback cuantitativo en `PantallaHubUbicacion.tsx`.
 
 ---
 
 ### 19.2 Mejoras Implementadas
 
 #### A. Identidad Retro y Jerarquía Visual
-- **Badges de Rareza Canónica:** Cada especie en `PantallaCatalogo` exhibe una insignia estilizada de rareza con marco negro y sombra ortogonal: `COMÚN (35%)`, `FRECUENTE (15%)`, `RARA (10%)`, `ESPECIAL (5%)` y `LEGENDARIA (5%)`, integrando iconos temáticos Lucide SVG (`Crown`, `Sparkles`, `Zap`, `Shield`, `BookOpen`).
-- **Indicador Monótono de BST:** Se incorporó el indicador `BST: <strong className="text-emerald-400">{calcularPresupuestoCriatura(especie)}</strong>` junto a `CR` y `Captura` tanto en las tarjetas como en el modal de inspección retro.
-- **Selector de Ordenamiento Jerárquico:** Selector retro brutalista con 5 modos: Hábitat y Rareza (`ZONA_ASC`), Mayor Poder BST (`BST_DESC`), Menor Poder BST (`BST_ASC`), Más Difícil Captura (`CAPTURA_ASC`) y Mayor Rareza (`RAREZA_DESC`).
+- **Bandas Globales Disjuntas de BST y Captura por Rareza:**
+  | Rareza | Peso | Cantidad | Banda Global BST | Banda Tasa Captura Base | Separación Estricta |
+  | :--- | :---: | :---: | :---: | :---: | :--- |
+  | **`COMUN`** | 35 % (2/zona) | 12 | **$[150,\; 195]$** | **$0.70 - 0.85$** (70 % – 85 %) | $\max(\text{COMUN}) = 195 < 210 = \min(\text{FRECUENTE})$ |
+  | **`FRECUENTE`** | 15 % (1/zona) | 6 | **$[210,\; 245]$** | **$0.53 - 0.65$** (53 % – 65 %) | $\max(\text{FRECUENTE}) = 245 < 261 = \min(\text{RARA})$ |
+  | **`RARA`** | 10 % (1/zona) | 6 | **$[261,\; 296]$** | **$0.36 - 0.48$** (36 % – 48 %) | $\max(\text{RARA}) = 296 < 315 = \min(\text{ESPECIAL})$ |
+  | **`ESPECIAL`** | 5 % (`Z1..Z4`) | 4 | **$[315,\; 345]$** | **$0.20 - 0.30$** (20 % – 30 %) | $\max(\text{ESPECIAL}) = 345 < 360 = \min(\text{LEGENDARIA})$ |
+  | **`LEGENDARIA`** | 5 % (`Z5..Z6`) | 2 | **$[360,\; 375]$** | **$0.10 - 0.15$** (10 % – 15 %) | Ápice absoluto ($\text{BST} \ge 360$) |
+- **Badges Jerárquicos en Tarjeta y Modal:** Insignias temáticas Lucide SVG (`Crown`, `Sparkles`, `Zap`, `Shield`, `BookOpen`) con marco negro y sombras sólidas; indicador `BST: {bst}`, `CR: {cr}` y `Captura: {Math.round(tasaCaptura * 100)}%` (con `20%` para Golem Granito, `15%` para Behir y `10%` para Remorhaz).
+- **Selector de Ordenamiento con Criterio Alfabético:** Incorporación de 6 modos: Hábitat y Rareza (`ZONA_ASC`), Mayor Poder BST (`BST_DESC`), Menor Poder BST (`BST_ASC`), Mayor Rareza (`RAREZA_DESC`), Más Difícil Captura (`CAPTURA_ASC`) y Orden Alfabético (`NOMBRE_ASC`).
 
 #### B. Componentes Táctiles 8bitcn/ui y Hardening
-- **Barra de Cartografía Territorial con `Progress`:** Integración del componente `Progress` de 8bitcn en las tarjetas de sendas bloqueadas del Hub de Ubicación y dentro del modal `AlertDialog` de requisitos de acceso, visualizando la cartografía en escala de 0% a 100%.
-- **Botón Retro de Desbloqueo Territorial:** Acción interactiva `DESBLOQUEAR SENDA` con estado de mutación retro `DESBLOQUEANDO...`, `aria-busy` y protección estricta contra doble clic concurrente mediante guarda `if (desbloqueandoId || viajando) return;`.
-- **Insignia "LISTA PARA DESBLOQUEAR":** Notificación visual dorada cuando la senda satisface la totalidad de criterios de nivel y cartografía requeridos.
+- **Tarjeta Táctica de Senda Sellada con `Progress`:** Visualización precisa del avance cartográfico `${progresoActual}% / ${progresoObjetivo}%` y desglose de requisitos pendientes en Hub y modal `AlertDialog`.
+- **Botón Retro de Desbloqueo Territorial:** Acción `DESBLOQUEAR SENDA` conectada a `api.verificarZona` con `aria-busy`, prevención de doble clic y feedback táctil.
+- **Insignia "LISTA PARA DESBLOQUEAR":** Notificación dorada de disponibilidad inmediata al cumplir la totalidad de condiciones de cartografía y nivel.
 
 #### C. Integración Multimedia y Audio Retro Centralizado
-- **Retroalimentación Acústica de Desbloqueo:** Invocación de `reproducirSonido("confirmar", 0.6)` al desbloquear exitosamente un sendero territorial, `reproducirSonido("error", 0.5)` ante fallos de requisitos y `reproducirSonido("click", 0.3)` al alternar selectores de ordenamiento.
+- **Retroalimentación Acústica:** Fanfarria `confirmar` al desbloquear sendas, `error` ante bloqueos y `click` al interactuar con selectores.
 
 #### D. Reglas de Servidor y Contratos
+- **Fórmula Soberana y Determinística de Captura:**
+  $$\text{BST} = \text{hpBase} + \text{ataqueBase} + \text{defensaBase} + \text{velocidadBase}$$
+  $$\text{tasaCaptura}(\text{BST}) = \text{clamp}\left(0.10,\; 0.85,\; \text{round}\left(\left(1.35 - \frac{\text{BST}}{300}\right) \times 100\right) / 100\right)$$
+  Erradica definitivamente el 83 % en Golem Granito ($\text{BST} = 345 \implies \text{tasaCaptura} = 0.20$).
+- **Blindaje en `CriaturasService`:** Sincronización soberana directa contra `BESTIARIO` y `calcularTasaCapturaPorPresupuesto`, impidiendo la filtración de tasas obsoletas de BD.
 - **Matriz Canónica de Desbloqueo Territorial (`REGLAS_DESBLOQUEO_TERRITORIAL`):**
-  - `LOC-02` (Bastión de la Cumbre): Requiere `ZON-01` al 100%.
-  - `ZON-03` (Ciénaga Tenebrosa): Requiere `ZON-02` al 100%.
-  - `ZON-04` (Ruinas Olvidadas): Requiere `ZON-03` al 100% y 1 criatura de nivel >= 5.
-  - `LOC-03` (Puesto Fronterizo del Río): Requiere `ZON-04` al 100%.
-  - `ZON-05` (Picos Helados): Requiere `ZON-04` al 100% y 3 criaturas de nivel >= 5.
-  - `ZON-06` (Volcán de Fuego Profundo): Requiere `ZON-05` al 100% y 1 criatura de nivel >= 10.
-- **Fórmula Soberana de Captura Anticorrelacionada con BST:**
-  $$\text{tasaCaptura} = \text{clamp}\left(0.10, 0.85, 1.10 - \frac{\text{BST}}{400}\right)$$
-  Garantiza monotonía estricta: a mayor BST, menor probabilidad base de captura.
-- **Recalibración de las 30 Especies:** Rango monótono [160, 380] BST por zonas y rarezas, preservando la exclusividad legendaria de Behir y Remorhaz en 380 BST.
-- **Disparadores Automáticos Idempotentes:** Integración de `evaluarDesbloqueosAutomaticos` en `ExploracionService`, `CombateService` y `CapturaService`, desbloqueando zonas de forma proactiva al subir de nivel o completar cartografía.
+  - `LOC-02` (Puesto Fronterizo del Río): Cartografiar `ZON-01` al 100%.
+  - `ZON-03` (Bosque Susurrante): Cartografiar `ZON-02` al 100%.
+  - `ZON-04` (Paso de los Riscos): Cartografiar `ZON-03` al 100% y 1 criatura Nv. 5+.
+  - `LOC-03` (Bastión del Norte): Cartografiar `ZON-04` al 100%.
+  - `ZON-05` (Cueva Umbría): Cartografiar `ZON-04` al 100% y 3 criaturas en equipo Nv. 5+.
+  - `ZON-06` (Pico de la Cumbre): Cartografiar `ZON-05` al 100% y 1 criatura Nv. 10+.
+- **Disparadores Transaccionales Idempotentes:** Invocación de `evaluarDesbloqueosAutomaticos` en `ExploracionService`, `CombateService` y `CapturaService`.
 
 ---
 
 ### 19.3 Verificación de Calidad y Cero Regresiones
 - **Pruebas Automatizadas Front-End (`pnpm --filter web test`):**
   - **92 de 92 pruebas aprobadas** (100% de éxito, 0 fallos).
-  - Validación de cero emojis unicode (R1), presencia de `api.verificarZona`, `DESBLOQUEAR SENDA`, `Progress`, selector `Ordenar especies del catálogo` e indicador `BST`.
-  - Pruebas unitarias completas de `calcularPresupuestoCriatura`, `resolverRarezaEspecie` y `ordenarEspeciesCatalogo`.
+  - Verificación de ordenamiento alfabético `NOMBRE_ASC`, bandas disjuntas de BST, erradicación de anomalía en Golem Granito y cero emojis unicode (R1).
 - **Pruebas Automatizadas Backend (`pnpm --filter api test`):**
-  - **122 de 122 pruebas aprobadas** (100% de éxito, 0 fallos).
-  - Validación de invariantes J-1 a J-4 de monotonía de BST, fórmula soberana de captura y el grafo completo de desbloqueo territorial para `LOC-02`, `LOC-03`, `ZON-03..06`.
-- **Compilación de Producción (`pnpm --filter web build`):** 0 errores de tipado o empaquetado Vite en 2.99s.
+  - **123 de 123 pruebas aprobadas** (100% de éxito, 0 fallos).
+  - Validación de los 5 invariantes matemáticos `J-1` a `J-5`, blindaje contra tasa obsoleta en Golem Granito y grafo territorial completo.
+- **Compilación de Producción (`pnpm --filter web build`):** 0 errores de tipado o empaquetado Vite.

@@ -31,14 +31,16 @@ $$\text{promedioAtaque} = \text{damage\_die\_count} \times \left(\frac{\text{lad
 - $\text{damage\_bonus}$: Si el campo es `null`, se evalúa como $0$.
 
 ### 1.3 Tasa de captura base de la especie (Subfase 10m)
-La susceptibilidad intrínseca de una especie a ser capturada se calcula de forma soberana a partir de su presupuesto total de atributos base (BST), asegurando una estricta relación monótona y anticorrelacionada entre el poder de la criatura y la dificultad de su domesticación:
+La susceptibilidad intrínseca de una especie a ser capturada se calcula de forma soberana a partir de su presupuesto total de atributos base (BST), desacoplada enteramente del `challenge_rating` externo de Open5e y asegurando una estricta relación monótona y anticorrelacionada entre el poder de la criatura y la dificultad de su domesticación:
 
-$\text{tasaCaptura} = \text{clamp}\left(0.10, 0.85, 1.10 - \frac{\text{BST}}{400}\right)$
+$$\text{tasaCaptura} = \text{clamp}\left(0.10,\; 0.85,\; \text{round}\left(\left(1.35 - \frac{\text{BST}}{300}\right) \times 100\right) / 100\right)$$
 
 Donde $\text{clamp}(a, b, x) = \max(a, \min(b, x))$:
-- **Criaturas de menor BST:** Con $\text{BST} = 160$ (ej. `ciervo-lunar`), $\text{tasaCaptura} = 1.10 - 0.40 = 0.70$ (70%).
-- **Criaturas intermedias:** Con $\text{BST} = 260$ (ej. `treant-anciano`), $\text{tasaCaptura} = 1.10 - 0.65 = 0.45$ (45%).
-- **Criaturas apex y Legendarias:** Con $\text{BST} = 380$ (ej. `behir-abismo` o `remorhaz-glaciar`), $\text{tasaCaptura} = 1.10 - 0.95 = 0.15$ (15%).
+- **`COMUN` ($\text{BST} \in [150, 195]$):** Con $\text{BST} = 150$ (ej. `lobo-estepario`), $\text{tasaCaptura} = 1.35 - 0.50 = \mathbf{0.85}$ (85%). Con $\text{BST} = 195$ (ej. `lobo-invernal`), $\text{tasaCaptura} = \mathbf{0.70}$ (70%).
+- **`FRECUENTE` ($\text{BST} \in [210, 245]$):** Con $\text{BST} = 210$ (ej. `ciervo-lunar`), $\text{tasaCaptura} = \mathbf{0.65}$ (65%). Con $\text{BST} = 245$ (ej. `elemental-agua`), $\text{tasaCaptura} = \mathbf{0.53}$ (53%).
+- **`RARA` ($\text{BST} \in [261, 296]$):** Con $\text{BST} = 261$ (ej. `halcon-ceniza`), $\text{tasaCaptura} = \mathbf{0.48}$ (48%). Con $\text{BST} = 296$ (ej. `tigre-dientes-sable`), $\text{tasaCaptura} = \mathbf{0.36}$ (36%).
+- **`ESPECIAL` Apex regional ($\text{BST} \in [315, 345]$):** Con $\text{BST} = 315$ (ej. `oso-fresno`), $\text{tasaCaptura} = \mathbf{0.30}$ (30%). Con $\text{BST} = 345$ (ej. `golem-granito`), $\text{tasaCaptura} = \mathbf{0.20}$ (20%, erradicado definitivamente el 83%).
+- **`LEGENDARIA` Ápice absoluto ($\text{BST} \in [360, 375]$):** Con $\text{BST} = 360$ (ej. `behir-abismo`), $\text{tasaCaptura} = \mathbf{0.15}$ (15%). Con $\text{BST} = 375$ (ej. `remorhaz-glaciar`), $\text{tasaCaptura} = \mathbf{0.10}$ (10%).
 - **Límites de diseño:** El intervalo está acotado estrictamente entre $0.10$ (10%, suelo mínimo) y $0.85$ (85%, techo máximo).
 
 ### 1.4 Caso borde obligatorio: División entre cero ($\text{maximo} = \text{minimo}$)
@@ -76,7 +78,7 @@ Determina el daño infligido a los puntos de golpe del defensor al impactar un m
 Determina la probabilidad de éxito al intentar capturar una criatura salvaje durante un turno de combate.
 
 - **Variables y rangos:**
-  - $\text{tasaCaptura}$ (Especie): $[0.10, 0.90]$.
+  - $\text{tasaCaptura}$ (Especie): $[0.10, 0.85]$ (calculada soberanamente mediante $\text{clamp}(0.10, 0.85, 1.35 - \text{BST}/300)$).
   - $\text{hpActual}$: $[1, \text{hpMaximo}]$.
   - $\text{hpMaximo}$: $[30, 500]$.
   - $\text{multiplicadorTalisman}$: $1.0$ (Básico) o $1.5$ (Resonante).
@@ -263,16 +265,17 @@ Estos cinco invariantes actúan como contratos inquebrantables de la lógica del
 | **INV-04** | Daño mínimo no nulo | $\text{danoFinal} \ge 1$. Todo ataque ejecutado que impacte inflige al menos 1 punto de daño, sin importar la defensa del rival ni la desventaja elemental ($0.75\times$). | Fase 7 (Combate) y Subfase 10k |
 | **INV-05** | Progresión monótona creciente | $\text{xpRequerida}(n+1) > \text{xpRequerida}(n)$ para todo $n \ge 1$. Cada nivel exige estrictamente más XP acumulada que el anterior. | Fase 7 (Progresión) |
 
-### 4.1 Invariantes de jerarquía táctica y presupuesto de especies (Subfase 10j)
+### 4.1 Invariantes de jerarquía táctica, bandas disjuntas y presupuesto de especies (Subfase 10m)
 
-Para garantizar que ninguna criatura temprana opaque a los desafíos de zonas avanzadas y que las criaturas especiales y legendarias conserven su estatus apex, rigen 4 invariantes numéricos verificados por la suite unitaria (`apps/api/test/bestiario-canonico.spec.ts`):
+Para garantizar que ninguna criatura de menor rareza opaque a una criatura de rareza superior y asegurar la anticorrelación matemática estricta con la tasa de captura, rigen 5 invariantes numéricos verificados por la suite unitaria (`apps/api/test/bestiario-canonico.spec.ts`):
 
 | ID | Invariante | Regla Matemática / Lógica Operativa | Cumplimiento Verificado |
 | --- | --- | --- | --- |
-| **J-1** | Jerarquía de Aprendiz a Aventurero | Todo presupuesto común de Zona 1 ($160 - 170$) es estrictamente menor que los presupuestos comunes de Zona 2 ($190 - 200$). | Verificado en código (`bestiario-canonico.ts`) |
-| **J-2** | Supremacía de Rarezas Superiores | Toda criatura común de una jerarquía regional posee un presupuesto total inferior a las criaturas especiales o legendarias de jerarquías iguales o superiores. | Verificado en código y pruebas unitarias |
-| **J-3** | Monotonía Estricta Apex y Legendarias | Los presupuestos de criaturas especiales y legendarias crecen monótonamente por bioma: $210 < 250 < 290 < 330 < 380 = 380$. Las dos Legendarias (`behir-abismo`: 380, `remorhaz-glaciar`: 380) coronan el techo máximo del compendio. | Verificado en matriz canónica y BD |
-| **J-4** | Acotamiento de Atributos Base | Cada estadística individual ($\text{hpBase}, \text{ataqueBase}, \text{defensaBase}, \text{velocidadBase}$) se ubica estrictamente dentro del intervalo $[30, 100]$. | Verificado en 30 especies del bestiario |
+| **J-1** | Jerarquía Intra-Zonal Estricta | En toda zona $Z_k$: $\max\text{BST}(Z_k, 35\%) < \text{BST}(Z_k, 15\%) < \text{BST}(Z_k, 10\%) < \text{BST}(Z_k, 5\%)$. | Verificado en código (`bestiario-canonico.ts`) |
+| **J-2** | Monotonía Inter-Zonal por Escalafón | Para cada peso ($35\%, 15\%, 10\%, 5\%$), los presupuestos crecen estrictamente de `ZON-01` a `ZON-06`. | Verificado en código y pruebas unitarias |
+| **J-3** | Jerarquía Global Estricta sin Solapamiento | $\max(\text{BST}_{\text{COMUN}}) = 195 < \min(\text{BST}_{\text{FRECUENTE}}) = 210 < \max(\text{BST}_{\text{FRECUENTE}}) = 245 < \min(\text{BST}_{\text{RARA}}) = 261 < \max(\text{BST}_{\text{RARA}}) = 296 < \min(\text{BST}_{\text{ESPECIAL}}) = 315 < \max(\text{BST}_{\text{ESPECIAL}}) = 345 < \min(\text{BST}_{\text{LEGENDARIA}}) = 360$. | Verificado en matriz canónica y BD |
+| **J-4** | Acotamiento Individual de Atributos Base | Toda estadística individual ($\text{hpBase}, \text{ataqueBase}, \text{defensaBase}, \text{velocidadBase}$) se ubica estrictamente dentro del intervalo $[30, 100]$. | Verificado en las 30 especies |
+| **J-5** | Anticorrelación Estricta y Bandas de Captura | $\text{BST}_A > \text{BST}_B \implies \text{tasaCaptura}(A) < \text{tasaCaptura}(B)$. Bandas: Común $[0.70, 0.85]$, Frecuente $[0.50, 0.65]$, Rara $[0.35, 0.48]$, Especial $[0.20, 0.30]$ (Golem Granito 20%), Legendaria $[0.10, 0.15]$. | Verificado en suite unitaria y API |
 
 ---
 
