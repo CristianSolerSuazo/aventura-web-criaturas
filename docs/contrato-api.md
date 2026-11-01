@@ -172,7 +172,7 @@ Este documento define la especificación técnica de la API REST que comunica el
 
 #### `GET /api/mundo/ubicacion-actual`
 - **Módulo:** `M-MUN`.
-- **Descripción:** Retorna los detalles de la ubicación actual del personaje, su slug para recursos multimedia, nivel sugerido, servicios, progreso de exploración y destinos conectados.
+- **Descripción:** Retorna los detalles de la ubicación actual del personaje, su slug para recursos multimedia, nivel de fauna salvaje (`faunaNivelMinimo` y `faunaNivelMaximo`), especies autóctonas del hábitat, poder y rango del equipo del explorador, red territorial de 9 nodos para minimapa, servicios y conexiones con checklist estructurado.
 - **Respuesta exitosa (`200 OK`):**
   ```json
   {
@@ -185,12 +185,54 @@ Este documento define la especificación técnica de la API REST que comunica el
     "nivelMinimo": null,
     "nivelMaximo": null,
     "nivelSugerido": null,
+    "faunaNivelMinimo": null,
+    "faunaNivelMaximo": null,
     "servicios": ["CURACION", "ALMACEN", "HISTORIAL"],
     "progresoZona": 100,
+    "especiesHabitantes": [],
+    "poderEquipo": {
+      "nivelMaximoEquipo": 5,
+      "nivelPromedioEquipo": 4,
+      "nivelMaximoColeccion": 5,
+      "criaturasEquipoNv5": 2,
+      "rangoDomador": "Domador Novato"
+    },
+    "nodosMapa": [
+      {
+        "id": "LOC-01",
+        "nombre": "Villa Serena",
+        "tipo": "LOCALIDAD",
+        "esSegura": true,
+        "faunaNivelMinimo": null,
+        "faunaNivelMaximo": null,
+        "desbloqueada": true,
+        "progreso": 100,
+        "esActual": true,
+        "esAdyacente": false,
+        "conexionesIds": ["ZON-01", "ZON-02"]
+      },
+      {
+        "id": "ZON-01",
+        "nombre": "Praderas del Amanecer",
+        "tipo": "ZONA",
+        "esSegura": false,
+        "faunaNivelMinimo": 1,
+        "faunaNivelMaximo": 3,
+        "desbloqueada": true,
+        "progreso": 100,
+        "esActual": false,
+        "esAdyacente": true,
+        "conexionesIds": ["LOC-01", "LOC-02"]
+      }
+    ],
     "conexiones": [
       {
         "ubicacionDestinoId": "ZON-01",
         "nombre": "Praderas del Amanecer",
+        "tipoDestino": "ZONA",
+        "esSegura": false,
+        "faunaNivelMinimo": 1,
+        "faunaNivelMaximo": 3,
         "nivelSugerido": "1-3",
         "estaBloqueada": false,
         "desbloqueada": true,
@@ -199,11 +241,28 @@ Este documento define la especificación técnica de la API REST que comunica el
         "requisito": null,
         "detalleProgreso": null,
         "progresoActual": 100,
-        "progresoObjetivo": 100
+        "progresoObjetivo": 100,
+        "especiesHabitantes": [
+          {
+            "slug": "lobo-estepario",
+            "nombre": "Lobo Estepario",
+            "tipo": "BESTIA",
+            "elemento": "Natura",
+            "esEspecial": false,
+            "esLegendaria": false,
+            "pesoAparicion": 35
+          }
+        ],
+        "requisitoCartografia": null,
+        "requisitoNivelEquipo": null
       },
       {
         "ubicacionDestinoId": "LOC-02",
-        "nombre": "Bastión de la Cumbre",
+        "nombre": "Puesto Fronterizo del Río",
+        "tipoDestino": "LOCALIDAD",
+        "esSegura": true,
+        "faunaNivelMinimo": null,
+        "faunaNivelMaximo": null,
         "nivelSugerido": "Rango libre",
         "estaBloqueada": true,
         "desbloqueada": false,
@@ -212,7 +271,15 @@ Este documento define la especificación técnica de la API REST que comunica el
         "requisito": "Requiere explorar Praderas del Amanecer al 100%",
         "detalleProgreso": "Requiere cartografiar ZON-01 al 100%",
         "progresoActual": 100,
-        "progresoObjetivo": 100
+        "progresoObjetivo": 100,
+        "especiesHabitantes": [],
+        "requisitoCartografia": {
+          "zonaId": "ZON-01",
+          "nombre": "Praderas del Amanecer",
+          "completada": true,
+          "progresoActual": 100
+        },
+        "requisitoNivelEquipo": null
       }
     ]
   }

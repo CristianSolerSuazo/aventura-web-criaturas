@@ -173,6 +173,33 @@ Para acceder a zonas avanzadas y asentamientos fronterizos, el servidor evalúa 
 
 *Nota operativa:* Las condiciones son evaluadas de forma idempotente tanto proactivamente (tras exploración que alcanza 100%, victorias de combate o capturas) como a demanda mediante el endpoint `POST /progreso/verificar-zona`.
 
+#### 2.6.1 Claridad Semántica Territorial: Nivel de Fauna Salvaje vs. Poder del Equipo (Subfase 10n)
+Para erradicar la ambigüedad del término `"Nivel sugerido"` presente en fases previas, el sistema formaliza dos magnitudes tácticas disjuntas e independientes:
+
+1. **Nivel de Fauna Salvaje de la Zona (`Zona.nivelMinimo` y `Zona.nivelMaximo`):**
+   - Rango canónico de nivel con el que se generan las bestias salvajes en esa senda (`TABLAS_APARICION`).
+   - En localidades pacíficas (`esSegura = true`), la fauna salvaje no existe (`faunaNivelMinimo = null`, `faunaNivelMaximo = null`), catalogándose como `Asentamiento Pacífico (Sin Fauna Hostil)`.
+   - En zonas silvestres (`ZON-01` a `ZON-06`), define la severidad de los encuentros hostiles (ej. `ZON-01`: Nivel 1–3, `ZON-06`: Nivel 8–12).
+
+2. **Poder del Equipo y Rango de Domador (`PoderEquipo`):**
+   - El modelo `Personaje` en base de datos carece legítimamente de nivel propio (principio YAGNI, todo progreso de combate radica en las entidades `Criatura`).
+   - El servidor calcula soberanamente en memoria al consultar la ubicación actual:
+     - $\text{nivelMaximoEquipo} = \max(\{ \text{c.nivel} \mid c \in \text{equipo} \})$ (o 1 por defecto).
+     - $\text{nivelPromedioEquipo} = \text{round}\left(\frac{\sum_{c \in \text{equipo}} \text{c.nivel}}{|\text{equipo}|}\right)$.
+     - $\text{nivelMaximoColeccion} = \max(\{ \text{c.nivel} \mid c \in \text{equipo} \cup \text{almacen} \})$.
+     - $\text{rangoDomador}$: Título honorífico canónico del explorador según su mejor criatura activa:
+       - $\text{nivelMaximo} < 3 \implies$ `"Aspirante a Domador"`
+       - $\text{nivelMaximo} < 5 \implies$ `"Domador Novato"`
+       - $\text{nivelMaximo} < 8 \implies$ `"Explorador de Senderos"`
+       - $\text{nivelMaximo} < 10 \implies$ `"Veterano de Aethelgard"`
+       - $\text{nivelMaximo} \ge 10 \implies$ `"Maestro Domador de la Cumbre"`
+
+3. **Matriz de Riesgo Táctico Comparativo:**
+   - Si la zona es segura: `PACIFICO` $\implies$ `"ZONA SEGURA"`.
+   - Si $\text{nivelMaximoEquipo} \ge \text{faunaNivelMaximo}$: `CONTROLADO` $\implies$ `"RIESGO CONTROLADO"`.
+   - Si $\text{faunaNivelMinimo} \le \text{nivelMaximoEquipo} < \text{faunaNivelMaximo}$: `EQUILIBRADO` $\implies$ `"DESAFÍO EQUILIBRADO"`.
+   - Si $\text{nivelMaximoEquipo} < \text{faunaNivelMinimo}$: `PELIGROSO` $\implies$ `"PELIGRO ELEVADO"`.
+
 ### 2.8 Desbloqueo del movimiento insignia M4 (Subfase 10k)
 - Toda especie cuenta con 4 movimientos en los slots $1..4$. El slot 4 corresponde a la técnica insignia o movimiento de Furia.
 - **Condición de activación:** La criatura aliada requiere $\text{resonancia} = 100$ para habilitar el slot 4. Cualquier intento de ejecución con resonancia menor es rechazado en servidor con `BadRequestException(MOVIMIENTO_BLOQUEADO)`.
