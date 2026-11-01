@@ -141,6 +141,9 @@ export function ordenarEspeciesCatalogo(
         return a.nombre.localeCompare(b.nombre, "es");
       });
 
+    case "NOMBRE_ASC":
+      return copia.sort((a, b) => a.nombre.localeCompare(b.nombre, "es"));
+
     case "ZONA_ASC":
     default:
       return copia.sort((a, b) => {

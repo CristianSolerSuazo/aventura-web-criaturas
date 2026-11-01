@@ -542,8 +542,9 @@ export type CriterioOrdenCatalogo =
   | "ZONA_ASC"
   | "BST_DESC"
   | "BST_ASC"
+  | "RAREZA_DESC"
   | "CAPTURA_ASC"
-  | "RAREZA_DESC";
+  | "NOMBRE_ASC";
 
 export type ArquetipoEspecie = "TANQUE" | "ATACANTE" | "VELOZ" | "EQUILIBRADO";
 export type CategoriaHistorial = "COMBATE" | "CAPTURA" | "EXPLORACION" | "TIENDA" | "CURACION";
