@@ -345,8 +345,9 @@ export function PantallaCatalogo() {
               <option value="ZONA_ASC">ORDEN: HÁBITAT Y RAREZA</option>
               <option value="BST_DESC">ORDEN: MAYOR PODER (BST)</option>
               <option value="BST_ASC">ORDEN: MENOR PODER (BST)</option>
-              <option value="CAPTURA_ASC">ORDEN: MÁS DIFÍCIL CAPTURA</option>
               <option value="RAREZA_DESC">ORDEN: MAYOR RAREZA</option>
+              <option value="CAPTURA_ASC">ORDEN: MÁS DIFÍCIL CAPTURA</option>
+              <option value="NOMBRE_ASC">ORDEN: ALFABÉTICO (A-Z)</option>
             </select>
             <ChevronDown className="absolute right-2.5 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground pointer-events-none" aria-hidden="true" />
           </div>
