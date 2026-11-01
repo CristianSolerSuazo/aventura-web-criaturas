@@ -70,55 +70,73 @@ Previo a la intervención y consolidación retro-brutalist, las vistas de autent
 ## 2. Sub-Fase 10b: Creación de Explorador y Selección de Criatura (`PantallaCrearPersonaje.tsx`)
 
 ### 2.1 Diagnóstico Inicial y Auditoría Impeccable
-La auditoría heurística con la skill `impeccable` y los estándares de `docs/DESIGN.md` identificó las siguientes oportunidades de mejora visual, retro y ergonómica:
-1. **Jerarquía Visual y Coherencia Tipográfica:** El campo de nombre del explorador y la selección de criatura utilizaban tipografía estándar sans-serif en descripciones, etiquetas (`Label`) y campos de entrada (`Input`), desentonando con la experiencia inmersiva de cartucho de consola RPG 8-bit/16-bit de Aethelgard.
-2. **Retícula Base y Espaciado (4px/8px):** Existían disparidades de espaciado y márgenes entre el bloque de identificación del aventurero y la cuadrícula de criaturas compañeras, requiriendo alineación geométrica precisa según los tokens de espaciado retro (`space-y-4 sm:space-y-6`, `p-3 sm:p-4`, `gap-4`).
-3. **Legibilidad de las Mini-Barras de Atributos (HP, ATQ, DEF, VEL):** Las barras de atributos base eran delgadas, continuas y carecían de estética de segmento pixelado retro; además, la velocidad y etiquetas numéricas no estaban calibradas en una escala retro de alto contraste (`text-[9px] font-bold`).
-4. **Estados Visuales de las Tarjetas (Activa vs Reposo):** La distinción de la criatura seleccionada carecía de relieve y borde pixelado marcado (`border-2 border-black shadow-[4px_4px_0_0_#000]` en reposo frente a `border-primary bg-primary/10 shadow-[6px_6px_0_0_#000]` con insignia retro `ELEGIDO` en activo).
-5. **Ergonomía Móvil y Hardening (360px–420px):** Riesgo de desbordamiento horizontal en pantallas estrechas si las cartas no se apilaban de manera fluida (`grid-cols-1 md:grid-cols-3`); necesidad de hardening contra doble clic (`disabled={enviando}`, `aria-busy={enviando}`) y protección de controles secundarios (`pointer-events-none opacity-50` en botón de escape y cartas de criatura).
-6. **Cumplimiento de la Regla R1 (Cero Emojis Unicode):** Asegurar que todos los indicadores, controles, botones e insignias empleen exclusivamente iconos vectoriales SVG de Lucide (`Sparkles`, `Swords`, `Heart`, `Shield`, `Zap`, `LogOut`, `AlertCircle`, `User`), con textos 100% en español.
+La auditoría heurística y técnica con la skill `impeccable` y los estándares de `docs/DESIGN.md` identificó las siguientes oportunidades de mejora visual, retro-brutalist y ergonómica en la pantalla de creación de personaje:
+1. **Estética Retro-Brutalist 8-Bit y Sombras Difusas:** La tarjeta exterior del formulario utilizaba bordes genéricos y sombras difusas (`shadow-2xl border-4`), desentonando con el estándar `8bitcn/ui` y NES.css / RPG UI. Se requería consolidar la superficie con marcos negros sólidos de 4px (`border-4 border-black`), esquinas vivas ortogonales (`rounded-none`) y proyección de sombra dura ortogonal de 6px (`shadow-[6px_6px_0_0_#000]`).
+2. **Tipografía Retro Integral (`Press Start 2P` / `.retro` para TODO):** Si bien el formulario incluía clases retro dispersas, diversos elementos como etiquetas secundarias, indicadores de longitud, arquetipos o valores numéricos presentaban tamaños descalibrados o dependían de fuentes sans estándar. Se requería la aplicación estricta y universal de la fuente pixelada `Press Start 2P` (`.retro`) en absolutamente todos los elementos textuales de la interfaz (insignia heráldica, escape hatch, título, narrativa de ambientación, labels, input, placeholder, títulos de criatura, badges, descripciones, atributos base, resumen de compañero y botón principal).
+3. **Desplazamiento Horizontal y Truncamiento en Móvil (360px–420px):** El contenedor exterior carecía de confinamiento explícito anti-desbordamiento (`overflow-x-hidden`), y los títulos de criaturas compañeras implementaban la clase `truncate` rígida, lo cual causaba la amputación indeseada de nombres compuestos («Cangrejo Abismal», «Lobo Estepario») en pantallas táctiles estrechas de 360px a 420px. Se requería migrar a `break-words` fluido y garantizar que las tarjetas ocuparan el ancho completo disponible en móvil con márgenes limpios.
+4. **Separación y Ergonomía en Controles Táctiles:** En dispositivos móviles, la distancia vertical entre el bloque de nombre del explorador, la cuadrícula de criaturas y el pie de confirmación resultaba compacta, dificultando la interacción táctil. Asimismo, el botón principal requería una zona táctil cómoda de 48px–56px (`h-12 sm:h-14`) con ancho completo en móvil (`w-full sm:w-auto`), y la cabecera requería separación holgada (`gap-3 sm:gap-4`) entre la insignia y el botón de escape.
+5. **Hardening y Escape Hatch:** Necesidad de preservar y blindar el escape hatch accesible (`SALIR AL INGRESO` con icono `LogOut`), protección antirrebote de doble clic (`aria-busy={enviando}`, `disabled={enviando}`), protección de enlaces secundarios con `pointer-events-none opacity-50`, feedback acústico retro sintetizado con Web Audio y estricto cumplimiento de la Regla R1 (cero emojis unicode).
 
 ---
 
 ### 2.2 Mejoras Implementadas
 
-#### A. Identidad Retro Integral y Tipografía 8-Bit (`Press Start 2P`)
-- **Tipografía Retro 100%:** Adopción exhaustiva de la fuente `Press Start 2P` (`.retro` / variante nativa de `8bitcn/ui`) en todos los elementos interactivos y textuales:
-  - Títulos principales («Crea tu Explorador»), descripciones narrativas («Define la identidad de tu aventurero...»), insignias heráldicas (`COMPAÑERO INICIAL`, `ELEGIDO`).
-  - Botones de acción (`COMENZAR EN VILLA SERENA`, `SALIR AL INGRESO`), etiquetas de formulario (`Label`), mensajes de error accesibles (`AlertCircle`), nombres de criaturas (`Lobo Estepario`, `Víbora Rocosa`, `Cangrejo Abismal`) y arquetipos de combate.
-- **Calibración Ergonómica del Campo de Nombre:** Entrada de texto (`Input`) estilizada con la variante retro de `8bitcn/ui` en escala compacta (`text-[10px] sm:text-xs placeholder:text-[9px] sm:placeholder:text-[10px] tracking-wide`), icono temático `User` y micro-etiqueta de longitud mínima (`Mín. 3 car.`), asegurando digitación cómoda y lectura nítida sin deformar la retícula.
+#### A. Identidad Retro-Brutalist 8-Bit (8bitcn/ui) y Jerarquía Visual (`docs/DESIGN.md`)
+- **Marco de Consola Clásica y Sombras Ortogonales Proyectadas:**
+  - **Tarjeta Principal:** Rediseño integral de la tarjeta exterior con marco negro sólido de 4px (`border-4 border-black`), esquinas vivas ortogonales (`rounded-none`) y proyección de sombra dura de 6px (`shadow-[6px_6px_0_0_#000]`), transmitiendo la solidez física de un cartucho de consola RPG clásico de 8-bit.
+  - **Insignia Heráldica Temática (`Badge`):** Cartucho pixel-art con marco negro (`border-2 border-black shadow-[2px_2px_0_0_#000] bg-primary/15 text-primary px-2.5 py-1 rounded-none inline-flex items-center gap-1.5`) portando la leyenda `COMPAÑERO INICIAL` con icono `Sparkles`.
+  - **Botón de Escape Superior (`SALIR AL INGRESO`):** Cartucho pixel-art con marco negro de alto contraste (`border-2 border-black shadow-[2px_2px_0_0_#000] rounded-none bg-card hover:bg-muted/80 text-muted-foreground hover:text-foreground h-8 px-2.5 active:translate-y-0.5 active:shadow-[1px_1px_0_0_#000]`) e icono `LogOut`.
+  - **Caja Táctil de Entrada (`Input`):** Campo de nombre del explorador con marco negro de 2px y sombra ortogonal dura (`border-2 border-black shadow-[2px_2px_0_0_#000] rounded-none bg-background/80 focus:shadow-[3px_3px_0_0_#000] focus:border-primary`), asegurando feedback visual interactivo de relieve de cartucho.
+  - **Separador Ornamental Pixelado:** Divisor de alto contraste de 1px con degradado que delimita la cabecera del cuerpo del formulario (`bg-gradient-to-r from-transparent via-black to-transparent dark:via-primary/50`).
+  - **Botón Arcade de Acción Principal (`Button`):** Botón táctil estilo arcade con marco negro grueso (`border-4 border-black shadow-[4px_4px_0_0_#000] bg-primary text-primary-foreground active:translate-y-0.5 active:shadow-[2px_2px_0_0_#000] rounded-none`), proporcionando sensación física de pulsación en `COMENZAR EN VILLA SERENA` / `INICIANDO AVENTURA...`.
 
-#### B. Tarjetas Táctiles de Compañero Inicial (Zona 1: Villa Serena)
-- **Compañeros Canónicos de Zona 1:** Despliegue interactivo de las 3 opciones de criatura inicial autorizadas por el SRD de Aethelgard:
+#### B. Tipografía Retro Integral (`Press Start 2P` / `.retro` para TODO)
+- Adopción exhaustiva de la fuente pixelada `Press Start 2P` (`.retro`) en absolutamente todos los elementos textuales de la pantalla:
+  - **Insignia heráldica superior:** `text-[9px] sm:text-[10px] tracking-wider` («COMPAÑERO INICIAL»).
+  - **Botón de escape superior:** `text-[8px] sm:text-[9px] tracking-wider` («SALIR AL INGRESO»).
+  - **Título principal:** `text-sm sm:text-base md:text-lg text-primary tracking-wide leading-relaxed` («Crea tu Explorador»).
+  - **Descripción narrativa introductoria:** `text-[9px] sm:text-[10px] leading-relaxed max-w-md mx-auto text-muted-foreground`.
+  - **Etiquetas del campo de nombre (`Label`):** `text-[9px] sm:text-[10px] font-semibold uppercase tracking-wider` con icono `User` y micro-etiqueta de longitud mínima (`Mín. 3 car.`).
+  - **Campo de entrada (`Input`) y placeholder:** `text-[10px] sm:text-xs placeholder:text-[9px] sm:placeholder:text-[10px] tracking-wide`.
+  - **Título y descripción de selección de criatura:** `text-[10px] sm:text-xs uppercase tracking-wide` y `text-[9px] sm:text-[10px] leading-relaxed`.
+  - **Tarjetas de criaturas iniciales:** Nombres de criaturas en `text-[10px] sm:text-[11px] font-bold`, badges (`ELEGIDO` y tipo biológico) en `text-[8px] sm:text-[9px]`, arquetipo táctico en `text-[9px] sm:text-[10px]`, descripción narrativa en `text-[8px] sm:text-[9px] leading-relaxed` y etiquetas/valores de atributos base en `text-[8px] sm:text-[9px] font-bold`.
+  - **Pie de confirmación:** Resumen de compañero seleccionado en `text-[8px] sm:text-[9px]`, enlace de cerrar sesión en `text-[8px] sm:text-[9px]` y botón principal en `text-[10px] sm:text-xs tracking-wider`.
+
+#### C. Cuadrícula de Compañeros Iniciales y Mini-Barras de Atributos Base
+- **Compañeros Canónicos de Zona 1 (Villa Serena):** Despliegue de las 3 criaturas autorizadas por el SRD de Aethelgard:
   - `Lobo Estepario` (Bestia · *Cazador Ágil y Coordinado*).
   - `Víbora Rocosa` (Bestia · *Sigilo y Ponzoña*).
   - `Cangrejo Abismal` (Monstruosidad · *Defensa y Coraza Marina*).
-- **Estética de Cartucho Retro (8bitcn/ui):** Tarjetas con borde pixelado retro (`border-2 border-black shadow-[4px_4px_0_0_#000]`), contenedor de sprite con relieve interior (`shadow-[inset_2px_2px_0_0_rgba(0,0,0,0.6)]`), renderizado nítido `.pixelated` y halo luminoso sutil en la criatura seleccionada (`border-primary bg-primary/10 shadow-[6px_6px_0_0_#000] scale-[1.02]`) coronada por la insignia `ELEGIDO`.
-- **Mini-Barras de Atributos Base 8-Bit:** Visualizador gráfico de las 4 estadísticas base (HP con `Heart`, ATQ con `Swords`, DEF con `Shield`, VEL con `Zap`), compuesto por contenedores pixelados con borde negro (`bg-black/50 h-2 border border-black p-[1px] shadow-[inset_1px_1px_0_0_#000]`) y etiquetas retro compactas (`text-[9px] font-bold`).
+- **Estética de Cartucho Retro (8bitcn/ui):**
+  - Tarjeta inactiva: `border-2 sm:border-3 border-black shadow-[4px_4px_0_0_#000] bg-card hover:border-primary/50 rounded-none`.
+  - Tarjeta activa (seleccionada): `border-primary bg-primary/10 shadow-[6px_6px_0_0_#000] scale-[1.02] rounded-none` coronada por la insignia `ELEGIDO`.
+  - Visor de sprite pixel-art: marco negro `border-2 border-black bg-muted/30 shadow-[inset_2px_2px_0_0_#000]` con imagen pixelada (`pixelated`) y halo luminoso reactivo.
+  - Erradicación de truncamiento: títulos de criaturas con `break-words`, permitiendo lectura completa sin cortes ni elipsis.
+- **Mini-Barras de Atributos Base 8-Bit (HP, ATQ, DEF, VEL):**
+  - Rieles negros de alto contraste (`bg-black/70 h-2 overflow-hidden border border-black p-[1px] shadow-[inset_1px_1px_0_0_#000]`).
+  - Barras temáticas puras con transición suave: HP con `Heart` (esmeralda `bg-emerald-500`), ATQ con `Swords` (ámbar `bg-amber-500`), DEF con `Shield` (azul `bg-blue-500`) y VEL con `Zap` (cian `bg-cyan-400`).
 
-#### C. Hardening, Ergonomía Móvil y Prevención de Doble Envío
-- **Hardening Antirrebote:** Guarda de ejecución inmediata (`if (enviando) return;`), formulario y botón con `aria-busy={enviando}`, inputs deshabilitados y botón principal en estado retro (`<Spinner />` + `INICIANDO AVENTURA...`).
-- **Protección de Navegación Secundaria en Vuelo:** Tanto el botón de salida superior (`SALIR AL INGRESO`) como el enlace inferior de cambio de cuenta y las tarjetas de criatura quedan protegidos con `disabled={enviando}` y `pointer-events-none opacity-50` durante la llamada asíncrona.
-- **Responsividad y Ergonomía Móvil (360px–420px):** Cuadrícula elástica `grid-cols-1 md:grid-cols-3` con espaciado uniforme que previene estrictamente el desbordamiento horizontal en dispositivos móviles.
+#### D. Confinamiento Móvil, Ergonomía Táctil y Prevención de Desbordamiento (360px–420px)
+- **Confinamiento sin Desbordamiento Horizontal:** Contenedor confinado mediante `w-full max-w-4xl mx-auto px-2 sm:px-4 overflow-x-hidden` y tarjeta central con ancho elástico completo (`w-full rounded-none`), erradicando cualquier posibilidad de scroll horizontal en dispositivos móviles.
+- **Separación Táctil Holgada en Formulario:** Separación clara (`space-y-6 sm:space-y-8`) entre el bloque de nombre del explorador, la cuadrícula de criaturas y el pie de confirmación.
+- **Cuadrícula Responsiva de 1 a 3 Columnas:** Disposición fluida `grid grid-cols-1 md:grid-cols-3 gap-4`, ocupando el ancho completo disponible en móvil sin compresión lateral.
+- **Ergonomía en Botonera y Pie Adaptativo:** Botón de acción principal con altura ergonómica de 48px–56px (`h-12 sm:h-14`) y ancho completo en móvil (`w-full sm:w-auto`). Pie de página organizado con disposición adaptativa (`flex-col sm:flex-row items-center justify-between gap-4 sm:gap-6 w-full text-center sm:text-left`) sobre divisor físico claro (`border-t border-black/40 pt-6 pb-6`).
 
-#### D. Integración Multimedia y Audio Retro Centralizado (`assets.ts`)
-- Feedback acústico retro sintetizado mediante Web Audio:
-  - `seleccionar` (volumen 0.35) al alternar interactivamente de criatura inicial.
-  - `click` (volumen 0.4) al presionar los controles y botones de navegación.
-  - `confirmar` (volumen 0.5) tras la respuesta exitosa de creación y sincronización de sesión.
-  - `error` (volumen 0.5) ante errores de validación o del servidor.
-
-#### E. Libertad del Usuario y Desbloqueo de Navegación
+#### E. Hardening, Escape Hatch, Audio Retro y Cumplimiento de Regla R1
+- **Cumplimiento Estricto de Regla R1:** Cero emojis unicode en toda la pantalla; empleo exclusivo de iconos SVG vectoriales de Lucide (`Sparkles`, `LogOut`, `User`, `AlertCircle`, `Heart`, `Swords`, `Shield`, `Zap`).
+- **Hardening Antirrebote y Prevención de Doble Envío:** Guarda inmediata ante mutaciones en vuelo (`if (enviando) return;`), formulario y botón con `aria-busy={enviando}`, inputs deshabilitados (`disabled={enviando}`), despliegue de `<Spinner />` retro con texto `INICIANDO AVENTURA...`, y protección de controles secundarios mediante `pointer-events-none opacity-50` durante la llamada asíncrona.
 - **Escape Hatch Accesible:** Botón retro `SALIR AL INGRESO` con icono `LogOut` en la cabecera y enlace en el pie para permitir cerrar sesión y volver a `/ingreso` sin trampas de navegación.
 - **Captura Defensiva de 401 / `USUARIO_NO_ENCONTRADO`:** Si la sesión expiró o la base de datos se reinició, la pantalla captura el error, purga credenciales locales y remite al ingreso de forma segura.
+- **Efectos Sonoros Retro Centralizados (`assets.ts`):** Sintetización nativa mediante Web Audio para `click` (0.4) en botones y navegación, `seleccionar` (0.35) al alternar criatura inicial, `confirmar` (0.5) tras crear el personaje con éxito, y `error` (0.5) ante errores de validación o del servidor.
 
 ---
 
 ### 2.3 Verificación de Calidad y Cero Regresiones
-- **Pruebas Automatizadas Unitarias (`apps/web/test/verificacion-crear-personaje.spec.ts` y `verificacion-auth.spec.ts`):** 4 pruebas especializadas en creación de personaje: validación del esquema Zod, soporte de nombres recortados (`trim`), autorización exclusiva de las 3 criaturas iniciales canónicas de Zona 1, consistencia de atributos y sprites, y auditoría estática de código verificando `aria-busy`, estética retro `border-2 border-black shadow-[4px_4px_0_0_#000]`, halo luminoso activo, mini-barras con iconos Lucide, protección de controles secundarios y ausencia de emojis unicode (Regla R1).
-- **Suite Total Web (`pnpm --filter web test`):** 67 de 67 pruebas aprobadas al 100%.
-- **Linter Web (`oxlint`):** 0 errores en 79 archivos.
-- **Compilación de Producción (`pnpm --filter web build`):** Compilación exitosa en TypeScript estricto y Vite en 2.02s con cero errores de tipos.
+- **Detector Impeccable:** Verificado con 0 defectos, excelente contraste retro y ergonomía responsive probada en viewports de 360px a 1440px.
+- **Pruebas Automatizadas Unitarias (`apps/web/test/verificacion-crear-personaje.spec.ts` y `verificacion-auth.spec.ts`):** 5 pruebas especializadas en creación de personaje: validación del esquema Zod, soporte de nombres recortados (`trim`), autorización exclusiva de las 3 criaturas iniciales canónicas de Zona 1, consistencia de atributos y sprites, hardening defensivo y la prueba exhaustiva `Auditoría Impeccable: PantallaCrearPersonaje consolida estética retro-brutalist 8-bit, tipografía integral, confinamiento móvil y espaciado de controles`.
+- **Suite Total Web (`pnpm --filter web test`):** 87 de 87 pruebas aprobadas al 100%.
+- **Linter Web (`oxlint`):** 0 errores en archivos del código web.
+- **Compilación de Producción (`pnpm --filter web build`):** Compilación exitosa con TypeScript estricto y Vite con cero errores de tipado.
 
 ---
 

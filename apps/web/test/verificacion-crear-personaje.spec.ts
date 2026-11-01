@@ -67,7 +67,7 @@ test("Opciones de criaturas iniciales poseen estadísticas completas y sprites v
     );
   }
 
-// Comprueba resolución de fallback seguro
+  // Comprueba resolución de fallback seguro
   assert.strictEqual(obtenerImagenCriatura(null), RUTAS_PLACEHOLDERS.criatura);
 });
 
@@ -132,3 +132,68 @@ test("Hardening y Ergonomía: PantallaCrearPersonaje cuenta con aria-busy, esté
   }
 });
 
+test("Auditoría Impeccable: PantallaCrearPersonaje consolida estética retro-brutalist 8-bit, tipografía integral, confinamiento móvil y espaciado de controles", async () => {
+  const { readFileSync } = await import("node:fs");
+  const { join, dirname } = await import("node:path");
+  const { fileURLToPath } = await import("node:url");
+
+  const __dirname = dirname(fileURLToPath(import.meta.url));
+  const crearPersonajeCodigo = readFileSync(
+    join(__dirname, "../src/paginas/PantallaCrearPersonaje.tsx"),
+    "utf-8",
+  );
+
+  // 1. Estética retro-brutalist 8-bit (8bitcn/ui)
+  assert.ok(
+    crearPersonajeCodigo.includes("border-4 border-black"),
+    "La tarjeta principal y el botón de inicio deben usar marcos negros sólidos de 4px",
+  );
+  assert.ok(
+    crearPersonajeCodigo.includes("shadow-[6px_6px_0_0_#000]"),
+    "La tarjeta principal y la criatura seleccionada deben proyectar sombra ortogonal sólida de 6px",
+  );
+  assert.ok(
+    crearPersonajeCodigo.includes("shadow-[2px_2px_0_0_#000]"),
+    "Insignia, botón de escape y campo de entrada deben portar sombras ortogonales sólidas de 2px",
+  );
+  assert.ok(
+    crearPersonajeCodigo.includes("shadow-[4px_4px_0_0_#000]"),
+    "Las tarjetas de criatura y el botón de inicio de aventura deben tener sombras ortogonales de 4px",
+  );
+  assert.ok(
+    crearPersonajeCodigo.includes("rounded-none"),
+    "Los componentes deben preservar esquinas ortogonales vivas estilo 8-bit",
+  );
+
+  // 2. Confinamiento móvil y erradicación de desbordamiento horizontal (360px-420px)
+  assert.ok(
+    crearPersonajeCodigo.includes("overflow-x-hidden"),
+    "El contenedor principal debe confinar el ancho con overflow-x-hidden",
+  );
+  assert.ok(
+    crearPersonajeCodigo.includes("break-words"),
+    "Los títulos de criatura deben usar break-words para evitar truncamiento destructivo en móviles",
+  );
+  assert.ok(
+    !crearPersonajeCodigo.includes("truncate"),
+    "Se debe erradicar la clase truncate para no amputar nombres de criaturas",
+  );
+
+  // 3. Ergonomía táctil y separación de controles
+  assert.ok(
+    crearPersonajeCodigo.includes("space-y-6 sm:space-y-8"),
+    "Las secciones del formulario deben contar con separación vertical clara y holgada",
+  );
+  assert.ok(
+    crearPersonajeCodigo.includes("h-12 sm:h-14"),
+    "El botón de acción principal debe disponer de altura táctil ergonómica de 48px-56px",
+  );
+  assert.ok(
+    crearPersonajeCodigo.includes("gap-3 sm:gap-4"),
+    "La cabecera superior debe proveer separación generosa entre insignia y botón de escape",
+  );
+  assert.ok(
+    crearPersonajeCodigo.includes("flex-col sm:flex-row items-center justify-between"),
+    "El pie de confirmación debe contar con disposición adaptativa en columna/fila para móviles estrechos",
+  );
+});
