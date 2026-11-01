@@ -4,6 +4,8 @@ import {
   BESTIARIO,
   TABLAS_APARICION,
   EspecieCanonica,
+  calcularPresupuestoEspecie,
+  calcularTasaCapturaPorPresupuesto,
 } from '../src/modulos/externo/bestiario-canonico';
 import {
   calcularTasaCaptura,
@@ -44,7 +46,8 @@ async function importarEspecies() {
     const ext = mapaExterno.get(canonica.idExterno);
     const challengeRating = ext ? ext.challengeRating : 1.0;
     const tipo = ext?.tipoExterno || canonica.tipo;
-    const tasaCaptura = calcularTasaCaptura(challengeRating);
+    const bst = calcularPresupuestoEspecie(canonica.statsBase);
+    const tasaCaptura = calcularTasaCapturaPorPresupuesto(bst);
 
     const especieDb = await prisma.especie.upsert({
       where: { idExterno: canonica.idExterno },

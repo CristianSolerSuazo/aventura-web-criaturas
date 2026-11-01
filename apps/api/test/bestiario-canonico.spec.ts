@@ -7,6 +7,8 @@ import {
   TABLAS_APARICION,
   EspecieCanonica,
   AparicionCanonica,
+  calcularPresupuestoEspecie,
+  calcularTasaCapturaPorPresupuesto,
 } from '../src/modulos/externo/bestiario-canonico';
 import { CATALOGO_ESPECIES_PROPENSO } from '../src/modulos/externo/normalizador-criaturas.util';
 
@@ -164,19 +166,19 @@ describe('Bestiario Canónico, Jerarquía de Atributos y Tablas de Aparición (S
     );
 
     const BANDAS_NO_ESPECIAL: Record<string, [number, number]> = {
-      'ZON-01': [160, 180],
-      'ZON-02': [200, 240],
-      'ZON-03': [220, 260],
-      'ZON-04': [240, 285],
-      'ZON-05': [300, 330],
-      'ZON-06': [300, 330],
+      'ZON-01': [160, 200],
+      'ZON-02': [176, 220],
+      'ZON-03': [196, 245],
+      'ZON-04': [216, 270],
+      'ZON-05': [236, 295],
+      'ZON-06': [260, 325],
     };
 
     const BANDAS_ESPECIAL: Record<string, [number, number]> = {
       'ZON-01': [210, 210],
-      'ZON-02': [270, 280],
-      'ZON-03': [270, 280],
-      'ZON-04': [310, 330],
+      'ZON-02': [230, 230],
+      'ZON-03': [256, 256],
+      'ZON-04': [282, 282],
     };
 
     for (const esp of BESTIARIO) {
@@ -221,24 +223,65 @@ describe('Bestiario Canónico, Jerarquía de Atributos y Tablas de Aparición (S
     );
 
     const calcularPresupuesto = (esp: EspecieCanonica) =>
-      esp.statsBase.hpBase +
-      esp.statsBase.ataqueBase +
-      esp.statsBase.defensaBase +
-      esp.statsBase.velocidadBase;
+      calcularPresupuestoEspecie(esp.statsBase);
 
-    // J-1 Aprendiz: max comunes de ZON-01 < min comunes de ZON-02
-    const comunesZ1 = BESTIARIO.filter((e) => !e.esEspecial && mapaAparicion.get(e.slug) === 'ZON-01');
-    const comunesZ2 = BESTIARIO.filter((e) => !e.esEspecial && mapaAparicion.get(e.slug) === 'ZON-02');
-    const maxZ1 = Math.max(...comunesZ1.map(calcularPresupuesto));
-    const minZ2 = Math.min(...comunesZ2.map(calcularPresupuesto));
-    assert.ok(maxZ1 < minZ2, `J-1 Aprendiz superado por comunes de Z2: max(Z1)=${maxZ1} < min(Z2)=${minZ2}`);
+    // Invariante J-1: Orden interno estricto por rareza en cada zona (BST(35) < BST(15) < BST(10) < BST(5))
+    for (const zonaId of ZONAS_CANONICAS) {
+      const aparicionesZona = TABLAS_APARICION.filter((a) => a.zonaId === zonaId);
+      const bstPorPeso = new Map<number, number[]>();
+      for (const ap of aparicionesZona) {
+        const esp = BESTIARIO.find((e) => e.slug === ap.especieSlug)!;
+        const bst = calcularPresupuesto(esp);
+        const lista = bstPorPeso.get(ap.peso) ?? [];
+        lista.push(bst);
+        bstPorPeso.set(ap.peso, lista);
+      }
+
+      const bst35 = Math.max(...(bstPorPeso.get(35) ?? []));
+      const bst15 = Math.max(...(bstPorPeso.get(15) ?? []));
+      const bst10 = Math.max(...(bstPorPeso.get(10) ?? []));
+      const bst5 = Math.max(...(bstPorPeso.get(5) ?? []));
+
+      assert.ok(
+        bst35 < bst15,
+        `En ${zonaId}, comunes (35% BST ${bst35}) deben ser estrictamente inferiores a frecuente (15% BST ${bst15})`,
+      );
+      assert.ok(
+        bst15 < bst10,
+        `En ${zonaId}, frecuente (15% BST ${bst15}) debe ser estrictamente inferior a rara (10% BST ${bst10})`,
+      );
+      assert.ok(
+        bst10 < bst5,
+        `En ${zonaId}, rara (10% BST ${bst10}) debe ser estrictamente inferior a especial/legendaria (5% BST ${bst5})`,
+      );
+    }
+
+    // Invariante J-2: Progresión monótona inter-zonal por escalafón de rareza
+    const pesosVerificar = [35, 15, 10, 5];
+    for (const peso of pesosVerificar) {
+      const bstPorZona = ZONAS_CANONICAS.map((zonaId) => {
+        const aps = TABLAS_APARICION.filter((a) => a.zonaId === zonaId && a.peso === peso);
+        const bsts = aps.map((a) => {
+          const esp = BESTIARIO.find((e) => e.slug === a.especieSlug)!;
+          return calcularPresupuesto(esp);
+        });
+        return Math.max(...bsts);
+      });
+
+      for (let i = 0; i < bstPorZona.length - 1; i++) {
+        assert.ok(
+          bstPorZona[i] < bstPorZona[i + 1],
+          `Progresión J-2 violada para peso ${peso}%: ${ZONAS_CANONICAS[i]} (${bstPorZona[i]}) no es menor que ${ZONAS_CANONICAS[i + 1]} (${bstPorZona[i + 1]})`,
+        );
+      }
+    }
 
     // Presupuestos apex crecen monotónicamente a lo largo de las zonas
     const ordenApex = [
       'oso-fresno',           // Z1: 210
-      'mantarraya-espectral', // Z2: 270
-      'mantis-sombria',       // Z3: 280
-      'golem-granito',        // Z4: 320
+      'mantarraya-espectral', // Z2: 230
+      'mantis-sombria',       // Z3: 256
+      'golem-granito',        // Z4: 282
       'behir-abismo',         // Z5: 355
       'remorhaz-glaciar',     // Z6: 380
     ];
@@ -255,7 +298,7 @@ describe('Bestiario Canónico, Jerarquía de Atributos y Tablas de Aparición (S
       );
     }
 
-    // Las dos legendarias superan a todas las demás criaturas
+    // Invariante J-3: Supremacía Legendaria
     const presBehir = calcularPresupuesto(BESTIARIO.find((e) => e.slug === 'behir-abismo')!);
     const presRemorhaz = calcularPresupuesto(BESTIARIO.find((e) => e.slug === 'remorhaz-glaciar')!);
     for (const esp of BESTIARIO) {
@@ -263,6 +306,22 @@ describe('Bestiario Canónico, Jerarquía de Atributos y Tablas de Aparición (S
         const pres = calcularPresupuesto(esp);
         assert.ok(pres < presBehir, `${esp.slug} (${pres}) no debe superar o igualar a Behir (${presBehir})`);
         assert.ok(pres < presRemorhaz, `${esp.slug} (${pres}) no debe superar o igualar a Remorhaz (${presRemorhaz})`);
+      }
+    }
+
+    // Invariante J-3: Propiedad de anticorrelación estricta de captura: si BST(A) > BST(B) => tasaCaptura(A) <= tasaCaptura(B)
+    for (let i = 0; i < BESTIARIO.length; i++) {
+      for (let j = 0; j < BESTIARIO.length; j++) {
+        const bstA = calcularPresupuesto(BESTIARIO[i]);
+        const bstB = calcularPresupuesto(BESTIARIO[j]);
+        const tasaA = calcularTasaCapturaPorPresupuesto(bstA);
+        const tasaB = calcularTasaCapturaPorPresupuesto(bstB);
+        if (bstA > bstB) {
+          assert.ok(
+            tasaA <= tasaB,
+            `Anticorrelación violada: ${BESTIARIO[i].slug} (BST ${bstA}, tasa ${tasaA}) vs ${BESTIARIO[j].slug} (BST ${bstB}, tasa ${tasaB})`,
+          );
+        }
       }
     }
   });
