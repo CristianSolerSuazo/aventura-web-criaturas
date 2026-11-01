@@ -177,6 +177,61 @@ describe('Compendio de Criaturas (M-CRI) y Bitácora de Historial (M-HIS)', () =
         },
       );
     });
+    it('blinda soberanamente la tasa de captura de Golem Granito corrigiendo el valor obsoleto 0.83 de BD a 0.20', async () => {
+      const mockGolemDb = {
+        id: 'esp-golem',
+        idExterno: 'srd-2024_animated-armor',
+        nombre: 'Golem Granito',
+        slug: 'golem-granito',
+        tipo: 'construct',
+        elemento: 'fisico',
+        challengeRating: 1.0,
+        hpBase: 76,
+        ataqueBase: 71,
+        defensaBase: 80,
+        velocidadBase: 55,
+        tasaCaptura: 0.83,
+        esEspecial: true,
+        esLegendaria: false,
+        descripcion: 'Constructo rúnico forjado en roca viva.',
+        movimientos: [],
+        apariciones: [
+          {
+            peso: 5,
+            zona: { id: 'ZON-04', nombre: 'Paso de los Riscos' },
+          },
+        ],
+      };
+
+      const prismaMock = {
+        especie: {
+          findMany: async () => [mockGolemDb],
+          findUnique: async () => mockGolemDb,
+          count: async () => 1,
+        },
+      } as unknown as PrismaService;
+
+      const servicio = new CriaturasService(prismaMock);
+
+      // Verificación en catálogo general (obtenerEspecies)
+      const catalogo = await servicio.obtenerEspecies();
+      const golemCatalogo = catalogo.especies[0];
+      assert.strictEqual(golemCatalogo.slug, 'golem-granito');
+      assert.strictEqual(golemCatalogo.presupuestoTotal, 345, 'El presupuesto total soberano debe ser 345');
+      assert.strictEqual(golemCatalogo.tasaCaptura, 0.20, 'La tasa de captura soberana debe ser 0.20 (20%), erradicando el 0.83');
+      assert.strictEqual(golemCatalogo.rareza, 'ESPECIAL');
+      assert.strictEqual(golemCatalogo.hpBase, 94);
+      assert.strictEqual(golemCatalogo.ataqueBase, 86);
+      assert.strictEqual(golemCatalogo.defensaBase, 98);
+      assert.strictEqual(golemCatalogo.velocidadBase, 67);
+
+      // Verificación en ficha individual (obtenerEspeciePorSlug)
+      const golemDetalle = await servicio.obtenerEspeciePorSlug('golem-granito');
+      assert.strictEqual(golemDetalle.slug, 'golem-granito');
+      assert.strictEqual(golemDetalle.presupuestoTotal, 345);
+      assert.strictEqual(golemDetalle.tasaCaptura, 0.20);
+      assert.strictEqual(golemDetalle.rareza, 'ESPECIAL');
+    });
   });
 
   describe('HistorialService: normalización de categorías y bitácora paginada', () => {
