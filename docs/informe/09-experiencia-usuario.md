@@ -1229,3 +1229,72 @@ La auditoría heurística y de ergonomía visual sobre `PantallaHistorial.tsx` m
 - **Pruebas Automatizadas API (`pnpm --filter api test`):** 115 de 115 pruebas aprobadas (100% de éxito), confirmando que `HistorialService` y el backend operan sin regresiones.
 - **Linter Web (`pnpm --filter web lint`):** 0 errores de TypeScript y Oxlint en los 80 archivos del proyecto.
 - **Compilación de Producción (`pnpm --filter web build`):** 0 errores de compilación, empaquetado completado en Vite en 3.19s.
+
+---
+
+## 18. Sub-Fase 10c: Arquitectura de Layout y Navegación Global (`LayoutPrincipal.tsx`)
+
+### 18.1 Diagnóstico Inicial y Auditoría Impeccable
+La auditoría de diseño heurístico y técnico realizada con la skill `impeccable` y los lineamientos de `docs/DESIGN.md` sobre el cascarón de aplicación y navegación perimetral (`LayoutPrincipal.tsx`) detectó oportunidades cruciales de alineación visual y robustez ergonómica:
+1. **Inconsistencia Tipográfica:** La cabecera y el pie de página originales utilizaban tipografía sans-serif convencional por defecto en los enlaces de navegación («Kit de interfaz», «Créditos», «Créditos y licencias») y en la leyenda de derechos institucionales `(c) 2026 Aethelgard · Proyecto Integrador ISC-305`. Esta disparidad rompía la inmersión retro de cartucho de consola RPG al alternar la fuente pixelada del logo con fuentes genéricas de sistema. Se requería la unificación rigurosa al 100% bajo la tipografía pixelada `Press Start 2P` (`.retro`).
+2. **Ausencia de Marcos Retro-Brutalistas:** La cabecera superior y el pie de página descansaban sobre bordes tenues de baja definición (`border-b border-border` y `border-t border-border`), careciendo de la contundencia física de los marcos negros sólidos (`border-b-4 border-black` y `border-t-4 border-black`) y sombras ortogonales proyectadas duras (`shadow-[0_4px_0_0_#000]` y `shadow-[0_-4px_0_0_rgba(0,0,0,0.15)]`), estándar fundamental de `8bitcn/ui`, NES.css y RPG UI.
+3. **Ergonomía de Navegación en la Cabecera:** Los enlaces superiores se presentaban como texto plano con subrayado sutil, desaprovechando la oportunidad táctil de comportarse como auténticos cartuchos de consola u arcade buttons 8-bit con relieve físico (`border-2 border-black shadow-[2px_2px_0_0_#000]`), micro-interacción al clic (`active:translate-y-0.5 active:shadow-none`) y distinción cromática nítida e inmediata entre estado activo e inactivo.
+4. **Restricciones Arquitectónicas de Pruebas y Cero Regresiones:** El cascarón debía satisfacer con precisión matemática las salvaguardas de regresión:
+   - Prohibición absoluta de `flex-wrap` en la cabecera fija, previniendo quiebres de línea o desalineaciones que rompan la altura estricta de la barra superior fija.
+   - Ausencia total del botón de `LogOut` en el header global para no saturar la barra superior en pantallas reducidas (el cierre de sesión se delega exclusivamente a los escapes interiores de las pantallas correspondientes).
+   - Disponibilidad accesible ininterrumpida de los enlaces hacia `/kit-ui` y `/creditos`.
+5. **Desplazamiento Horizontal y Adaptación Móvil (360px–420px):** En pantallas angostas, el logo y los cartuchos de navegación requerían convivir holgadamente sin colisionar en una única fila compacta (`gap-2 sm:gap-4`), mientras que el pie de página requería apilamiento elástico fluido (`flex-col sm:flex-row items-center justify-between gap-3 sm:gap-4 text-center sm:text-left`) con quiebre de texto protegido (`break-words`) para evitar cualquier desbordamiento lateral.
+6. **Ausencia de Retroalimentación Háptica-Auditiva:** Falta de sonorización retro al interactuar con el logotipo de la marca y los enlaces de navegación primaria y secundaria.
+
+---
+
+### 18.2 Mejoras Implementadas
+
+#### A. Identidad Retro-Brutalist 8-Bit y Marcos 8bitcn/ui (`docs/DESIGN.md`)
+- **Cabecera Fija Superior con Relieve Ortogonal:** Barra de navegación superior fija (`sticky top-0 z-40`) enmarcada con borde negro grueso inferior de 4px (`border-b-4 border-black`), fondo de tarjeta sólida retro de alta opacidad (`bg-card/95 backdrop-blur-xs`) y sombra proyectada ortogonal de 4px (`shadow-[0_4px_0_0_#000]`), transmitiendo la firmeza de un bisel de consola retro.
+- **Logotipo Heráldico de Marca con Relieve:** Enlace hacia `/hub` con tipografía pixelada `Press Start 2P` (`.retro`), escala responsive calibrada (`text-xs sm:text-base md:text-lg font-bold tracking-wider text-primary`) y sombra proyectada ortogonal de alto contraste (`drop-shadow-[1px_1px_0_#000]`).
+- **Botones de Navegación en Formato Cartucho 8-Bit:** Los enlaces `NavLink` («Kit de interfaz» y «Créditos») fueron reconcebidos como cartuchos táctiles pixel-art:
+  - *Estado Inactivo:* Marco negro de 2px con sombra dura (`border-2 border-black shadow-[2px_2px_0_0_#000] bg-background text-muted-foreground hover:text-foreground hover:border-primary active:translate-y-0.5 active:shadow-none`).
+  - *Estado Activo:* Fondo primario de alto impacto con marco negro y sombra sólida (`border-2 border-black shadow-[2px_2px_0_0_#000] bg-primary text-primary-foreground font-bold`).
+- **Pie de Página Brutalista Ceremonial:** Borde superior negro sólido de 4px (`border-t-4 border-black bg-card/95 shadow-[0_-4px_0_0_rgba(0,0,0,0.15)] px-4 py-4 sm:px-6 mt-auto`), con enlaces inferiores estilizados con tipografía retro, subrayado pixelado grueso de alto contraste (`underline underline-offset-4 decoration-2 decoration-black/40 hover:decoration-primary`) y transiciones de color nítidas.
+- **Preservación Incondicional del Cascarón de Combate:** Rama de evaluación condicional `if (esCombate)` preservada de forma intacta a pantalla completa (`h-screen h-[100dvh] w-full overflow-hidden bg-background text-foreground antialiased selection:bg-primary selection:text-primary-foreground max-w-full`), aislando las cinemáticas de batalla de las barras perimetrales.
+
+#### B. Tipografía Retro Integral (`Press Start 2P` / `.retro` 100%)
+- Adopción absoluta y homogénea de la fuente pixelada `Press Start 2P` (`.retro`) en la totalidad de cadenas textuales del cascarón perimetral:
+  - **Marca principal:** `text-xs sm:text-base md:text-lg font-bold tracking-wider` («Aethelgard»).
+  - **Cartuchos de navegación superior:** `text-[8px] sm:text-[9px] md:text-[10px] uppercase tracking-wider` («Kit de interfaz» y «Créditos»).
+  - **Leyenda institucional del pie:** `text-[7px] sm:text-[8px] md:text-[9px] text-muted-foreground leading-relaxed break-words` («(c) 2026 Aethelgard · Proyecto Integrador ISC-305»).
+  - **Enlaces secundarios del pie:** `text-[8px] sm:text-[9px]` («Kit de interfaz» y «Créditos y licencias»).
+
+#### C. Confinamiento Móvil y Cero Desbordamiento (360px–420px)
+- **Confinamiento Anti-Overflow Raíz:** Contenedor raíz sellado con `min-h-screen flex flex-col bg-background text-foreground antialiased selection:bg-primary selection:text-primary-foreground max-w-full overflow-x-hidden`.
+- **Cabecera Compacta sin `flex-wrap`:** Barra superior estrictamente en una sola fila (`flex items-center justify-between gap-2 sm:gap-4 w-full`) con ancho de padding calibrado (`px-2.5 py-2 sm:px-6 sm:py-3`), garantizando que en viewports de 360px el logotipo y los dos cartuchos coexistan con holgura sin desbordar ni provocar quiebres de línea indeseados.
+- **Pie de Página Adaptable:** Cuadrícula fluida con apilamiento vertical elástico en dispositivos móviles y horizontal en escritorio (`flex-col sm:flex-row items-center justify-between gap-3 sm:gap-4 text-center sm:text-left`), blindando la leyenda de derechos con `break-words` para evitar mutilaciones de texto.
+
+#### D. Ergonomía Táctil y Separación de Acciones
+- **Botonera Superior:** Separación explícita (`gap-2 sm:gap-3`) entre cartuchos, con altura ergonómica táctil de 32px–36px (`h-8 sm:h-9`) y acolchado táctil holgado (`px-2 sm:px-3 py-1 sm:py-1.5`).
+- **Botonera Inferior:** Separación generosa (`gap-4 sm:gap-6`) entre los enlaces «Kit de interfaz» y «Créditos y licencias», y separación vertical/horizontal (`gap-3 sm:gap-4`) respecto a la leyenda institucional.
+- **Cuerpo Central (`<main>`):** Relleno interior confortable (`p-3 sm:p-6 lg:p-8 flex-1 max-w-6xl w-full mx-auto`), garantizando separación física entre el contenido interactivo de las pantallas y las barras perimetrales fijas.
+
+#### E. Reglas de Servidor, Audio Web Audio y Cero Emojis (Regla R1)
+- **Audio Retro Centralizado:** Integración de la función `reproducirSonido("click", 0.3)` desde `@/lib/assets` en todos los eventos interactivos de clic (marca, enlaces superiores y enlaces del pie), ofreciendo retroalimentación acústica clásica de consola.
+- **Regla R1 Estricta:** 100% de textos en español normativo y cero emojis unicode en todo el cascarón.
+- **Integridad de Enrutamiento:** Preservación sin alteraciones de `Outlet`, `Link`, `NavLink`, `useLocation` y el notificador global `<Toaster />`.
+
+---
+
+### 18.3 Verificación de Calidad y Cero Regresiones
+- **Pruebas Automatizadas Unitarias (`pnpm --filter web test`):**
+  - **88 de 88 pruebas aprobadas** (100% de éxito, 0 fallos).
+  - Verificación formal de la prueba histórica `Ergonomía y Libertad de Usuario: PantallaCrearPersonaje y PantallaHubUbicacion incluyen escape hatch con LogOut, y LayoutPrincipal es responsive` (validando ausencia estricta de `flex-wrap` en cabecera, ausencia de botón `LogOut` en el header global y persistencia del enlace a `/kit-ui`).
+  - Verificación de la prueba histórica de la Regla R1 `Regla R1: Cero emojis unicode en PantallaIngreso.tsx, PantallaRegistro.tsx, PantallaCrearPersonaje.tsx y LayoutPrincipal.tsx`.
+  - Nueva prueba especializada `Auditoría Impeccable: LayoutPrincipal y Footer consolidan estética retro-brutalist 8-bit, tipografía integral y confinamiento móvil` validando:
+    1. Marcos negros sólidos de 4px (`border-b-4 border-black`, `border-t-4 border-black`).
+    2. Sombras ortogonales proyectadas duras (`shadow-[0_4px_0_0_#000]`, `shadow-[2px_2px_0_0_#000]`).
+    3. Confinamiento de pantalla contra overflow horizontal (`overflow-x-hidden`).
+    4. Estructura elástica de pie de página (`flex-col sm:flex-row items-center justify-between`) y quiebre protegido (`break-words`).
+    5. Ergonomía y separación de controles (`gap-2 sm:gap-3`, `gap-3 sm:gap-4`, `gap-4 sm:gap-6`, `p-3 sm:p-6 lg:p-8`).
+    6. Tipografía retro integral y retroalimentación táctil de audio con `reproducirSonido`.
+- **Linter Web (`pnpm --filter web lint`):** 0 errores de tipado o calidad en 80 archivos evaluados con Oxlint.
+- **Compilación de Producción (`pnpm --filter web build`):** 0 errores de compilación, empaquetado completado en Vite en 1.76s.
+

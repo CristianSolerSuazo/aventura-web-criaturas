@@ -276,3 +276,81 @@ test("Auditoría Impeccable: PantallaRegistro consolida estética retro-brutalis
     "Los enlaces del pie deben usar disposición adaptativa en columna/fila para móviles estrechos",
   );
 });
+
+test("Auditoría Impeccable: LayoutPrincipal y Footer consolidan estética retro-brutalist 8-bit, tipografía integral y confinamiento móvil", async () => {
+  const { readFileSync } = await import("node:fs");
+  const { join, dirname } = await import("node:path");
+  const { fileURLToPath } = await import("node:url");
+
+  const __dirname = dirname(fileURLToPath(import.meta.url));
+  const layoutCodigo = readFileSync(join(__dirname, "../src/components/LayoutPrincipal.tsx"), "utf-8");
+
+  // 1. Estética retro-brutalist 8-bit (8bitcn/ui)
+  assert.ok(
+    layoutCodigo.includes("border-b-4 border-black"),
+    "La cabecera superior fija debe lucir un marco negro sólido inferior de 4px",
+  );
+  assert.ok(
+    layoutCodigo.includes("border-t-4 border-black"),
+    "El pie de página debe lucir un marco negro sólido superior de 4px",
+  );
+  assert.ok(
+    layoutCodigo.includes("shadow-[0_4px_0_0_#000]"),
+    "La cabecera superior debe proyectar sombra sólida ortogonal de 4px",
+  );
+  assert.ok(
+    layoutCodigo.includes("shadow-[2px_2px_0_0_#000]"),
+    "Los botones de navegación de la cabecera deben comportarse como cartuchos con sombra sólida de 2px",
+  );
+  assert.ok(
+    layoutCodigo.includes("border-2 border-black"),
+    "Los botones de navegación superior deben enmarcarse con bordes negros de 2px",
+  );
+
+  // 2. Confinamiento móvil y erradicación de desbordamiento horizontal (360px-420px)
+  assert.ok(
+    layoutCodigo.includes("overflow-x-hidden"),
+    "El cascarón principal debe confinar el ancho con overflow-x-hidden",
+  );
+  assert.ok(
+    !layoutCodigo.includes("flex-wrap"),
+    "LayoutPrincipal no debe usar flex-wrap en la cabecera ni romper la barra fija en móvil",
+  );
+  assert.ok(
+    layoutCodigo.includes("flex flex-col sm:flex-row items-center justify-between"),
+    "El pie de página debe organizarse con apilamiento fluido flex-col sm:flex-row",
+  );
+  assert.ok(
+    layoutCodigo.includes("break-words"),
+    "La leyenda de derechos debe permitir quiebre de palabras para evitar amputación en pantallas estrechas",
+  );
+
+  // 3. Ergonomía táctil y separación de controles
+  assert.ok(
+    layoutCodigo.includes("gap-2 sm:gap-3"),
+    "Los botones de navegación superior deben contar con separación táctil explícita",
+  );
+  assert.ok(
+    layoutCodigo.includes("gap-3 sm:gap-4"),
+    "El pie debe separar la leyenda institucional del bloque de enlaces",
+  );
+  assert.ok(
+    layoutCodigo.includes("gap-4 sm:gap-6"),
+    "Los enlaces del pie deben contar con espaciado generoso",
+  );
+  assert.ok(
+    layoutCodigo.includes("p-3 sm:p-6 lg:p-8"),
+    "El contenedor principal <main> debe mantener un relleno interior confortable",
+  );
+
+  // 4. Tipografía retro integral y audio
+  assert.ok(
+    layoutCodigo.includes("reproducirSonido"),
+    "LayoutPrincipal debe incorporar retroalimentación táctil de audio Web Audio",
+  );
+  assert.ok(
+    layoutCodigo.includes("drop-shadow-[1px_1px_0_#000]"),
+    "El logo de la marca debe contar con relieve de alto contraste 8-bit",
+  );
+});
+
