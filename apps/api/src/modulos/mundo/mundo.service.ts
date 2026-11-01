@@ -6,10 +6,15 @@ import {
   ConflictException,
 } from '@nestjs/common';
 import { PrismaService } from '../../comun/prisma/prisma.service';
+import { ProgresoService } from '../progreso/progreso.service';
+import { Optional } from '@nestjs/common';
 
 @Injectable()
 export class MundoService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    @Optional() private readonly progresoService?: ProgresoService,
+  ) {}
 
   async obtenerUbicacionActual(usuarioId: string) {
     const personaje = await this.prisma.personaje.findUnique({
@@ -46,21 +51,52 @@ export class MundoService {
 
     const desbloqueadasSet = new Set(zonasDesbloqueadas.map((d) => d.zonaId));
 
-    const conexiones = conexionesOrigen.map((c) => {
-      const estaDesbloqueada = desbloqueadasSet.has(c.zonaDestinoId);
-      const nivelSugerido =
-        c.zonaDestino.nivelMinimo && c.zonaDestino.nivelMaximo
-          ? `${c.zonaDestino.nivelMinimo}-${c.zonaDestino.nivelMaximo}`
-          : null;
+    const conexiones = await Promise.all(
+      conexionesOrigen.map(async (c) => {
+        const estaDesbloqueada = desbloqueadasSet.has(c.zonaDestinoId);
+        const nivelSugerido =
+          c.zonaDestino.nivelMinimo && c.zonaDestino.nivelMaximo
+            ? `${c.zonaDestino.nivelMinimo}-${c.zonaDestino.nivelMaximo}`
+            : null;
 
-      return {
-        ubicacionDestinoId: c.zonaDestinoId,
-        nombre: c.zonaDestino.nombre,
-        nivelSugerido,
-        estaBloqueada: !estaDesbloqueada,
-        requisito: !estaDesbloqueada ? 'Requiere progreso en el gremio o equipo' : null,
-      };
-    });
+        let requisito: string | null = null;
+        let progresoActual = 0;
+        let progresoObjetivo = 100;
+        let cumpleRequisito = estaDesbloqueada;
+        let detalleProgreso: string | null = null;
+
+        if (this.progresoService) {
+          const evalReq = await this.progresoService.evaluarEstadoRequisitoZona(
+            this.prisma,
+            personaje.id,
+            c.zonaDestinoId,
+          );
+          requisito = evalReq.requisito;
+          progresoActual = estaDesbloqueada ? 100 : evalReq.progresoActual;
+          progresoObjetivo = evalReq.progresoObjetivo;
+          cumpleRequisito = estaDesbloqueada ? true : evalReq.cumple;
+          detalleProgreso = estaDesbloqueada
+            ? 'Sendas exploradas y cartografiadas.'
+            : evalReq.detalleProgreso;
+        } else {
+          requisito = !estaDesbloqueada ? 'Requiere progreso en el gremio o equipo' : null;
+          progresoActual = estaDesbloqueada ? 100 : 0;
+          detalleProgreso = requisito;
+        }
+
+        return {
+          ubicacionDestinoId: c.zonaDestinoId,
+          nombre: c.zonaDestino.nombre,
+          nivelSugerido,
+          estaBloqueada: !estaDesbloqueada,
+          requisito,
+          progresoActual,
+          progresoObjetivo,
+          cumpleRequisito,
+          detalleProgreso,
+        };
+      }),
+    );
 
     const registroZonaActual = zonasDesbloqueadas.find(
       (d) => d.zonaId === zona.id,

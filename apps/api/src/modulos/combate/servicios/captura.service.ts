@@ -21,7 +21,7 @@ import {
   tieneEstadoAlterado,
   bloquearYVerificarTurno,
 } from '../combate.service';
-import { calcularXpRequerida } from '../../progreso/progreso.service';
+import { calcularXpRequerida, ProgresoService } from '../../progreso/progreso.service';
 
 export const MULTIPLICADORES_TALISMAN: Record<string, number> = {
   'talisman-basico': 1.0,
@@ -50,6 +50,27 @@ export function calcularProbabilidadCaptura(
   return Math.max(0.05, Math.min(0.95, probBruta));
 }
 
+export interface RespuestaCaptura {
+  exito: boolean;
+  mensaje: string;
+  encuentroId: string;
+  estado: string;
+  destinoCaptura?: 'EQUIPO' | 'ALMACEN';
+  criaturaCapturada?: {
+    criaturaId: string;
+    nombre: string;
+    nivel: number;
+    hpActual: number;
+    hpMaximo: number;
+  };
+  contraataqueRival?: any;
+  efectosFinDeTurno?: any[];
+  resonancia?: { aliada: number; rival: number };
+  estados?: { aliada: any[]; rival: any[] };
+  mensajes?: string[];
+  zonasRecienDesbloqueadas?: string[];
+}
+
 @Injectable()
 export class CapturaService {
   private readonly generador: GeneradorAleatorio;
@@ -58,6 +79,7 @@ export class CapturaService {
     private readonly prisma: PrismaService,
     private readonly historialService: HistorialService,
     @Optional() generador?: GeneradorAleatorio,
+    @Optional() private readonly progresoService?: ProgresoService,
   ) {
     this.generador = generador ?? new GeneradorAleatorioNativo();
   }
@@ -70,7 +92,7 @@ export class CapturaService {
     encuentroId: string,
     itemCodigo: string,
     turnoEsperado?: number,
-  ) {
+  ): Promise<RespuestaCaptura> {
     // 1. Validar personaje autenticado
     const personaje = await this.prisma.personaje.findUnique({
       where: { usuarioId },
@@ -276,6 +298,14 @@ export class CapturaService {
           });
         }
 
+        let zonasRecienDesbloqueadas: string[] = [];
+        if (this.progresoService?.evaluarDesbloqueosAutomaticos) {
+          zonasRecienDesbloqueadas = await this.progresoService.evaluarDesbloqueosAutomaticos(
+            tx,
+            personaje.id,
+          );
+        }
+
         await tx.historial.create({
           data: {
             personajeId: personaje.id,
@@ -301,6 +331,7 @@ export class CapturaService {
             hpActual: criaturaCapturada.hpActual,
             hpMaximo: criaturaCapturada.hpMaximo,
           },
+          ...(zonasRecienDesbloqueadas.length > 0 ? { zonasRecienDesbloqueadas } : {}),
         };
       }
 

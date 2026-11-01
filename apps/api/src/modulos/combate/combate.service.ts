@@ -333,6 +333,7 @@ export class CombateService {
       let estadoEncuentroFinal: string = ESTADOS_ENCUENTRO.ACTIVO;
       let resultadoFinal: string | null = null;
       let progresoVictoria: any = null;
+      let zonasRecienDesbloqueadas: string[] = [];
 
       if (resultadoRonda.resultado === 'VICTORIA') {
         estadoEncuentroFinal = ESTADOS_ENCUENTRO.VICTORIA;
@@ -379,6 +380,13 @@ export class CombateService {
               progreso: progresoActualizado,
             },
           });
+        }
+
+        if (this.progresoService?.evaluarDesbloqueosAutomaticos) {
+          zonasRecienDesbloqueadas = await this.progresoService.evaluarDesbloqueosAutomaticos(
+            tx,
+            personaje.id,
+          );
         }
 
         await this.historialService.registrar(
@@ -480,6 +488,7 @@ export class CombateService {
           rival: resultadoRonda.estadoBatalla.rival.estados,
         },
         mensajes: resultadoRonda.mensajes,
+        ...(zonasRecienDesbloqueadas.length > 0 ? { zonasRecienDesbloqueadas } : {}),
       };
     });
   }
